@@ -1,0 +1,32 @@
+[
+    {
+        "id": 1,
+        "numero": "56",
+        "complemento": "Casa",
+        "tipo": "AMBOS",
+        "endereco": {
+            "cep": "08599-490",
+            "estado": "SP",
+            "cidade": "Itaquaquecetuba",
+            "bairro": "Campo da Venda",
+            "rua": "Rua Santa Helena",
+            "pais": "Brasil"
+        },
+        "observacao": null
+    },
+    {
+        "id": 2,
+        "numero": "53",
+        "complemento": "Casa",
+        "tipo": "AMBOS",
+        "endereco": {
+            "cep": "08599-480",
+            "estado": "SP",
+            "cidade": "Itaquaquecetuba",
+            "bairro": "Campo da Venda",
+            "rua": "Rua São José",
+            "pais": "Brasil"
+        },
+        "observacao": null
+    }
+]

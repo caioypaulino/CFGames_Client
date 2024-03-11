@@ -1,0 +1,32 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 100px;
+}
+
+.containerListProduct {
+    position: relative;
+    display: flex;
+    width: 85%;
+    margin: 20px;
+    margin-bottom: 40px;
+}
+
+.btnRemove {
+    position: absolute;
+    height: 30px;
+    width: 150px;
+    background: #6085ff;
+    color: #e2e6ef;
+    border-radius: 5px;
+    border-color: transparent;
+    cursor: pointer;
+    margin: 10px;
+    z-index: 2;
+    top: 60%;
+    left: 55%;
+}
+  
+.btnRemove:hover {
+    background-color: #2349c5;
+}
