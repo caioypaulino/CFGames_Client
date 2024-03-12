@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import LinhaDados from "../../components/components_perfil/linhaDados";
+import LinhaDadosEnderecos from "../../components/components_perfil/linhaDadosEnderecos";
 import TabelaActions from "../../components/components_perfil/tabelaActions";
 import styles from "./Enderecos.module.css";
 import enderecoData from "../../utils/enderecosCliente.json";
@@ -22,7 +22,7 @@ const enderecos = () => {
             if (tipo === "id") {
               return null; // Pula a renderização para o tipo "id"
             }
-            return <LinhaDados key={index} tipo={tipo} dado={dado} />;
+            return <LinhaDadosEnderecos key={index} tipo={tipo} dado={dado} />;
           })}
         </div>
       </div>

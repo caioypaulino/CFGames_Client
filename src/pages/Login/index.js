@@ -4,6 +4,7 @@ import bannerLogin from "../../assets/login/undraw_login_re_4vu2 1.svg";
 import styles from './Login.module.css';
 import {Link, redirect, useNavigate} from 'react-router-dom';
 import { salvarToken } from "../../utils/storage";
+import swal from 'sweetalert2';
 
 export default function login() {
   const [email, setEmail] = useState("");
@@ -20,25 +21,25 @@ export default function login() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, senha }),
       });
-      const data = await response.json();
 
-      console.log(data);
+      if (response.ok) {
+        const data = await response.json();
 
-      salvarToken(data.token);
+        console.log(data);
 
-      navigate("/perfil");
+        salvarToken(data.token);
 
-      // if (response.ok) {
-      //   const data = await response.json();
-      //   // Faça algo com os dados de resposta, como armazená-los no estado da sua aplicação
-      //   alert(response.json);
-      // } else {
-      //   // Lidar com um erro de autenticação
-      //   alert(response.json);
-      // }
-    } catch (error) {
+        swal.fire({title:"Login realizado com sucesso!", text:"Seja Bem-vindo(a)", icon:"success", confirmButtonColor:"#6085FF"}).then(() => { navigate("/perfil") });
+        
+      } 
+      else {
+        // Lidar com um erro de autenticação
+        swal.fire({title:"Email ou Senha inválidos!", text:"Digite novamente.", icon:"error", confirmButtonColor:"#6085FF"})
+      }
+    }   
+    catch (error) {
       console.error(error);
-      alert(error);
+      swal.fire(error,'',"error");
       // Lidar com um erro de rede
     }
   };
