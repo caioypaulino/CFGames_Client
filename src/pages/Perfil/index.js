@@ -3,12 +3,19 @@ import LinhaDados from "../../components/components_perfil/linhaDados";
 import TabelaActions from "../../components/components_perfil/tabelaActions";
 import styles from "./Perfil.module.css";
 import clienteData from "../../utils/cliente.json";
+import { getToken } from "../../utils/storage";
 
 const perfil = () => {
   const [cliente, setCliente] = useState({});
 
   useEffect(() => {
-    setCliente(clienteData);
+    const token = getToken();
+
+    fetch('http://localhost:8080/perfil/pessoal', {
+      headers: { Authorization : "Bearer " + token }
+    }).then(resp => resp.json()).then(json => setCliente(json));
+
+    // setCliente(clienteData);
   }, []);
 
   const getGeneroString = (genero) => {
@@ -23,12 +30,7 @@ const perfil = () => {
       <div className={styles.tbInfo}>
         <div>
           {Object.entries(cliente).map(([tipo, dado], index) => {
-            if (tipo === "id") {
-              return null; // Pula a renderização para o tipo "id"
-            }
-            if (tipo === "genero") {
-              dado = getGeneroString(dado);
-            }
+            
             return <LinhaDados key={index} tipo={tipo} dado={dado} />;
           })}
         </div>

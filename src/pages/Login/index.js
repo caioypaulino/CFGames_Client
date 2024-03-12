@@ -2,11 +2,14 @@ import React, { useState } from "react";
 import logoCF from "../../assets/navbar/Logo 2.svg";
 import bannerLogin from "../../assets/login/undraw_login_re_4vu2 1.svg";
 import styles from './Login.module.css';
-import {Link} from 'react-router-dom';
+import {Link, redirect, useNavigate} from 'react-router-dom';
+import { salvarToken } from "../../utils/storage";
 
 export default function login() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [senha, setSenha] = useState("");
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -15,17 +18,24 @@ export default function login() {
       const response = await fetch("http://localhost:8080/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, senha }),
       });
+      const data = await response.json();
 
-      if (response.ok) {
-        const data = await response.json();
-        // Faça algo com os dados de resposta, como armazená-los no estado da sua aplicação
-        alert(response.json);
-      } else {
-        // Lidar com um erro de autenticação
-        alert(response.json);
-      }
+      console.log(data);
+
+      salvarToken(data.token);
+
+      navigate("/perfil");
+
+      // if (response.ok) {
+      //   const data = await response.json();
+      //   // Faça algo com os dados de resposta, como armazená-los no estado da sua aplicação
+      //   alert(response.json);
+      // } else {
+      //   // Lidar com um erro de autenticação
+      //   alert(response.json);
+      // }
     } catch (error) {
       console.error(error);
       alert(error);
@@ -56,9 +66,9 @@ export default function login() {
               <p>Senha</p>
               <input
                 type="password"
-                value={password}
+                value={senha}
                 className="password"
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => setSenha(e.target.value)}
               />
             </label><br/>
             <input className={styles.enviar} type="submit" />
