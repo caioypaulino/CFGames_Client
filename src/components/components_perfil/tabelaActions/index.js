@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./tabelaActions.module.css";
+import { Link } from "react-router-dom";
 
 const tabelaActions = (props) => {
   return (
@@ -8,8 +9,8 @@ const tabelaActions = (props) => {
         <h1 className={styles.titleContainer}>Dados da conta</h1>
       </div>
       <div className={styles.containerButtons}>
-        <button>Meus dados</button>
-        <button>Endereços</button>
+        <Link to="/perfil/pessoal"><button>Meus dados</button></Link>
+        <Link to="/perfil/enderecos"><button>Endereços </button></Link>
         <button>Cartões de crédito</button>
         <button>Meus pedidos</button>
       </div>

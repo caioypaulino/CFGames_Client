@@ -46,3 +46,7 @@
 .containerButtons button:hover {
   background-color: #2349c5;
 }
+
+.containerButtons a {
+  text-decoration: none; /* Remove sublinhado */
+}

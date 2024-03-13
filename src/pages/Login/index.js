@@ -4,7 +4,7 @@ import bannerLogin from "../../assets/login/undraw_login_re_4vu2 1.svg";
 import styles from './Login.module.css';
 import {Link, redirect, useNavigate} from 'react-router-dom';
 import { salvarToken } from "../../utils/storage";
-import swal from 'sweetalert2';
+import Swal from 'sweetalert2';
 
 export default function login() {
   const [email, setEmail] = useState("");
@@ -29,17 +29,17 @@ export default function login() {
 
         salvarToken(data.token);
 
-        swal.fire({title:"Login realizado com sucesso!", text:"Seja Bem-vindo(a)", icon:"success", confirmButtonColor:"#6085FF"}).then(() => { navigate("/perfil") });
+        Swal.fire({title:"Login realizado com sucesso!", text:"Seja Bem-vindo(a)", icon:"success", confirmButtonColor:"#6085FF"}).then(() => { navigate("/perfil/pessoal") });
         
       } 
       else {
         // Lidar com um erro de autenticação
-        swal.fire({title:"Email ou Senha inválidos!", text:"Digite novamente.", icon:"error", confirmButtonColor:"#6085FF"})
+        Swal.fire({title:"Email ou Senha inválidos!", text:"Digite novamente.", icon:"error", confirmButtonColor:"#6085FF"})
       }
     }   
     catch (error) {
       console.error(error);
-      swal.fire(error,'',"error");
+      Swal.fire(error,'',"error");
       // Lidar com um erro de rede
     }
   };

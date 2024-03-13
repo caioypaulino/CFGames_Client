@@ -6,8 +6,8 @@ import Login from "./pages/Login";
 import Cadastro from "./pages/Cadastro";
 import Carrinho from "./pages/Carrinho";
 import Layout from "./components/layout/index.js";
-import Perfil from "./pages/Perfil";
-import PerfilEnderecos from "./pages/Enderecos";
+import Perfil from "./pages/Perfil/Pessoal/index.js";
+import PerfilEnderecos from "./pages/Perfil/Enderecos/index.js";
 
 export default function App() {
   return (
@@ -15,8 +15,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Layout><Home /></Layout>} />
         <Route path="/carrinho" element={<Layout><Carrinho /></Layout>} />
-        <Route path="/perfil" element={<Layout><Perfil/></Layout>} />
-        <Route path="/enderecos" element={<Layout><PerfilEnderecos/></Layout>} />
+        <Route path="/perfil/pessoal" element={<Layout><Perfil/></Layout>} />
+        <Route path="/perfil/enderecos" element={<Layout><PerfilEnderecos/></Layout>} />
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
         <Route path="/pagamento" />
