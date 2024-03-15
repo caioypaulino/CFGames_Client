@@ -2,20 +2,20 @@ import React, { useEffect, useState } from "react";
 import LinhaDadosEnderecos from "../../../components/components_perfil/linhaDadosEnderecos";
 import TabelaActions from "../../../components/components_perfil/tabelaActions";
 import iconAdd from "../../../assets/buttons/add.svg"
-import styles from "./Enderecos.module.css";
+import styles from "./Cartoes.module.css";
 import Swal from "sweetalert2";
 import { getToken } from "../../../utils/storage";
 import { handleCep, cepMask } from '../../../utils/mask';
 
-const enderecos = () => {
-    const [enderecos, setEnderecos] = useState({});
+const cartoes = () => {
+    const [cartoes, setCartoes] = useState({});
 
     useEffect(() => {
         const token = getToken();
 
-        fetch('http://localhost:8080/perfil/enderecos', {
+        fetch('http://localhost:8080/perfil/cartoes', {
             headers: { Authorization: "Bearer " + token }
-        }).then(resp => resp.json()).then(json => setEnderecos(json));
+        }).then(resp => resp.json()).then(json => setCartoes(json));
     }, []);
 
     // função para abrir o formulário de adição de endereço
@@ -92,7 +92,7 @@ const enderecos = () => {
                 <TabelaActions />
             </div>
             <div className={styles.tbInfo}>
-                {Object.entries(enderecos).map(([tipo, dado], index) => (
+                {Object.entries(cartoes).map(([tipo, dado], index) => (
                     <LinhaDadosEnderecos key={index} index={index + 1} tipo={tipo} dado={dado} />
                 ))}
                 <div className={styles.btnIconAdd}>
@@ -105,4 +105,4 @@ const enderecos = () => {
     );
 };
 
-export default enderecos;
+export default cartoes;
