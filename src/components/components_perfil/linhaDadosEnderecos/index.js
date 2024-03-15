@@ -15,7 +15,7 @@ const linhaDadosEnderecos = (props) => {
     const enderecoFormatado = `${cep}, ${rua}, ${numero}, ${bairro}, ${cidade}, ${estado}`;
 
     // utilizando sweet alert 2 como popup para informações e edição
-    const abrirPopup = () => {
+    const abrirPopupInfo = () => {
         Swal.fire({
             title: `Endereço ${props.index}`,
             html: ` 
@@ -38,7 +38,8 @@ const linhaDadosEnderecos = (props) => {
             }
         });
     };
-  
+    
+    // utilizando sweet alert 2 como popup para Update Endereço
     const abrirPopupUpdate = () => {
         Swal.fire({
             title: `Editar Endereço ${props.index}`,
@@ -63,11 +64,12 @@ const linhaDadosEnderecos = (props) => {
             }
         });
         
-        // adicionando um ouvinte de evento ao campo de CEP para chamar a função handleZipCode
+        // adicionando um ouvinte de evento ao campo de CEP para chamar a função handleCep que cria uma máscara dinâmica
         const cepInput = document.getElementById('cep');
         cepInput.addEventListener('input', handleCep);
     };
 
+    // função request update endereço
     const editarEndereco = async (id, numero, complemento, tipo, cep, observacao) => {
         try {
             const token = getToken();
@@ -106,7 +108,7 @@ const linhaDadosEnderecos = (props) => {
         }
     };
 
-    // Função para abrir popup de confirmação de exclusão
+    // utilizando sweet alert 2 como popup para Delete Endereço
     const abrirPopupDelete = () => {
         Swal.fire({
             title: "Tem certeza?",
@@ -125,7 +127,7 @@ const linhaDadosEnderecos = (props) => {
         });
     };
 
-    // Função para excluir o endereço
+    // função request delete endereço
     const excluirEndereco = async (enderecoId) => {
         try {
             const token = getToken();
@@ -165,7 +167,7 @@ const linhaDadosEnderecos = (props) => {
             <p className="text">Endereço {props.index}:</p>
             <p className={styles.data}>{enderecoFormatado}</p>
             <div className={styles.icons}>
-                <button className={styles.btnIcon} onClick={abrirPopupUpdate}>
+                <button className={styles.btnIcon} onClick={abrirPopupInfo}>
                     <img className={styles.iconEdite} src={iconEdit} alt="Editar" />
                 </button>
             </div>

@@ -6,12 +6,13 @@ const tabelaActions = (props) => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1 className={styles.titleContainer}>Dados da conta</h1>
+        <h1 className={styles.titleContainer}>Perfil</h1>
       </div>
       <div className={styles.containerButtons}>
-        <Link to="/perfil/pessoal"><button>Meus dados</button></Link>
+        <Link to="/perfil/conta"><button>Dados da conta</button></Link>
+        <Link to="/perfil/pessoal"><button>Dados pessoais</button></Link>
         <Link to="/perfil/enderecos"><button>Endereços </button></Link>
-        <button>Cartões de crédito</button>
+        <Link to="/perfil/cartoes"><button>Cartões de crédito</button></Link>
         <button>Meus pedidos</button>
       </div>
     </div>

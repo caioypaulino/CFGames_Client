@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import LinhaDadosEnderecos from "../../../components/components_perfil/linhaDadosEnderecos";
+import LinhaDadosCartoes from "../../../components/components_perfil/linhaDadosCartoes";
 import TabelaActions from "../../../components/components_perfil/tabelaActions";
 import iconAdd from "../../../assets/buttons/add.svg"
 import styles from "./Cartoes.module.css";
 import Swal from "sweetalert2";
 import { getToken } from "../../../utils/storage";
-import { handleCep, cepMask } from '../../../utils/mask';
+import { handleCreditCard } from "../../../utils/mask";
 
 const cartoes = () => {
     const [cartoes, setCartoes] = useState({});
@@ -18,59 +18,57 @@ const cartoes = () => {
         }).then(resp => resp.json()).then(json => setCartoes(json));
     }, []);
 
-    // função para abrir o formulário de adição de endereço
+    // função para abrir o formulário de adição de cartão
     const abrirPopupAdd = () => {
         Swal.fire({
-            title: "Adicionar Novo Endereço",
+            title: "Adicionar Novo Cartão",
             html: `
-                <input id="numero" type="text" placeholder="Número" class="swal2-input">
-                <input id="complemento" type="text" placeholder="Complemento" class="swal2-input">
-                <input id="tipo" type="text" placeholder="Tipo" class="swal2-input">
-                <input id="cep" type="text" placeholder="CEP" maxlength="9" class="swal2-input">
-                <input id="observacao" type="text" placeholder="Observação" class="swal2-input">`,
+                <input id="numeroCartao" type="text" placeholder="Número do Cartão" inputmode="numeric" maxlength="19" class="swal2-input">
+                <input id="nomeCartao" type="text" placeholder="Nome do Titular" class="swal2-input">
+                <input id="mesVencimento" type="number" placeholder="Mês de Vencimento" max="12" class="swal2-input">
+                <input id="anoVencimento" type="number" placeholder="Ano de Vencimento" min="2024" class="swal2-input">
+                <input id="cvc" type="text" placeholder="CVC" class="swal2-input">`,
             showCancelButton: true,
             confirmButtonText: "Adicionar",
             confirmButtonColor: "#6085FF",
             cancelButtonText: "Cancelar",
             icon: "info",
             preConfirm: () => {
-                const numero = Swal.getPopup().querySelector("#numero").value;
-                const complemento = Swal.getPopup().querySelector("#complemento").value;
-                const tipo = Swal.getPopup().querySelector("#tipo").value;
-                const cep = cepMask(Swal.getPopup().querySelector("#cep").value);
-                const observacao = Swal.getPopup().querySelector("#observacao").value;
-                adicionarEndereco(numero, complemento, tipo, cep, observacao);
+                const numeroCartao = (Swal.getPopup().querySelector("#numeroCartao").value).replace(/\s/g, ''); // remove espaços em branco da máscara
+                const nomeCartao = Swal.getPopup().querySelector("#nomeCartao").value;
+                const mesVencimento = Swal.getPopup().querySelector("#mesVencimento").value;
+                const anoVencimento = Swal.getPopup().querySelector("#anoVencimento").value;
+                const cvc = Swal.getPopup().querySelector("#cvc").value;
+                adicionarCartao(numeroCartao, nomeCartao, mesVencimento, anoVencimento, cvc);
             },
         });
-
-        // adicionando um ouvinte de evento ao campo de CEP para chamar a função handleZipCode
-        const cepInput = document.getElementById('cep');
-        cepInput.addEventListener('input', handleCep);
+        
+        // adicionando um ouvinte de evento ao campo de numeroCartao para chamar a função handleCreditCard que cria uma máscara dinâmica
+        const numeroCartaoInput = document.getElementById('numeroCartao');
+        numeroCartaoInput.addEventListener('input', handleCreditCard);
     };
 
-    // função para adicionar um novo endereço
-    const adicionarEndereco = async (numero, complemento, tipo, cep, observacao) => {
+    // função para adicionar um novo cartão
+    const adicionarCartao = async (numeroCartao, nomeCartao, mesVencimento, anoVencimento, cvc) => {
         try {
             const token = getToken();
-            const response = await fetch("http://localhost:8080/perfil/add/endereco", {
+            const response = await fetch("http://localhost:8080/perfil/add/cartao", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: "Bearer " + token,
                 },
                 body: JSON.stringify({
-                    numero,
-                    complemento,
-                    tipo,
-                    endereco: {
-                        cep,
-                    },
-                    observacao,
+                    numeroCartao,
+                    nomeCartao,
+                    mesVencimento,
+                    anoVencimento,
+                    cvc,
                 }),
             });
 
             if (response.ok) {
-                Swal.fire({ title: "Sucesso!", text: "Endereço adicionado com sucesso.", icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
+                Swal.fire({ title: "Sucesso!", text: "Cartão adicionado com sucesso.", icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
             }
             else {
                 // buscando mensagem de erro que não é JSON
@@ -81,8 +79,8 @@ const cartoes = () => {
         }
         catch (error) {
             // tratando mensagem de erro
-            console.error("Erro ao adicionar endereço:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao adicionar o endereço.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
+            console.error("Erro ao adicionar cartão:", error);
+            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao adicionar o cartão.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
         }
     };
 
@@ -93,7 +91,7 @@ const cartoes = () => {
             </div>
             <div className={styles.tbInfo}>
                 {Object.entries(cartoes).map(([tipo, dado], index) => (
-                    <LinhaDadosEnderecos key={index} index={index + 1} tipo={tipo} dado={dado} />
+                    <LinhaDadosCartoes key={index} index={index + 1} tipo={tipo} dado={dado} />
                 ))}
                 <div className={styles.btnIconAdd}>
                     <button className={styles.btnIcon} onClick={abrirPopupAdd}>

@@ -3,15 +3,25 @@
     justify-content: space-between;
     align-items: center;
     background-color: #E2E6EF;
-    width: 45rem;
-    height: 2.5rem;
+    width: 26rem;
+    height: 5rem;
     border-radius: 5px;
-    margin-left: -50px;
+    left: 7.5%;
     margin-bottom: 15px;
     margin-top: 15px;
+    position: relative;
 }
 
-.iconEdite {
+.infoDivider {
+    left: 3%;
+    border: 1px solid grey;
+
+    position: relative;
+}
+
+.iconInfo {
+    width: 80%;
+    height: 80%;
     flex: 3;
 }
 
@@ -21,7 +31,20 @@
     flex: 3;
 }
 
-.btnIcon {
+.btnIconInfo {
+    left: 10%;
+    top: 1.3px;
+    justify-content: flex-end;
+    background: none;
+    border: none;   
+    padding: 0;
+    cursor: pointer;
+    display: inline-block;
+    margin-right: 5px;
+    position: relative;
+}
+
+.btnIconDelete {
     justify-content: flex-end;
     background: none;
     border: none;
@@ -29,6 +52,7 @@
     cursor: pointer;
     display: inline-block;
     margin-right: 5px;
+    position: relative;
 }
 
 .data {
