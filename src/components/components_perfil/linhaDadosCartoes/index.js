@@ -8,7 +8,7 @@ import { creditCardMask, creditCardXXXXMask } from "../../../utils/mask";
 
 const linhaDadosCartoes = (props) => {
     // Utilizando desestruturação
-    const { numeroCartao, nomeCartao, mesVencimento, anoVencimento } = props.dado;
+    const { numeroCartao, nomeCartao, bandeira, mesVencimento, anoVencimento } = props.dado;
 
     // Formatando data de vencimento
     const dataVencimento = `${mesVencimento}/${anoVencimento}`;
@@ -20,6 +20,7 @@ const linhaDadosCartoes = (props) => {
             html: `
                 <p><strong>Número do cartão:</strong> ${creditCardMask(numeroCartao)}</p>
                 <p><strong>Nome do titular:</strong> ${nomeCartao}</p>
+                <p><strong>Bandeira:</strong> ${bandeira}</p>
                 <p><strong>Vencimento:</strong> ${dataVencimento}</p>
                 <p><strong>CVC:</strong> ***</p>`,
             confirmButtonColor: "#6085FF",

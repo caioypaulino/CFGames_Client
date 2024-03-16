@@ -6,7 +6,8 @@ import Login from "./pages/Login";
 import Cadastro from "./pages/Cadastro";
 import Carrinho from "./pages/Carrinho";
 import Layout from "./components/layout/index.js";
-import PerfilPessoal from "./pages/Perfil/Pessoal";
+import PerfilPessoais from "./pages/Perfil/Pessoais";
+import PerfilConta from "./pages/Perfil/Conta";
 import PerfilEnderecos from "./pages/Perfil/Enderecos";
 import PerfilCartoes from "./pages/Perfil/Cartoes";
 
@@ -16,7 +17,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Layout><Home /></Layout>} />
         <Route path="/carrinho" element={<Layout><Carrinho /></Layout>} />
-        <Route path="/perfil/pessoal" element={<Layout><PerfilPessoal/></Layout>} />
+        <Route path="/perfil/conta" element={<Layout><PerfilConta/></Layout>} />
+        <Route path="/perfil/pessoal" element={<Layout><PerfilPessoais/></Layout>} />
         <Route path="/perfil/enderecos" element={<Layout><PerfilEnderecos/></Layout>} />
         <Route path="/perfil/cartoes" element={<Layout><PerfilCartoes/></Layout>} />
         <Route path="/login" element={<Login />} />

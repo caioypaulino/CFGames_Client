@@ -39,3 +39,50 @@ export const creditCardXXXXMask = (number) => {
 
     return maskedNumberWithSpaces + visibleDigits;
 }
+
+export const handleCPF = (event) => {
+    let input = event.target;
+    input.value = cpfMask(input.value);
+}
+
+// Função para aplicar máscara ao número de CPF
+export const cpfMask = (value) => {
+    if (!value) return "";
+
+    value = value.replace(/\D/g,'');
+    value = value.replace(/(\d{3})(\d)/,'$1.$2');
+    value = value.replace(/(\d{3})(\d)/,'$1.$2');
+    value = value.replace(/(\d{3})(\d{1,2})$/,'$1-$2');
+
+    return value;
+}
+
+export const handleTelefone = (event) => {
+    let input = event.target;
+    input.value = telefoneMask(input.value);
+}
+
+// Função para aplicar máscara ao número de telefone
+export const telefoneMask = (value) => {
+    if (!value) return "";
+
+    // Remove todos os caracteres não numéricos
+    value = value.replace(/\D/g, '');
+
+    // Formatação para número de telefone com 8 ou 9 dígitos
+    if (value.length <= 10) {
+        value = value.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+    } else {
+        value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+    }
+
+    return value;
+};
+
+// Função para aplicar máscara as datas
+export const dataMask = (value) => {
+    const [ano, mes, dia] = value.split("-");
+    return `${dia}/${mes}/${ano}`;
+}
+
+
