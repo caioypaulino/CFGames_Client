@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./linhaDadosPessoais.module.css";
-import { cpfMask, telefoneMask, dataMask } from "../../../utils/mask";
+import { cpfMask, telefoneMask, dataMaskBR } from "../../../utils/mask";
 
 const linhaDadosPessoais = (props) => {
     let dadoFormatado = props.dado;
@@ -17,7 +17,7 @@ const linhaDadosPessoais = (props) => {
 
     // Aplicando a máscara de data de nascimento
     if (props.tipo === 'dataNascimento') {
-        dadoFormatado = dataMask(dadoFormatado);
+        dadoFormatado = dataMaskBR(dadoFormatado);
     }
 
     return (

@@ -1,3 +1,9 @@
+// Função para remover máscara e mostrar apenas dígitos
+export const removeMask = (value) => {
+    value = value.replace(/\D/g,'');
+    return value;
+}
+
 export const handleCep = (event) => {
     let input = event.target;
     input.value = cepMask(input.value);
@@ -7,7 +13,7 @@ export const handleCep = (event) => {
 export const cepMask = (value) => {
     if (!value) return "";
 
-    value = value.replace(/\D/g,'');
+    value = removeMask(value);
     value = value.replace(/(\d{5})(\d)/,'$1-$2');
 
     return value;
@@ -23,7 +29,7 @@ export const creditCardMask = (number) => {
     // Colocar espaço a cada 4 dígitos
     if (!number) return "";
 
-    number = number.replace(/\D/g,'');
+    number = removeMask(number);
     number = number.replace(/(\d{4})(?=\d)/g, '$1 ');
 
     return number;
@@ -49,7 +55,7 @@ export const handleCPF = (event) => {
 export const cpfMask = (value) => {
     if (!value) return "";
 
-    value = value.replace(/\D/g,'');
+    value = removeMask(value);
     value = value.replace(/(\d{3})(\d)/,'$1.$2');
     value = value.replace(/(\d{3})(\d)/,'$1.$2');
     value = value.replace(/(\d{3})(\d{1,2})$/,'$1-$2');
@@ -79,10 +85,16 @@ export const telefoneMask = (value) => {
     return value;
 };
 
-// Função para aplicar máscara as datas
-export const dataMask = (value) => {
+// Função para aplicar máscara de datas (dd/MM/yyyy)
+export const dataMaskBR = (value) => {
     const [ano, mes, dia] = value.split("-");
     return `${dia}/${mes}/${ano}`;
 }
+
+// Função para aplicar máscara de datas (dd-MM-yyyy)
+export const dataMaskEN = (value) => {
+    const dataSplit = value.split("-");
+    return `${dataSplit[2]}-${dataSplit[1]}-${dataSplit[0]}`;
+};
 
 

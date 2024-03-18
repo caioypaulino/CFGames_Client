@@ -74,3 +74,33 @@ input[type="password"] {
 .link {
   color: #2349c5;
 }
+
+.lastP {
+  position: relative;
+  margin-left: 20%;
+}
+
+.lastP {
+  position: relative;
+  margin-left: 20%;
+}
+
+.lastP p {
+  position: relative;
+}
+
+.lastP p::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background-color: transparent; /* Define a cor da linha como transparente para remover */
+}
+
+.lastP .link {
+  color: #6085FF; /* Define a cor do link como #6085FF */
+  text-decoration: none; /* Remove o sublinhado */
+  cursor: pointer; /* Altera o cursor ao passar sobre o link */
+}

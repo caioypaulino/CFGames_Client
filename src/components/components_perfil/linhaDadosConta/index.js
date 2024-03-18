@@ -3,8 +3,10 @@ import styles from "./linhaDadosConta.module.css";
 import iconEdit from "../../../assets/buttons/Frame (6).svg";
 import Swal from "sweetalert2";
 import { getToken } from "../../../utils/storage";
+import { useNavigate } from "react-router-dom";
 
 const linhaDadosConta = (props) => {
+    const navigate = useNavigate();
 
     const abrirPopupUpdate = () => {
         Swal.fire({
@@ -61,7 +63,7 @@ const linhaDadosConta = (props) => {
             });
 
             if (response.ok) {
-                Swal.fire({ title: "Sucesso!", text: `E-mail atualizado com sucesso.`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.href = "/login" });
+                Swal.fire({ title: "Sucesso!", text: `E-mail atualizado com sucesso.`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login") });
             } 
             else {
                 const errorMessage = await response.text();

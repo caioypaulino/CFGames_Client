@@ -1,0 +1,96 @@
+
+.form {
+    max-width: 49vw;
+    box-sizing: border-box;
+    padding: 0;
+    margin: auto;
+    flex-direction: column;
+    position: relative;
+    text-align: left;
+    display: flex;
+}
+  
+.formRow {
+    display: flex;
+    justify-content: space-between;
+}
+
+.formGroup {
+    flex: 1;
+    margin-right: -8rem; /* Adicione margem direita para separar os campos */
+}
+
+/* Limpe a margem direita do último grupo */
+.formRow .formGroup:last-child {
+    margin-right: 0;
+}
+
+.date, .input, .select, .inputNum {
+    font-size: 20px;
+    font-family: "Roboto";
+    height: 30px;
+    width: 70%;
+    background: #e2e6ef;
+    border-radius: 7.5px;
+    border-color: transparent;
+    margin-bottom: 10px;
+    padding-left: 10px;
+}
+  
+.select {
+    height: 43%;
+    width: 67%;
+}
+  
+.date {
+    height: 5%;
+}
+
+.inputNum {
+    width: 64%;
+}
+  
+.enviar {
+    font-family: "Roboto";
+    height: 5%;
+    width: 72%;
+    background: #6085ff;
+    color: #e2e6ef;
+    border-radius: 7.5px;
+    border-color: transparent;
+    cursor: pointer;
+}
+  
+.enviar:hover {
+    background-color: #2349c5;
+}
+  
+.link {
+    color: #2349c5;
+}
+  
+.lastP {
+    position: relative;
+    margin-left: 20%;
+}
+  
+.lastP p {
+    position: relative;
+}
+  
+.lastP p::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: transparent; /* Define a cor da linha como transparente para remover */
+}
+  
+.lastP .link {
+    color: #6085FF; /* Define a cor do link como #6085FF */
+    text-decoration: none; /* Remove o sublinhado */
+    cursor: pointer; /* Altera o cursor ao passar sobre o link */
+}
+  

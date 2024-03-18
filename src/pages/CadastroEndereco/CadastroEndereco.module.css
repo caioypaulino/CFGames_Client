@@ -1,0 +1,61 @@
+.mini {
+    margin-left: 7rem;
+    margin-top: 1.4rem;
+}
+
+.logoCF {
+    max-width: 200px;
+}
+  
+.titulo {
+    font-family: "Roboto";
+    font-style: normal;
+    color: #011640;
+    margin: 0;
+}
+  
+.img_banner {
+    position: absolute;
+    max-width: 25%;
+    margin-left: 62%;
+}
+
+.formE{
+    width: 50%;
+    position: absolute;
+    left: 6%;
+}
+
+.formE2 {
+    width: 50%;
+    margin-left: 50%;
+    position: absolute;
+}
+
+.enviar {
+    font-family: "Roboto";
+    height: 2.5rem;
+    width: 25%;
+    background: #6085ff;
+    color: #e2e6ef;
+    border-radius: 7.5px;
+    border-color: transparent;
+    cursor: pointer;
+    position: absolute;
+    left: 35%;
+    top: 51rem;
+}
+  
+.enviar:hover {
+    background-color: #2349c5;
+}
+
+.checkbox {
+    position: absolute;
+    left: 6.5%;
+    top: 49.5rem;
+}
+
+html {
+    overflow-x: hidden;
+}
