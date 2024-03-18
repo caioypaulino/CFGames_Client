@@ -39,52 +39,44 @@ export default function CadastroEndereco() {
     const handleSubmit = async () => {
         try {
             const token = getToken();
-            
+
+            let enderecosRequest = [];
+
             if (enderecosDiferentes) {
                 enderecoEntrega.tipo = "ENTREGA";
                 enderecoCobranca.tipo = "COBRANCA";
+
+                enderecosRequest = [enderecoEntrega, enderecoCobranca];
+            }
+            else {
+                enderecosRequest = [enderecoEntrega];
             }
 
             // Submissão do endereço de entrega
-            const responseEntrega = await fetch("http://localhost:8080/perfil/add/endereco", {
+            const response = await fetch("http://localhost:8080/cadastro/endereco", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: "Bearer " + token,
                 },
-                body: JSON.stringify(enderecoEntrega),
+                body: JSON.stringify(enderecosRequest),
             });
 
             // Verificação e tratamento da resposta para o endereço de entrega
-            if (!responseEntrega.ok) {
-                const errorMessageEntrega = await responseEntrega.text();
-                throw new Error(errorMessageEntrega);
+            if (response.ok) {
+                // Exibição de mensagem de sucesso
+                Swal.fire({title: "Sucesso!", text: "Endereço(s) adicionado(s) com sucesso.", icon: "success", confirmButtonColor: "#6085FF"}).then(() => { navigate("/perfil/pessoal") });
+                
             }
-            
-            if (enderecosDiferentes) {
-                // Submissão do endereço de cobrança
-                const responseCobranca = await fetch("http://localhost:8080/perfil/add/endereco", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: "Bearer " + token,
-                    },
-                    body: JSON.stringify(enderecoCobranca),
-                });
-
-                // Verificação e tratamento da resposta para o endereço de cobrança
-                if (!responseCobranca.ok) {
-                    const errorMessageCobranca = await responseCobranca.text();
-                    throw new Error(errorMessageCobranca);
-                }
+            else {
+                const errorMessage = await response.text();
+                throw new Error(errorMessage);
             }
-
-            // Exibição de mensagem de sucesso
-            Swal.fire({title: "Sucesso!", text: "Endereço adicionado com sucesso.", icon: "success", confirmButtonColor: "#6085FF"}).then(() => { navigate("/perfil/pessoal") });
+        
         }
         catch (error) {
             console.error("Erro ao adicionar endereço:", error);
-            Swal.fire({title: "Erro!", html: `Ocorreu um erro ao adicionar os endereços.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF"});
+            Swal.fire({title: "Erro!", html: `Ocorreu um erro ao adicionar os endereço(s).<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF"});
         }
     };
 

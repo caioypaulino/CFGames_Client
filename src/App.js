@@ -7,10 +7,12 @@ import CadastroCliente from "./pages/CadastroCliente";
 import CadastroEndereco from "./pages/CadastroEndereco";
 import Carrinho from "./pages/Carrinho";
 import Layout from "./components/layout/index.js";
+import LayoutAdmin from "./components/layout_admin/index.js";
 import PerfilPessoais from "./pages/Perfil/Pessoais";
 import PerfilConta from "./pages/Perfil/Conta";
 import PerfilEnderecos from "./pages/Perfil/Enderecos";
 import PerfilCartoes from "./pages/Perfil/Cartoes";
+import AdminProdutos from "./pages/Admin/Produtos"
 
 export default function App() {
   return (
@@ -26,7 +28,9 @@ export default function App() {
         <Route path="/cadastro/cliente" element={<CadastroCliente />} />
         <Route path="/cadastro/endereco" element={<CadastroEndereco />} />
         <Route path="/pagamento" />
-        <Route path="/Admin" />
+        <Route path="/admin/produtos" element={<LayoutAdmin><AdminProdutos /></LayoutAdmin>} />
+        <Route path="/admin/clientes" />
+        <Route path="/admin/pedidos" />
       </Routes>
     </BrowserRouter>
   );

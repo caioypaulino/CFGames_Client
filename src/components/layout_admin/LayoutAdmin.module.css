@@ -1,0 +1,12 @@
+/* Layout.module.css */
+.layoutContainer {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Esticar o layout até o fundo da janela */
+  }
+  
+.contentContainer {
+  flex: 1; /* Faz com que este container ocupe o espaço restante */
+}
+  
+  

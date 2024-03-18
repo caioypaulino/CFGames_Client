@@ -1,0 +1,41 @@
+.navbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.navbar ul {
+    display: flex;
+    justify-content: space-between; /* Alinha os itens no início e no final */
+    align-items: center;
+    padding: 0;
+    margin-left: 10rem;
+    width: 100%; /* Ocupa toda a largura do contêiner pai */
+}
+
+.navbar ul li {
+    list-style: none;
+    margin-right: 10rem;
+}
+
+.navbar a {
+    font-family: 'Roboto';
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-decoration: none; /* Removendo sublinhado */
+    color: #011640; /* Altere a cor conforme necessário */
+}
+
+.accountIcon {
+    top: 0.1rem;
+    left: 10%;
+    position: relative;
+}
+
+.inputText {
+    width: 682px;
+    border-radius: 20px;
+    border: 2px solid #011640;
+}
