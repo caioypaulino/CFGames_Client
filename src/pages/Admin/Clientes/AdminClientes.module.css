@@ -1,0 +1,165 @@
+.container {
+    display: flex;
+    justify-content: center;
+    margin-top: 3%;
+}
+
+.table {
+    width: 70%; /* Aumenta a largura da tabela */
+    border-collapse: collapse;
+    border-radius: 10px;
+    overflow: hidden;
+    table-layout: fixed;
+    margin-left: 15%; /* Centraliza a tabela */
+}
+
+thead {
+    background-color: #011640;
+}
+
+th, td {
+    color: white;
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    text-align: center;
+    padding: 12px;
+}
+
+th span {
+    color: white;
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    text-align: center;
+    padding: 12px;
+}
+
+tbody {
+    background-color: #EBEBEB;
+}
+
+td {
+    color: black;
+}
+
+.linhasTabela {
+    border: .15rem solid white;
+}
+
+/* Estilos para o botão de ações */
+.buttonAcoes {
+    border: none;
+    color: black;
+    padding: 8px 16px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-weight: bold;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.buttonAcoes:hover {
+    background-color: #e2e6ef; /* Cor de fundo verde escuro ao passar o mouse */
+}
+
+.pagination {
+    margin-top: 1.5%;
+    text-align: center;
+}
+
+.pagination button {
+    background-color: #6085FF;
+    border: none;
+    color: black;
+    padding: .25% .9%;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 0 2%;
+    cursor: pointer;
+    border-radius: 20%;
+    color: white;
+    font-weight: bold;
+    font-family: 'Roboto';
+}
+
+.pagination button:hover {
+    background-color: #011640; 
+}
+
+.pagination button.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.paginaAtual{
+    color: #6085FF;
+    font-weight: bold;
+    font-family: 'Roboto';
+}
+
+.totalPaginas{
+    color: #000a99;
+    font-weight: bold;
+    font-family: 'Roboto';
+}
+
+.btnIconAdd {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex; /* Transformar em um flex container */
+    width: 6%; /* Definir largura */
+    height: 6%; /* Definir altura */
+    left: 77.5%;
+    bottom: 14%;
+    position: absolute;
+}
+
+.btnIcon:hover {
+    background-color: #f0f0f0; /* Adicionar cor de fundo ao passar o mouse */
+    border-radius: 50%; /* Fazer o botão parecer um círculo */
+}
+
+.iconAdd {
+    width: 90%;
+    height: 90%;
+    flex: 3;
+}
+
+.btnIcon {
+    justify-content: flex-end;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.select1 {
+    margin-top: 1rem; 
+    padding: 0.5rem; 
+    font-size: 1.25rem; 
+    border: 1px solid #ccc; 
+    border-radius: 4px; 
+    width: 16.3rem; 
+    height: 3.5rem; 
+    font-family: inherit; 
+    outline: none;
+}
+
+.select1::onfocus {
+    border-color: '#b1cae3';
+    border-width: 0.25rem;
+}
+
+.select1::onblur {
+    border-color: '#ccc';
+    border-width: 1px;
+}

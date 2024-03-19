@@ -7,11 +7,11 @@ import { dataMaskBR2, dataMaskEN, valueMaskEN } from "../../../utils/mask";
 
 const AdminProdutos = () => {
     const [produtos, setProdutos] = useState([]);
+    const [categorias, setCategorias] = useState([]);
     const [paginaAtual, setPaginaAtual] = useState(1);
     const [produtosPorPagina] = useState(9);
     const [colunaClassificada, setColunaClassificada] = useState(null);
     const [ordemClassificacao, setOrdemClassificacao] = useState('asc');
-    const [categorias, setCategorias] = useState([]); // Adicionando estado para categorias
 
     useEffect(() => {
         const token = getToken();
@@ -34,10 +34,10 @@ const AdminProdutos = () => {
             });
     }, []);
 
+    // Abre um modal com os detalhes do produto usando o SweetAlert2
     const abrirPopupInfo = (produto) => {
         let nomesCategorias = produto.categorias.map(categoria => categoria.nome);
-
-        // Abre um modal com os detalhes do produto usando o SweetAlert2
+       
         Swal.fire({
             title: produto.titulo,
             html: `
@@ -210,7 +210,7 @@ const AdminProdutos = () => {
         return 0;
     });
 
-    const currentProdutos = sortedProdutos.slice(indexPrimeiroProduto, indexUltimoProduto);
+    const produtosAtuais = sortedProdutos.slice(indexPrimeiroProduto, indexUltimoProduto);
     const totalPaginas = Math.ceil(produtos.length / produtosPorPagina);
 
     const handlePaginaAnterior = () => {
@@ -261,7 +261,7 @@ const AdminProdutos = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {currentProdutos.map(produto => (
+                        {produtosAtuais.map(produto => (
                             <tr key={produto.id}>
                                 <td>{produto.id}</td>
                                 <td>{produto.titulo}</td>

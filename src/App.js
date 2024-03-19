@@ -13,6 +13,7 @@ import PerfilConta from "./pages/Perfil/Conta";
 import PerfilEnderecos from "./pages/Perfil/Enderecos";
 import PerfilCartoes from "./pages/Perfil/Cartoes";
 import AdminProdutos from "./pages/Admin/Produtos"
+import AdminClientes from "./pages/Admin/Clientes";
 
 export default function App() {
   return (
@@ -29,7 +30,7 @@ export default function App() {
         <Route path="/cadastro/endereco" element={<CadastroEndereco />} />
         <Route path="/pagamento" />
         <Route path="/admin/produtos" element={<LayoutAdmin><AdminProdutos /></LayoutAdmin>} />
-        <Route path="/admin/clientes" />
+        <Route path="/admin/clientes" element={<LayoutAdmin><AdminClientes /></LayoutAdmin>} />
         <Route path="/admin/pedidos" />
       </Routes>
     </BrowserRouter>
