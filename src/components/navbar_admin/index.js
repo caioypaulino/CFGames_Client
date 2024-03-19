@@ -10,7 +10,7 @@ function NavbarAdmin() {
             <div className={styles.navbar}>
                 <ul>
                     <li>
-                        <a href="/home"><img className="logoCF" src={logo} alt="Logo" /></a>
+                        <a href="/"><img className="logoCF" src={logo} alt="Logo" /></a>
                     </li>
                     <li>
                         <a href="/admin/produtos">Produtos</a>

@@ -3,6 +3,7 @@ import iconAdd from "../../../assets/buttons/add.svg";
 import styles from "./AdminProdutos.module.css";
 import Swal from "sweetalert2";
 import { getToken } from "../../../utils/storage";
+import { dataMaskBR2, dataMaskEN, valueMaskEN } from "../../../utils/mask";
 
 const AdminProdutos = () => {
     const [produtos, setProdutos] = useState([]);
@@ -10,6 +11,7 @@ const AdminProdutos = () => {
     const [produtosPorPagina] = useState(9);
     const [colunaClassificada, setColunaClassificada] = useState(null);
     const [ordemClassificacao, setOrdemClassificacao] = useState('asc');
+    const [categorias, setCategorias] = useState([]); // Adicionando estado para categorias
 
     useEffect(() => {
         const token = getToken();
@@ -17,29 +19,39 @@ const AdminProdutos = () => {
         fetch('http://localhost:8080/admin/produtos', {
             headers: { Authorization: "Bearer " + token }
         })
-        .then(resp => resp.json())
-        .then(json => {
-            const sortedProdutos = json.sort((a, b) => a.id - b.id); // Ordena os produtos por ID
-            setProdutos(sortedProdutos);
-        });
+            .then(resp => resp.json())
+            .then(json => {
+                const sortedProdutos = json.sort((a, b) => a.id - b.id); // Ordena os produtos por ID
+                setProdutos(sortedProdutos);
+            });
+
+        fetch('http://localhost:8080/admin/categorias', {
+            headers: { Authorization: "Bearer " + token }
+        })
+            .then(resp => resp.json())
+            .then(json => {
+                setCategorias(json); // Definindo categorias
+            });
     }, []);
 
     const abrirPopupInfo = (produto) => {
+        let nomesCategorias = produto.categorias.map(categoria => categoria.nome);
+
         // Abre um modal com os detalhes do produto usando o SweetAlert2
         Swal.fire({
             title: produto.titulo,
             html: `
                 <p>ID: ${produto.id}</p>
-                <p>Gênero: ${produto.categorias.length > 0 ? produto.categorias[0].nome : ''}</p>
+                <p>Categoria(s): ${produto.categorias.length > 0 ? nomesCategorias : ''}</p>
                 <p>Preço: ${produto.preco}</p>
                 <p>Quantidade: ${produto.quantidade}</p>
                 <p>Descrição: ${produto.descricao}</p>
                 <p>Plataforma: ${produto.plataforma}</p>
-                <p>Data de Lançamento: ${produto.dataLancamento}</p>
+                <p>Data de Lançamento: ${dataMaskBR2(produto.dataLancamento)}</p>
                 <p>Marca: ${produto.marca}</p>
                 <p>Editora: ${produto.publisher}</p>
-                <p>Peso: ${produto.peso}</p>
-                <p>Dimensões (C x L x A): ${produto.comprimento} x ${produto.largura} x ${produto.altura}</p>
+                <p>Peso: ${produto.peso + 'g'}</p>
+                <p>Dimensões (C x L x A): ${produto.comprimento}cm x ${produto.largura}cm x ${produto.altura}cm</p>
                 <p>Código de Barras: ${produto.codigoBarras}</p>
                 <p>Status: ${produto.status}</p>
             `,
@@ -49,10 +61,124 @@ const AdminProdutos = () => {
         });
     };
 
+    const abrirPopupAdd = () => {
+        Swal.fire({
+            title: 'Adicionar Produto',
+            html: `
+                <input id="titulo" type="text" class="swal2-input" placeholder="Título">
+                <input id="descricao" type="text" class="swal2-input" placeholder="Descrição">
+                <select id="plataforma" class="swal2-input" style="margin-top: 1rem; padding: 0.5rem; font-size: 1.25rem; border: 1px solid #ccc; border-radius: 4px; width: 16.3rem; height: 3.5rem; font-family: inherit; outline: none;" onfocus="this.style.borderColor = '#b1cae3'; this.style.borderWidth = '0.25rem';" onblur="this.style.borderColor = '#ccc'; this.style.borderWidth = '1px';">
+                    <option value="" disabled selected hidden>Plataforma</option>
+                    <option value="0">XBOX 360</option>
+                    <option value="1">XBOX ONE</option>
+                    <option value="2">XBOX Series S</option>
+                    <option value="3">PlayStation 3</option>
+                    <option value="4">PlayStation 4</option>
+                    <option value="5">PlayStation 5</option>
+                    <option value="6">PSP</option>
+                    <option value="7">Nintendo Wii</option>
+                    <option value="8">Nintendo DS</option>
+                    <option value="9">Nintendo Switch</option>
+                </select>
+                <input id="dataLancamento" type="date" class="swal2-input" placeholder="Data de Lançamento" style="width: 16.3rem;">
+                <input id="marca" type="text" class="swal2-input" placeholder="Marca">
+                <input id="publisher" type="text" class="swal2-input" placeholder="Publisher">
+                <input id="comprimento" type="number" class="swal2-input" placeholder="Comprimento (cm)" min="0">
+                <input id="largura" type="number" class="swal2-input" placeholder="Largura (cm)" min="0">
+                <input id="altura" type="number" class="swal2-input" placeholder="Altura (cm)" min="0">
+                <input id="peso" type="number" class="swal2-input" placeholder="Peso (g)">
+                <input id="codigoBarras" type="text" pattern="[0-9]{13}" maxlength="13" class="swal2-input" placeholder="Código de Barras">
+                <input id="quantidade" type="number" min="1" class="swal2-input" placeholder="Quantidade" pattern="[0-9]+" title="Apenas números inteiros">
+                <input id="preco" type="number" class="swal2-input" placeholder="Preço">
+                <select id="status" placeholder="Status" class="swal2-select" style="margin-top: 1rem; padding: 0.5rem; font-size: 1.25rem; border: 1px solid #ccc; border-radius: 4px; width: 16.3rem; height: 3.5rem; font-family: inherit; outline: none;" onfocus="this.style.borderColor = '#b1cae3'; this.style.borderWidth = '0.25rem';" onblur="this.style.borderColor = '#ccc'; this.style.borderWidth = '1px';">
+                    <option value="" disabled selected hidden>Status</option>
+                    <option value="0">Inativo</option>
+                    <option value="1">Ativo</option>
+                    <option value="2">Fora de Mercado</option>
+                </select>
+                <select id="categoria" placeholder="Categorias" class="swal2-select" style="margin-top: 1rem; padding: 0.5rem; font-size: 1.25rem; border: 1px solid #ccc; border-radius: 4px; width: 16.3rem; height: 3.5rem; font-family: inherit; outline: none;" onfocus="this.style.borderColor = '#b1cae3'; this.style.borderWidth = '0.25rem';" onblur="this.style.borderColor = '#ccc'; this.style.borderWidth = '1px';">
+                    <option value="" disabled selected hidden>Categorias</option>
+                    ${categorias.map(categoria => `<option value="${categoria.id}">${categoria.nome}</option>`).join('')}
+                </select>
+            `,
+            showCancelButton: true,
+            confirmButtonText: "Adicionar",
+            confirmButtonColor: "#6085FF",
+            cancelButtonText: "Cancelar",
+            icon: "info",
+            preConfirm: () => {
+                const titulo = Swal.getPopup().querySelector('#titulo').value;
+                const descricao = Swal.getPopup().querySelector('#descricao').value;
+                const plataforma = Swal.getPopup().querySelector('#plataforma').value;
+                const dataLancamento = dataMaskEN(Swal.getPopup().querySelector('#dataLancamento').value);
+                const marca = Swal.getPopup().querySelector('#marca').value;
+                const publisher = Swal.getPopup().querySelector('#publisher').value;
+                const comprimento = parseFloat(valueMaskEN(Swal.getPopup().querySelector('#comprimento').value));
+                const largura = parseFloat(valueMaskEN(Swal.getPopup().querySelector('#largura').value));
+                const altura = parseFloat(valueMaskEN(Swal.getPopup().querySelector('#altura').value));
+                const peso = parseFloat(valueMaskEN(Swal.getPopup().querySelector('#peso').value));
+                const codigoBarras = Swal.getPopup().querySelector('#codigoBarras').value;
+                const quantidade = parseInt(Swal.getPopup().querySelector('#quantidade').value);
+                const preco = parseFloat(valueMaskEN(Swal.getPopup().querySelector('#preco').value));
+                const status = Swal.getPopup().querySelector('#status').value;
+                const categoria = Swal.getPopup().querySelector('#categoria').value;
+
+                // Função para adicionar o produto
+                adicionarProduto(titulo, descricao, plataforma, dataLancamento, marca, publisher, peso, comprimento, altura, largura, codigoBarras, quantidade, preco, status, categoria);
+            }
+        });
+    };
+
+    // Função para adicionar o produto
+    const adicionarProduto = async (titulo, descricao, plataforma, dataLancamento, marca, publisher, peso, comprimento, altura, largura, codigoBarras, quantidade, preco, status, categoria) => {
+        try {
+            const token = getToken();
+            const response = await fetch("http://localhost:8080/admin/produtos/add", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + token,
+                },
+                body: JSON.stringify({
+                    titulo,
+                    descricao,
+                    plataforma,
+                    dataLancamento,
+                    marca,
+                    publisher,
+                    comprimento,
+                    largura,
+                    altura,
+                    peso,
+                    codigoBarras,
+                    quantidade,
+                    preco,
+                    status,
+                    categorias: [{ id: categoria }]
+                }),
+            });
+
+            if (response.ok) {
+                Swal.fire({ title: "Sucesso!", text: "Produto adicionado com sucesso.", icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
+            }
+            else {
+                // Buscando mensagem de erro que não é JSON
+                const errorMessage = await response.text();
+
+                throw new Error(errorMessage);
+            }
+        }
+        catch (error) {
+            // Tratando mensagem de erro
+            console.error("Erro ao adicionar produto:", error);
+            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao adicionar o produto.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
+        }
+    };
+
     const handleSort = (coluna) => {
         if (coluna === colunaClassificada) {
             setOrdemClassificacao(ordem => (ordem === 'asc' ? 'desc' : 'asc'));
-        } 
+        }
         else {
             setColunaClassificada(coluna);
             setOrdemClassificacao('asc');
@@ -66,18 +192,18 @@ const AdminProdutos = () => {
     const sortedProdutos = [...produtos].sort((a, b) => {
         if (colunaClassificada === 'ID') {
             return ordemClassificacao === 'asc' ? a.id - b.id : b.id - a.id;
-        } 
+        }
         else if (colunaClassificada === 'Título') {
             return ordemClassificacao === 'asc' ? a.titulo.localeCompare(b.titulo) : b.titulo.localeCompare(a.titulo);
-        } 
-        else if (colunaClassificada === 'Gênero') {
+        }
+        else if (colunaClassificada === 'Categoria') {
             const nomeA = a.categorias.length > 0 ? a.categorias[0].nome : '';
             const nomeB = b.categorias.length > 0 ? b.categorias[0].nome : '';
             return ordemClassificacao === 'asc' ? nomeA.localeCompare(nomeB) : nomeB.localeCompare(nomeA);
-        } 
+        }
         else if (colunaClassificada === 'Preço') {
             return ordemClassificacao === 'asc' ? a.preco - b.preco : b.preco - a.preco;
-        } 
+        }
         else if (colunaClassificada === 'Quantidade') {
             return ordemClassificacao === 'asc' ? a.quantidade - b.quantidade : b.quantidade - a.quantidade;
         }
@@ -113,9 +239,9 @@ const AdminProdutos = () => {
                                     <span>{ordemClassificacao === 'asc' ? '▲' : '▼'}</span>
                                 )}
                             </th>
-                            <th onClick={() => handleSort('Gênero')}>
-                                Gênero
-                                {colunaClassificada === 'Gênero' && (
+                            <th onClick={() => handleSort('Categoria')}>
+                                Categoria
+                                {colunaClassificada === 'Categoria' && (
                                     <span>{ordemClassificacao === 'asc' ? '▲' : '▼'}</span>
                                 )}
                             </th>
@@ -140,7 +266,7 @@ const AdminProdutos = () => {
                                 <td>{produto.id}</td>
                                 <td>{produto.titulo}</td>
                                 <td>{produto.categorias.length > 0 ? produto.categorias[0].nome : ''}</td>
-                                <td>{produto.preco}</td>
+                                <td>{'R$ ' + produto.preco}</td>
                                 <td>{produto.quantidade}</td>
                                 <td>
                                     <button className={styles.buttonAcoes} onClick={() => abrirPopupInfo(produto)}>. . .</button>
@@ -154,6 +280,12 @@ const AdminProdutos = () => {
                     <span className={styles.paginaAtual}>{paginaAtual}</span><span className={styles.totalPaginas}>/{totalPaginas}</span>
                     <button onClick={handleProximaPagina} disabled={paginaAtual === totalPaginas}>&gt;</button>
                 </div>
+                <div className={styles.btnIconAdd}>
+                    <button className={styles.btnIcon} onClick={abrirPopupAdd}>
+                        <img className={styles.iconAdd} src={iconAdd} alt="Adicionar" />
+                    </button>
+                </div>
+
             </div>
         </div>
     );

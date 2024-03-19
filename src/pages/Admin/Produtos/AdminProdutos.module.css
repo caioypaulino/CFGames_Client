@@ -107,3 +107,59 @@ td {
     font-weight: bold;
     font-family: 'Roboto';
 }
+
+.btnIconAdd {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex; /* Transformar em um flex container */
+    width: 6%; /* Definir largura */
+    height: 6%; /* Definir altura */
+    left: 77.5%;
+    bottom: 14%;
+    position: absolute;
+}
+
+.btnIcon:hover {
+    background-color: #f0f0f0; /* Adicionar cor de fundo ao passar o mouse */
+    border-radius: 50%; /* Fazer o botão parecer um círculo */
+}
+
+.iconAdd {
+    width: 90%;
+    height: 90%;
+    flex: 3;
+}
+
+.btnIcon {
+    justify-content: flex-end;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.select1 {
+    margin-top: 1rem; 
+    padding: 0.5rem; 
+    font-size: 1.25rem; 
+    border: 1px solid #ccc; 
+    border-radius: 4px; 
+    width: 16.3rem; 
+    height: 3.5rem; 
+    font-family: inherit; 
+    outline: none;
+}
+
+.select1::onfocus {
+    border-color: '#b1cae3';
+    border-width: 0.25rem;
+}
+
+.select1::onblur {
+    border-color: '#ccc';
+    border-width: 1px;
+}

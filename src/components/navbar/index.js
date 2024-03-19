@@ -10,7 +10,7 @@ function navbar() {
       <div className={styles.navbar}>
         <ul>
           <li>
-            <a href="/home">
+            <a href="/">
               <img className="logoCF" src={logo} />
             </a>
           </li>

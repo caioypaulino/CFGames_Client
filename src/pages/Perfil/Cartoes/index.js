@@ -5,7 +5,7 @@ import iconAdd from "../../../assets/buttons/add.svg"
 import styles from "./Cartoes.module.css";
 import Swal from "sweetalert2";
 import { getToken } from "../../../utils/storage";
-import { handleCreditCard } from "../../../utils/mask";
+import { handleCreditCard, removeMask } from "../../../utils/mask";
 
 const cartoes = () => {
     const [cartoes, setCartoes] = useState({});
@@ -34,7 +34,7 @@ const cartoes = () => {
             cancelButtonText: "Cancelar",
             icon: "info",
             preConfirm: () => {
-                const numeroCartao = (Swal.getPopup().querySelector("#numeroCartao").value).replace(/\s/g, ''); // remove espaços em branco da máscara
+                const numeroCartao = removeMask(Swal.getPopup().querySelector("#numeroCartao").value); // remove espaços em branco da máscara
                 const nomeCartao = Swal.getPopup().querySelector("#nomeCartao").value;
                 const mesVencimento = Swal.getPopup().querySelector("#mesVencimento").value;
                 const anoVencimento = Swal.getPopup().querySelector("#anoVencimento").value;
