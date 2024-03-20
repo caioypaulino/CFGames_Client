@@ -198,7 +198,7 @@ const AdminProdutos = () => {
     const atualizarEstoque = async (produtoId, quantidade) => {
         try {
             const token = getToken();
-            const response = await fetch(`http://localhost:8080/admin/produtos/add/quantidade/produto/${produtoId}`, {
+            const response = await fetch(`http://localhost:8080/admin/produtos/update/estoque/produto/${produtoId}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
