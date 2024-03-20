@@ -43,7 +43,7 @@ export default function CadastroCliente() {
                     navigate("/cadastro/endereco");
                 });
 
-            } 
+            }
             else {
                 // buscando mensagem de erro que não é JSON
                 const errorMessage = await response.text();
@@ -70,14 +70,14 @@ export default function CadastroCliente() {
                 const data = await response.json();
 
                 salvarToken(data.token);
-            } 
+            }
             else {
                 // buscando mensagem de erro que não é JSON
                 const errorMessage = await response.text();
 
                 throw new Error(errorMessage);
             }
-        } 
+        }
         catch (error) {
             console.error("Erro ao fazer login automaticamente:", error);
             Swal.fire({ title: "Erro!", text: "Não foi possível fazer login automaticamente após o cadastro.", icon: "error", confirmButtonColor: "#6085FF" })
@@ -168,11 +168,10 @@ export default function CadastroCliente() {
                             />
                         </label><br />
                         <input className={styles.enviar} type="submit" value="Continuar" />
+                        <div className={styles.lastP}>
+                            <p>Já possui uma conta? <Link className={styles.link} to="/Login">Entrar</Link></p>
+                        </div>
                     </form>
-                    <div className={styles.lastP}>
-                        <br></br><br></br>
-                        <p>Já possui uma conta? <Link className={styles.link} to="/Login">Entrar</Link></p>
-                    </div> 
                 </div>
                 <div className="image-banner">
                     <img className={styles.img_banner} src={bannerCadastro} alt="Banner" />

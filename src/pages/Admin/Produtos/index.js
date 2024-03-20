@@ -37,7 +37,7 @@ const AdminProdutos = () => {
     // Abre um modal com os detalhes do produto usando o SweetAlert2
     const abrirPopupInfo = (produto) => {
         let nomesCategorias = produto.categorias.map(categoria => categoria.nome);
-       
+        
         Swal.fire({
             title: produto.titulo,
             html: `
@@ -55,10 +55,225 @@ const AdminProdutos = () => {
                 <p>Código de Barras: ${produto.codigoBarras}</p>
                 <p>Status: ${produto.status}</p>
             `,
+            showCancelButton: true,
+            confirmButtonText: "Editar",
+            confirmButtonColor: "#6085FF",
+            cancelButtonText: "Fechar",
+            showDenyButton: true,
+            denyButtonText: "Deletar",
             icon: 'info',
-            confirmButtonText: 'Fechar',
-            confirmButtonColor: "#6085FF"
+        }).then((result) => {
+            if (result.isConfirmed) { // Se o botão "Editar" for clicado
+                Swal.fire({
+                    title: 'Editar',
+                    text: 'Selecione uma opção:',
+                    showCancelButton: true,
+                    confirmButtonText: "Produto",
+                    confirmButtonColor: "#6085FF",
+                    showDenyButton: true,
+                    denyButtonText: "Estoque",
+                    denyButtonColor: "#6085FF",
+                    cancelButtonText: "Fechar",
+                    icon: 'info'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        abrirPopupAtualizarProduto(produto);
+                    } 
+                    else if (result.isDenied) {
+                        abrirPopupEstoque(produto);
+                    }
+                });
+            } 
+            else if (result.isDenied) { // Se o botão "Deletar" for clicado
+                confirmarDelecaoProduto(produto);
+            }
         });
+    };
+    
+    // Função para abrir o modal de atualização do produto
+    const abrirPopupAtualizarProduto = (produto) => {
+        Swal.fire({
+            title: 'Atualizar Produto',
+            html: `
+                <input id="tituloAtualizado" type="text" class="swal2-input" placeholder="Título" value="${produto.titulo}">
+                <input id="descricaoAtualizada" type="text" class="swal2-input" placeholder="Descrição" value="${produto.descricao}">
+                <input id="precoAtualizado" type="number" class="swal2-input" placeholder="Preço" value="${produto.preco}">
+                <input id="quantidadeAtualizada" type="number" class="swal2-input" placeholder="Quantidade" value="${produto.quantidade}">
+                ${categorias.map(categoria => `
+                    <label class="checkbox-container">
+                        <input type="checkbox" value="${categoria.id}" ${produto.categorias.some(cat => cat.id === categoria.id) ? 'checked' : ''}>
+                        ${categoria.nome}
+                        <span class="checkmark"></span>
+                    </label>
+                `).join('')}
+            `,
+            showCancelButton: true,
+            confirmButtonText: "Atualizar",
+            confirmButtonColor: "#6085FF",
+            cancelButtonText: "Cancelar",
+            icon: "info",
+            preConfirm: () => {
+                const titulo = Swal.getPopup().querySelector('#tituloAtualizado').value;
+                const descricao = Swal.getPopup().querySelector('#descricaoAtualizada').value;
+                const preco = parseFloat(Swal.getPopup().querySelector('#precoAtualizado').value);
+                const quantidade = parseInt(Swal.getPopup().querySelector('#quantidadeAtualizada').value);
+                // Obter as categorias selecionadas
+                const categoriasSelecionadas = Array.from(Swal.getPopup().querySelectorAll('input[type=checkbox]:checked')).map(checkbox => parseInt(checkbox.value));
+    
+                // Chame a função para atualizar o produto
+                atualizarProduto(produto.id, titulo, descricao, preco, quantidade, categoriasSelecionadas);
+            }
+        }).then((result) => {
+            if (result.isDismissed) { // Se o usuário clicar em cancelar, volte para abrirPopupInfo
+                abrirPopupInfo(produto); 
+            }
+        });
+    
+        // Aplicar estilos aos checkboxes
+        const checkboxes = document.querySelectorAll('.checkbox-container input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.style.display = 'none'; // Esconder os inputs originais
+        });
+    };
+    
+    // Função para atualizar o produto
+    const atualizarProduto = async (produtoId, titulo, descricao, preco, quantidade, categorias) => {
+        try {
+            const token = getToken();
+            const response = await fetch(`http://localhost:8080/admin/produtos/update/${produtoId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + token,
+                },
+                body: JSON.stringify({
+                    titulo,
+                    descricao,
+                    preco,
+                    quantidade,
+                    categorias: categorias.map(id => ({ id }))
+                }),
+            });
+    
+            if (response.ok) {
+                const successMessage = await response.text();
+                Swal.fire({ title: "Sucesso!", html: `${successMessage}`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
+            } 
+            else {
+                const errorMessage = await response.text();
+                throw new Error(errorMessage);
+            }
+        } 
+        catch (error) {
+            console.error("Erro ao atualizar produto:", error);
+            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao atualizar o produto.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" });
+        }
+    };
+
+    // Função para solicitar quantidade de estoque do produto (aumentar ou diminuir)
+    const abrirPopupEstoque = (produto) => {
+        Swal.fire({
+            title: 'Atualizar Estoque',
+            html: `Aqui você pode adicionar ou remover itens do estoque.<br>
+                <input id="quantidadeEstoque" type="number" class="swal2-input" placeholder="Quantidade">
+            `,
+            showCancelButton: true,
+            confirmButtonText: "Atualizar",
+            confirmButtonColor: "#6085FF",
+            cancelButtonText: "Cancelar",
+            icon: "info",
+            preConfirm: () => {
+                const quantidadeEstoque = parseInt(Swal.getPopup().querySelector('#quantidadeEstoque').value);
+    
+                // Chame a função para atualizar o estoque
+                atualizarEstoque(produto.id, quantidadeEstoque);
+            }
+        }).then((result) => {
+            if (result.isDismissed) { // Se o usuário clicar em cancelar, volte para abrirPopupInfo
+                abrirPopupInfo(produto); 
+            }
+        });
+    };
+    
+    const atualizarEstoque = async (produtoId, quantidade) => {
+        try {
+            const token = getToken();
+            const response = await fetch(`http://localhost:8080/admin/produtos/add/quantidade/produto/${produtoId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + token,
+                },
+                body: JSON.stringify({
+                    quantidade
+                }),
+            });
+    
+            if (response.ok) {
+                const successMessage = await response.text();
+                Swal.fire({ title: "Sucesso!", html: `${successMessage}`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
+            } else {
+                const errorMessage = await response.text();
+                throw new Error(errorMessage);
+            }
+        } catch (error) {
+            console.error("Erro ao atualizar estoque:", error);
+            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao atualizar o estoque.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" });
+        }
+    };
+
+    // Função para solicitar confirmação da deleção do produto
+    const confirmarDelecaoProduto = (produto) => {
+        Swal.fire({
+            title: 'Tem certeza?',
+            text: "Esta ação não pode ser revertida!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sim, deletar!',
+            cancelButtonText: 'Cancelar'
+        })
+        .then((result) => {
+            if (result.isConfirmed) { // Se o botão "Confirmar" for clicado
+                deletarProduto(produto.id);
+            }
+            else if (result.isDismissed) {
+                abrirPopupInfo(produto);
+            }
+        });
+    };
+
+    // Função para deletar um produto
+    const deletarProduto = async (produtoId) => {
+        try {
+            const token = getToken();
+
+            const response = await fetch(`http://localhost:8080/admin/produtos/delete/${produtoId}`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: "Bearer " + token,
+                    'Content-Type': 'application/json'
+                },
+            });
+
+            if (response.ok) {
+                const successMessage = await response.text();
+
+                Swal.fire({ title: "Sucesso!", html: `${successMessage}`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
+            }
+            else {
+                // buscando mensagem de erro que não é JSON
+                const errorMessage = await response.text();
+
+                throw new Error(errorMessage);
+            }
+        }
+        catch (error) {
+            // tratando mensagem de erro
+            console.error("Erro ao deletar produto:", error);
+            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao deletar o produto.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
+        }
     };
 
     const abrirPopupAdd = () => {
