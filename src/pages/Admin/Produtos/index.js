@@ -2,8 +2,11 @@ import React, { useEffect, useState } from "react";
 import iconAdd from "../../../assets/buttons/add.svg";
 import styles from "./AdminProdutos.module.css";
 import Swal from "sweetalert2";
+import Select from "react-select";
 import { getToken } from "../../../utils/storage";
 import { dataMaskBR2, dataMaskEN, valueMaskEN } from "../../../utils/mask";
+
+import ReactDOM from 'react-dom';
 
 const AdminProdutos = () => {
     const [produtos, setProdutos] = useState([]);
@@ -95,17 +98,43 @@ const AdminProdutos = () => {
         Swal.fire({
             title: 'Atualizar Produto',
             html: `
-                <input id="tituloAtualizado" type="text" class="swal2-input" placeholder="Título" value="${produto.titulo}">
-                <input id="descricaoAtualizada" type="text" class="swal2-input" placeholder="Descrição" value="${produto.descricao}">
-                <input id="precoAtualizado" type="number" class="swal2-input" placeholder="Preço" value="${produto.preco}">
-                <input id="quantidadeAtualizada" type="number" class="swal2-input" placeholder="Quantidade" value="${produto.quantidade}">
-                ${categorias.map(categoria => `
-                    <label class="checkbox-container">
-                        <input type="checkbox" value="${categoria.id}" ${produto.categorias.some(cat => cat.id === categoria.id) ? 'checked' : ''}>
-                        ${categoria.nome}
-                        <span class="checkmark"></span>
-                    </label>
-                `).join('')}
+                <input id="titulo" type="text" class="swal2-input" placeholder="Título" value="${produto.titulo}">
+                <input id="descricao" type="text" class="swal2-input" placeholder="Descrição" value="${produto.descricao}">
+                <select id="plataforma" class="swal2-select" style="margin-top: 1rem; padding: 0.5rem; font-size: 1.25rem; border: 1px solid #ccc; border-radius: 4px; width: 16.3rem; height: 3.5rem; font-family: inherit; outline: none;" onfocus="this.style.borderColor = '#b1cae3'; this.style.borderWidth = '0.25rem';" onblur="this.style.borderColor = '#ccc'; this.style.borderWidth = '1px';">
+                    <option value="${produto.plataforma}" disabled selected hidden>${produto.plataforma}</option>
+                    <option value="0">XBOX 360</option>
+                    <option value="1">XBOX ONE</option>
+                    <option value="2">XBOX Series S</option>
+                    <option value="3">PlayStation 3</option>
+                    <option value="4">PlayStation 4</option>
+                    <option value="5">PlayStation 5</option>
+                    <option value="6">PSP</option>
+                    <option value="7">Nintendo Wii</option>
+                    <option value="8">Nintendo DS</option>
+                    <option value="9">Nintendo Switch</option>
+                </select>
+                <input id="dataLancamento" type="date" class="swal2-input" placeholder="Data de Lançamento" style="width: 16.3rem;">
+                <input id="marca" type="text" class="swal2-input" placeholder="Marca" value="${produto.marca}">
+                <input id="publisher" type="text" class="swal2-input" placeholder="Publisher" value="${produto.publisher}">
+                <input id="peso" type="number" class="swal2-input" placeholder="Peso (em gramas)" value="${produto.peso}">
+                <input id="comprimento" type="number" class="swal2-input" placeholder="Comprimento (cm)" min="0" step="0.1" value="${produto.comprimento}">
+                <input id="altura" type="number" class="swal2-input" placeholder="Altura (cm)" min="0" step="0.1" value="${produto.altura}">
+                <input id="largura" type="number" class="swal2-input" placeholder="Largura (cm)" min="0" step="0.1" value="${produto.largura}">
+                <input id="codigoBarras" type="text" class="swal2-input" placeholder="Código de Barras" value="${produto.codigoBarras}">
+                <input id="preco" type="number" class="swal2-input" placeholder="Preço" min="10.0" step="0.01" value="${produto.preco}">
+                <select id="status" class="swal2-select" style="margin-top: 1rem; padding: 0.5rem; font-size: 1.25rem; border: 1px solid #ccc; border-radius: 4px; width: 16.3rem; height: 3.5rem; font-family: inherit; outline: none;" onfocus="this.style.borderColor = '#b1cae3'; this.style.borderWidth = '0.25rem';" onblur="this.style.borderColor = '#ccc'; this.style.borderWidth = '1px';">
+                    <option value="" disabled selected hidden>Status</option>
+                    <option value="0">Inativo</option>
+                    <option value="1">Ativo</option>
+                    <option value="2">Fora de Mercado</option>
+                </select>
+                <select name="categorias" id="categorias" multiple>
+                    ${categorias.map(categoria => `
+                        <option value="${categoria.id}" ${produto.categorias.some(cat => cat.id === categoria.id) ? 'selected' : ''}>
+                            ${categoria.nome}
+                        </option>
+                    `).join('')}
+                </select>
             `,
             showCancelButton: true,
             confirmButtonText: "Atualizar",
@@ -113,15 +142,24 @@ const AdminProdutos = () => {
             cancelButtonText: "Cancelar",
             icon: "info",
             preConfirm: () => {
-                const titulo = Swal.getPopup().querySelector('#tituloAtualizado').value;
-                const descricao = Swal.getPopup().querySelector('#descricaoAtualizada').value;
-                const preco = parseFloat(Swal.getPopup().querySelector('#precoAtualizado').value);
-                const quantidade = parseInt(Swal.getPopup().querySelector('#quantidadeAtualizada').value);
+
+                const titulo = Swal.getPopup().querySelector('#titulo').value;
+                const descricao = Swal.getPopup().querySelector('#descricao').value;
+                const plataforma = Swal.getPopup().querySelector('#plataforma').value;
+                const dataLancamento = Swal.getPopup().querySelector('#dataLancamento').value;
+                const marca = Swal.getPopup().querySelector('#marca').value;
+                const publisher = Swal.getPopup().querySelector('#publisher').value;
+                const peso = parseFloat(Swal.getPopup().querySelector('#peso').value);
+                const comprimento = parseFloat(Swal.getPopup().querySelector('#comprimento').value);
+                const altura = parseFloat(Swal.getPopup().querySelector('#altura').value);
+                const largura = parseFloat(Swal.getPopup().querySelector('#largura').value);
+                const codigoBarras = Swal.getPopup().querySelector('#codigoBarras').value;
+                const preco = parseFloat(Swal.getPopup().querySelector('#preco').value);
+                const status = Swal.getPopup().querySelector('#status').value;
                 // Obter as categorias selecionadas
-                const categoriasSelecionadas = Array.from(Swal.getPopup().querySelectorAll('input[type=checkbox]:checked')).map(checkbox => parseInt(checkbox.value));
-    
+                const categoriasSelecionadas = categoriasSelecionadas.map(categoria => categoria.value);
                 // Chame a função para atualizar o produto
-                atualizarProduto(produto.id, titulo, descricao, preco, quantidade, categoriasSelecionadas);
+                atualizarProduto(produto.id, titulo, descricao, plataforma, dataLancamento, marca, publisher, peso, comprimento, altura, largura, codigoBarras, preco, status, categoriasSelecionadas);
             }
         }).then((result) => {
             if (result.isDismissed) { // Se o usuário clicar em cancelar, volte para abrirPopupInfo
@@ -137,7 +175,7 @@ const AdminProdutos = () => {
     };
     
     // Função para atualizar o produto
-    const atualizarProduto = async (produtoId, titulo, descricao, preco, quantidade, categorias) => {
+    const atualizarProduto = async (produtoId, titulo, descricao, plataforma, dataLancamento, marca, publisher, peso, comprimento, altura, largura, codigoBarras, preco, status, categorias) => {
         try {
             const token = getToken();
             const response = await fetch(`http://localhost:8080/admin/produtos/update/${produtoId}`, {
@@ -147,10 +185,19 @@ const AdminProdutos = () => {
                     Authorization: "Bearer " + token,
                 },
                 body: JSON.stringify({
-                    titulo,
-                    descricao,
-                    preco,
-                    quantidade,
+                    titulo, 
+                    descricao, 
+                    plataforma, 
+                    dataLancamento, 
+                    marca, 
+                    publisher, 
+                    peso, 
+                    comprimento, 
+                    altura, 
+                    largura, 
+                    codigoBarras, 
+                    preco, 
+                    status,
                     categorias: categorias.map(id => ({ id }))
                 }),
             });
@@ -311,11 +358,23 @@ const AdminProdutos = () => {
                     <option value="1">Ativo</option>
                     <option value="2">Fora de Mercado</option>
                 </select>
-                <select id="categoria" placeholder="Categorias" class="swal2-select" style="margin-top: 1rem; padding: 0.5rem; font-size: 1.25rem; border: 1px solid #ccc; border-radius: 4px; width: 16.3rem; height: 3.5rem; font-family: inherit; outline: none;" onfocus="this.style.borderColor = '#b1cae3'; this.style.borderWidth = '0.25rem';" onblur="this.style.borderColor = '#ccc'; this.style.borderWidth = '1px';">
-                    <option value="" disabled selected hidden>Categorias</option>
-                    ${categorias.map(categoria => `<option value="${categoria.id}">${categoria.nome}</option>`).join('')}
-                </select>
+                <div id="select-container" class="swal2-select"  style="margin-left: 6rem; margin-top: 1rem; padding: 0.5rem; font-size: 1.25rem; border: 1px solid #ccc; border-radius: 4px; width: 15.2rem; height: 3.5rem; font-family: inherit; outline: none;" onfocus="this.style.borderColor = '#b1cae3'; this.style.borderWidth = '0.25rem';" onblur="this.style.borderColor = '#ccc'; this.style.borderWidth = '1px';"></div>
             `,
+            didOpen: () => { // Função executada quando o modal é aberto
+                const selectContainer = document.getElementById('select-container');
+        
+                // Renderizar o componente Select dentro do container
+                ReactDOM.render(
+                    <Select 
+                        id="categorias"
+                        placeholder="Categorias"
+                        options={categorias.map(categoria => ({ value: categoria.id, label: categoria.nome }))}
+                        isMulti
+                    />,
+                    selectContainer
+                );
+            },
+           
             showCancelButton: true,
             confirmButtonText: "Adicionar",
             confirmButtonColor: "#6085FF",
@@ -336,16 +395,17 @@ const AdminProdutos = () => {
                 const quantidade = parseInt(Swal.getPopup().querySelector('#quantidade').value);
                 const preco = parseFloat(valueMaskEN(Swal.getPopup().querySelector('#preco').value));
                 const status = Swal.getPopup().querySelector('#status').value;
-                const categoria = Swal.getPopup().querySelector('#categoria').value;
+                const categorias = Swal.getPopup().querySelector('#categorias').value;  
+
 
                 // Função para adicionar o produto
-                adicionarProduto(titulo, descricao, plataforma, dataLancamento, marca, publisher, peso, comprimento, altura, largura, codigoBarras, quantidade, preco, status, categoria);
+                adicionarProduto(titulo, descricao, plataforma, dataLancamento, marca, publisher, peso, comprimento, altura, largura, codigoBarras, quantidade, preco, status, categorias);
             }
         });
     };
 
     // Função para adicionar o produto
-    const adicionarProduto = async (titulo, descricao, plataforma, dataLancamento, marca, publisher, peso, comprimento, altura, largura, codigoBarras, quantidade, preco, status, categoria) => {
+    const adicionarProduto = async (titulo, descricao, plataforma, dataLancamento, marca, publisher, peso, comprimento, altura, largura, codigoBarras, quantidade, preco, status, categorias) => {
         try {
             const token = getToken();
             const response = await fetch("http://localhost:8080/admin/produtos/add", {
@@ -369,7 +429,7 @@ const AdminProdutos = () => {
                     quantidade,
                     preco,
                     status,
-                    categorias: [{ id: categoria }]
+                    categorias 
                 }),
             });
 
@@ -500,7 +560,6 @@ const AdminProdutos = () => {
                         <img className={styles.iconAdd} src={iconAdd} alt="Adicionar" />
                     </button>
                 </div>
-
             </div>
         </div>
     );
