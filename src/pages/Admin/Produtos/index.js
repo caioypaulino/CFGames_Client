@@ -2,11 +2,10 @@ import React, { useEffect, useState } from "react";
 import iconAdd from "../../../assets/buttons/add.svg";
 import styles from "./AdminProdutos.module.css";
 import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 import Select from "react-select";
 import { getToken } from "../../../utils/storage";
 import { dataMaskBR2, dataMaskEN, valueMaskEN } from "../../../utils/mask";
-
-import ReactDOM from 'react-dom';
 
 const AdminProdutos = () => {
     const [produtos, setProdutos] = useState([]);
@@ -15,7 +14,9 @@ const AdminProdutos = () => {
     const [produtosPorPagina] = useState(9);
     const [colunaClassificada, setColunaClassificada] = useState(null);
     const [ordemClassificacao, setOrdemClassificacao] = useState('asc');
-    const [selectedCategorias, setSelectedCategorias] = useState([]);
+    let categoriasSelecionadas = [];
+
+    const SwalJSX = withReactContent(Swal)
 
     useEffect(() => {
         const token = getToken();
@@ -326,12 +327,17 @@ const AdminProdutos = () => {
     };
 
     const abrirPopupAdd = () => {
-        Swal.fire({
-            title: 'Adicionar Produto',
-            html: `
-                <input id="titulo" type="text" class="swal2-input" placeholder="Título">
-                <input id="descricao" type="text" class="swal2-input" placeholder="Descrição">
-                <select id="plataforma" class="swal2-input" style="margin-top: 1rem; padding: 0.5rem; font-size: 1.25rem; border: 1px solid #ccc; border-radius: 4px; width: 16.3rem; height: 3.5rem; font-family: inherit; outline: none;" onfocus="this.style.borderColor = '#b1cae3'; this.style.borderWidth = '0.25rem';" onblur="this.style.borderColor = '#ccc'; this.style.borderWidth = '1px';">
+        const OnChangeCategorias = (categoriasSelecionadasNovas) => {
+            categoriasSelecionadas = categoriasSelecionadasNovas;
+            console.log(categoriasSelecionadasNovas);
+            console.log(categoriasSelecionadas);
+        };
+    
+        const AddProduto = () => (
+            <form>
+                <input id="titulo" type="text" className="swal2-input" placeholder="Título" />
+                <input id="descricao" type="text" className="swal2-input" placeholder="Descrição" />
+                <select id="plataforma" className="swal2-input" style={{marginTop: '1rem', padding: '0.5rem', fontSize: '1.25rem', border: '1px solid #ccc', borderRadius: '4px', width: '16.3rem', height: '3.5rem', fontFamily: 'inherit', outline: 'none'}} onFocus={(e) => e.target.style.borderColor = '#b1cae3'} onBlur={(e) => e.target.style.borderColor = '#ccc'}>
                     <option value="" disabled selected hidden>Plataforma</option>
                     <option value="0">XBOX 360</option>
                     <option value="1">XBOX ONE</option>
@@ -344,40 +350,59 @@ const AdminProdutos = () => {
                     <option value="8">Nintendo DS</option>
                     <option value="9">Nintendo Switch</option>
                 </select>
-                <input id="dataLancamento" type="date" class="swal2-input" placeholder="Data de Lançamento" style="width: 16.3rem;">
-                <input id="marca" type="text" class="swal2-input" placeholder="Marca">
-                <input id="publisher" type="text" class="swal2-input" placeholder="Publisher">
-                <input id="comprimento" type="number" class="swal2-input" placeholder="Comprimento (cm)" min="0">
-                <input id="largura" type="number" class="swal2-input" placeholder="Largura (cm)" min="0">
-                <input id="altura" type="number" class="swal2-input" placeholder="Altura (cm)" min="0">
-                <input id="peso" type="number" class="swal2-input" placeholder="Peso (g)">
-                <input id="codigoBarras" type="text" pattern="[0-9]{13}" maxlength="13" class="swal2-input" placeholder="Código de Barras">
-                <input id="quantidade" type="number" min="1" class="swal2-input" placeholder="Quantidade" pattern="[0-9]+" title="Apenas números inteiros">
-                <input id="preco" type="number" class="swal2-input" placeholder="Preço">
-                <select id="status" placeholder="Status" class="swal2-select" style="margin-top: 1rem; padding: 0.5rem; font-size: 1.25rem; border: 1px solid #ccc; border-radius: 4px; width: 16.3rem; height: 3.5rem; font-family: inherit; outline: none;" onfocus="this.style.borderColor = '#b1cae3'; this.style.borderWidth = '0.25rem';" onblur="this.style.borderColor = '#ccc'; this.style.borderWidth = '1px';">
+                <input id="dataLancamento" type="date" className="swal2-input" placeholder="Data de Lançamento" style={{width: '16.3rem'}} />
+                <input id="marca" type="text" className="swal2-input" placeholder="Marca" />
+                <input id="publisher" type="text" className="swal2-input" placeholder="Publisher" />
+                <input id="comprimento" type="number" className="swal2-input" placeholder="Comprimento (cm)" min="0" />
+                <input id="largura" type="number" className="swal2-input" placeholder="Largura (cm)" min="0" />
+                <input id="altura" type="number" className="swal2-input" placeholder="Altura (cm)" min="0" />
+                <input id="peso" type="number" className="swal2-input" placeholder="Peso (g)" />
+                <input id="codigoBarras" type="text" pattern="[0-9]{13}" maxLength="13" className="swal2-input" placeholder="Código de Barras" />
+                <input id="quantidade" type="number" min="1" className="swal2-input" placeholder="Quantidade" pattern="[0-9]+" title="Apenas números inteiros" />
+                <input id="preco" type="number" className="swal2-input" placeholder="Preço" />
+                <select id="status" placeholder="Status" className="swal2-select" style={{marginTop: '1rem', padding: '0.5rem', fontSize: '1.25rem', border: '1px solid #ccc', borderRadius: '4px', width: '16.3rem', height: '3.5rem', fontFamily: 'inherit', outline: 'none'}} onFocus={(e) => e.target.style.borderColor = '#b1cae3'} onBlur={(e) => e.target.style.borderColor = '#ccc'}>
                     <option value="" disabled selected hidden>Status</option>
                     <option value="0">Inativo</option>
                     <option value="1">Ativo</option>
                     <option value="2">Fora de Mercado</option>
                 </select>
-                <div id="select-container" class="swal2-select"  style="margin-left: 6rem; margin-top: 1rem; padding: 0.5rem; font-size: 1.25rem; border: 1px solid #ccc; border-radius: 4px; width: 15.2rem; height: 3.5rem; font-family: inherit; outline: none;" onfocus="this.style.borderColor = '#b1cae3'; this.style.borderWidth = '0.25rem';" onblur="this.style.borderColor = '#ccc'; this.style.borderWidth = '1px';"></div>
-            `,
-            didOpen: () => { // Função executada quando o modal é aberto
-                const selectContainer = document.getElementById('select-container');
-                // Renderizar o componente Select dentro do container
-                ReactDOM.render(
-                    <Select 
-                        id="categorias"
-                        placeholder="Categorias"
-                        options={categorias.map(categoria => ({ value: categoria.id, label: categoria.nome }))}
-                        isMulti
-                        value={selectedCategorias} // Set the value to the state
-                        onChange={selectedOptions => setSelectedCategorias(selectedOptions)} // Update state when selection changes
-                    />,
-                    selectContainer
-                );
-            },
-           
+                <Select
+                    id="categorias"
+                    class="swal2-select" 
+                    styles={{
+                        control: (provided) => ({
+                            ...provided,
+                            width:'16.3rem',
+                            marginTop:'1.1rem',
+                            marginLeft:'6.01rem'
+                        }),
+                        menu: (provided) => ({
+                            ...provided,
+                            width: '16.5rem',
+                            marginLeft: '6rem'
+                            
+                        }),
+                        option: (provided) => ({
+                            ...provided,
+                            fontSize: '1rem', // Tamanho da fonte das opções
+                        }),
+                    }}
+                    placeholder="Categorias"
+                    options={categorias.map(categoria => ({ value: categoria.id, label: categoria.nome }))} // Função de busca assíncrona
+                    isMulti
+                    isClearable
+                    isSearchable
+                    closeMenuOnSelect={false}
+                    onChange={OnChangeCategorias} // Update state when selection changes
+                />
+            </form>
+        );
+
+        SwalJSX.fire({
+            title: 'Adicionar Produto',
+            html:(
+                <AddProduto />
+            ) ,
             showCancelButton: true,
             confirmButtonText: "Adicionar",
             confirmButtonColor: "#6085FF",
@@ -398,14 +423,10 @@ const AdminProdutos = () => {
                 const quantidade = parseInt(Swal.getPopup().querySelector('#quantidade').value);
                 const preco = parseFloat(valueMaskEN(Swal.getPopup().querySelector('#preco').value));
                 const status = Swal.getPopup().querySelector('#status').value;
-                const categorias =  selectedCategorias.map(categoria => categoria.value);
+                const categorias = categoriasSelecionadas.map(categoria => ({ id: categoria.value }));
                 
-                console.log(categorias);
-                console.log(JSON.stringify(categorias));
-
-                // Função para adicionar o produto
-                adicionarProduto(titulo, descricao, plataforma, dataLancamento, marca, publisher, peso, comprimento, altura, largura, codigoBarras, quantidade, preco, status, categorias);
-            }
+                adicionarProduto(titulo, descricao, plataforma, dataLancamento, marca, publisher, peso, comprimento, altura, largura, codigoBarras, quantidade, preco, status, categorias)
+            },
         });
     };
 
@@ -434,7 +455,7 @@ const AdminProdutos = () => {
                     quantidade,
                     preco,
                     status,
-                    categorias 
+                    categorias
                 }),
             });
 
