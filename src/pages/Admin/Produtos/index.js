@@ -15,6 +15,7 @@ const AdminProdutos = () => {
     const [produtosPorPagina] = useState(9);
     const [colunaClassificada, setColunaClassificada] = useState(null);
     const [ordemClassificacao, setOrdemClassificacao] = useState('asc');
+    const [selectedCategorias, setSelectedCategorias] = useState([]);
 
     useEffect(() => {
         const token = getToken();
@@ -259,7 +260,8 @@ const AdminProdutos = () => {
             if (response.ok) {
                 const successMessage = await response.text();
                 Swal.fire({ title: "Sucesso!", html: `${successMessage}`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-            } else {
+            } 
+            else {
                 const errorMessage = await response.text();
                 throw new Error(errorMessage);
             }
@@ -362,7 +364,6 @@ const AdminProdutos = () => {
             `,
             didOpen: () => { // Função executada quando o modal é aberto
                 const selectContainer = document.getElementById('select-container');
-        
                 // Renderizar o componente Select dentro do container
                 ReactDOM.render(
                     <Select 
@@ -370,6 +371,8 @@ const AdminProdutos = () => {
                         placeholder="Categorias"
                         options={categorias.map(categoria => ({ value: categoria.id, label: categoria.nome }))}
                         isMulti
+                        value={selectedCategorias} // Set the value to the state
+                        onChange={selectedOptions => setSelectedCategorias(selectedOptions)} // Update state when selection changes
                     />,
                     selectContainer
                 );
@@ -395,8 +398,10 @@ const AdminProdutos = () => {
                 const quantidade = parseInt(Swal.getPopup().querySelector('#quantidade').value);
                 const preco = parseFloat(valueMaskEN(Swal.getPopup().querySelector('#preco').value));
                 const status = Swal.getPopup().querySelector('#status').value;
-                const categorias = Swal.getPopup().querySelector('#categorias').value;  
-
+                const categorias =  selectedCategorias.map(categoria => categoria.value);
+                
+                console.log(categorias);
+                console.log(JSON.stringify(categorias));
 
                 // Função para adicionar o produto
                 adicionarProduto(titulo, descricao, plataforma, dataLancamento, marca, publisher, peso, comprimento, altura, largura, codigoBarras, quantidade, preco, status, categorias);
