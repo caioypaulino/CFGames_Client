@@ -103,6 +103,12 @@ export const dataMaskEN = (value) => {
     return `${dataSplit[2]}-${dataSplit[1]}-${dataSplit[0]}`;
 };
 
+// Função para aplicar máscara de datas (yyyy-MM-dd)
+export const dataMaskEN2 = (value) => {
+    const [dia, mes, ano] = value.split("-");
+    return `${ano}-${mes}-${dia}`;
+}
+
 // Função para aplicar máscara de valores (ex: 13950,00 para 13950.00)
 export const valueMaskEN = (value) => {
 

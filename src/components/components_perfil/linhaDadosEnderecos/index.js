@@ -44,11 +44,17 @@ const linhaDadosEnderecos = (props) => {
         Swal.fire({
             title: `Editar Endereço ${props.index}`,
             html: `Aqui você pode editar o endereço.<br>
-                <input id="numero" type="text" placeholder="Número" value="${numero}" class="swal2-input"><br>
-                <input id="complemento" type="text" placeholder="Complemento" value="${complemento}" class="swal2-input"><br>
-                <input id="tipo" type="text" placeholder="Tipo" value="${tipo}" class="swal2-input"><br>
-                <input id="cep" type="text" placeholder="CEP" value="${cep}" maxlength="9" class="swal2-input"><br>
-                <input id="observacao" type="text" placeholder="Observação" value="${observacao ? observacao : ""}" class="swal2-input"><br>`,
+                <input id="numero" type="text" placeholder="Número" value="${numero}" class="swal2-input" style="width: 18rem;"><br>
+                <input id="complemento" type="text" placeholder="Complemento" value="${complemento}" class="swal2-input" style="width: 18rem;"><br>
+                <select id="tipo" className="swal2-select" style="margin-top: 1rem; padding: 0.5rem; font-size: 1.25rem; border: 1px solid #ccc; border-radius: 4px; width: 18rem; height: 3.5rem; font-family: inherit; outline: none;" onfocus="this.style.borderColor = '#b1cae3'; this.style.borderWidth = '0.25rem';" onblur="this.style.borderColor = '#ccc'; this.style.borderWidth = '1px';">
+                    <option defaultValue=${tipo} selected disabled hidden>${tipo}</option>
+                    <option value="" disabled hidden>Tipo</option>
+                    <option value="0">Entrega</option>
+                    <option value="1">Cobrança</option>
+                    <option value="2">Ambos</option>
+                </select>
+                <input id="cep" type="text" placeholder="CEP" value="${cep}" maxlength="9" class="swal2-input" style="width: 18rem;"><br>
+                <input id="observacao" type="text" placeholder="Observação" value="${observacao ? observacao : ""}" class="swal2-input" style="width: 18rem;"><br>`,
             showCancelButton: true,
             confirmButtonText: "Salvar",
             confirmButtonColor: "#6085FF",

@@ -171,7 +171,7 @@ const AdminClientes = () => {
         return 0;
     });
 
-    const currentClientes = sortedClientes.slice(indexPrimeiroCliente, indexUltimoCliente);
+    const clientesAtuais = sortedClientes.slice(indexPrimeiroCliente, indexUltimoCliente);
     const totalPaginas = Math.ceil(clientes.length / clientesPorPagina);
 
     const handlePaginaAnterior = () => {
@@ -216,7 +216,7 @@ const AdminClientes = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {currentClientes.map(cliente => (
+                        {clientesAtuais.map(cliente => (
                             <tr key={cliente.id}>
                                 <td>{cliente.id}</td>
                                 <td>{cliente.nome}</td>
@@ -233,11 +233,6 @@ const AdminClientes = () => {
                     <button onClick={handlePaginaAnterior} disabled={paginaAtual === 1}>&lt;</button>
                     <span className={styles.paginaAtual}>{paginaAtual}</span><span className={styles.totalPaginas}>/{totalPaginas}</span>
                     <button onClick={handleProximaPagina} disabled={paginaAtual === totalPaginas}>&gt;</button>
-                </div>
-                <div className={styles.btnIconAdd}>
-                    <button className={styles.btnIcon}>
-                        <img className={styles.iconAdd} src={iconAdd} alt="Adicionar" />
-                    </button>
                 </div>
             </div>
         </div>

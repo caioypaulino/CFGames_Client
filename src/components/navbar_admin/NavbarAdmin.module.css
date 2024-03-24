@@ -1,3 +1,4 @@
+/* Mantenha suas estilizações existentes */
 .navbar {
     display: flex;
     justify-content: center;
@@ -8,11 +9,13 @@
 
 .navbar ul {
     display: flex;
-    justify-content: space-between; /* Alinha os itens no início e no final */
+    justify-content: space-between;
+    /* Alinha os itens no início e no final */
     align-items: center;
     padding: 0;
     margin-left: 10rem;
-    width: 100%; /* Ocupa toda a largura do contêiner pai */
+    width: 100%;
+    /* Ocupa toda a largura do contêiner pai */
 }
 
 .navbar ul li {
@@ -24,8 +27,10 @@
     font-family: 'Roboto';
     font-size: 1.5rem;
     font-weight: bold;
-    text-decoration: none; /* Removendo sublinhado */
-    color: #011640; /* Altere a cor conforme necessário */
+    text-decoration: none;
+    /* Removendo sublinhado */
+    color: #011640;
+    /* Altere a cor conforme necessário */
 }
 
 .accountIcon {
@@ -38,4 +43,63 @@
     width: 682px;
     border-radius: 20px;
     border: 2px solid #011640;
+}
+
+.dropdown-menu {
+    scrollbar-width: thin;
+}
+
+.dropdown-menu::-webkit-scrollbar {
+    width: 8px;
+}
+
+.dropdown-menu::-webkit-scrollbar-track {
+    background: #011640;
+    /* Cor de fundo da pista */
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb {
+    background: #fff;
+    /* Cor do botão da barra de rolagem */
+    border-radius: 4px;
+}
+
+/* Alterar a fonte para Roboto */
+.dropdown-menu,
+.dropdown-menu .option {
+    font-family: 'Roboto', sans-serif;
+    color: #011640;
+    /* Cor do texto */
+}
+
+.dropdown-control {
+    background-color: #fff;
+    border: none;
+    /* Remover borda */
+    border-radius: 4px;
+    color: #333;
+    padding: 8px 12px;
+    cursor: pointer;
+    width: 12rem;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #fff;
+    border: none;
+    /* Remover borda */
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.dropdown-menu .option {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.dropdown-menu .option:hover {
+    background-color: #f0f0f0;
 }

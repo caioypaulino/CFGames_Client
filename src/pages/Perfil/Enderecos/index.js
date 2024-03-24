@@ -23,11 +23,16 @@ const enderecos = () => {
         Swal.fire({
             title: "Adicionar Novo Endereço",
             html: `
-                <input id="numero" type="text" placeholder="Número" class="swal2-input">
-                <input id="complemento" type="text" placeholder="Complemento" class="swal2-input">
-                <input id="tipo" type="text" placeholder="Tipo" class="swal2-input">
-                <input id="cep" type="text" placeholder="CEP" maxlength="9" class="swal2-input">
-                <input id="observacao" type="text" placeholder="Observação" class="swal2-input">`,
+                <input id="numero" type="text" placeholder="Número" class="swal2-input" style="width: 18rem;">
+                <input id="complemento" type="text" placeholder="Complemento" class="swal2-input" style="width: 18rem;">
+                <select id="tipo" className="swal2-select" style="margin-top: 1rem; padding: 0.5rem; font-size: 1.25rem; border: 1px solid #ccc; border-radius: 4px; width: 18rem; height: 3.5rem; font-family: inherit; outline: none;" onfocus="this.style.borderColor = '#b1cae3'; this.style.borderWidth = '0.25rem';" onblur="this.style.borderColor = '#ccc'; this.style.borderWidth = '1px';">
+                    <option value="" selected hidden>Tipo</option>
+                    <option value="0">Entrega</option>
+                    <option value="1">Cobrança</option>
+                    <option value="2">Ambos</option>
+                </select>
+                <input id="cep" type="text" placeholder="CEP" maxlength="9" class="swal2-input" style="width: 18rem;">
+                <input id="observacao" type="text" placeholder="Observação" class="swal2-input" style="width: 18rem;">`,
             showCancelButton: true,
             confirmButtonText: "Adicionar",
             confirmButtonColor: "#6085FF",

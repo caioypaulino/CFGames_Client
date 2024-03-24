@@ -5,17 +5,24 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import Select from "react-select";
 import { getToken } from "../../../utils/storage";
-import { dataMaskBR2, dataMaskEN, valueMaskEN } from "../../../utils/mask";
+import { dataMaskBR2, dataMaskEN, dataMaskEN2, valueMaskEN } from "../../../utils/mask";
 
 const AdminProdutos = () => {
     const [produtos, setProdutos] = useState([]);
     const [categorias, setCategorias] = useState([]);
+
+    // Multi-Select react-select array
+    let categoriasSelecionadas = [];
+    const OnChangeCategorias = (categoriasSelecionadasNovas) => {
+        categoriasSelecionadas = categoriasSelecionadasNovas;
+    };
+
     const [paginaAtual, setPaginaAtual] = useState(1);
     const [produtosPorPagina] = useState(9);
+
     const [colunaClassificada, setColunaClassificada] = useState(null);
     const [ordemClassificacao, setOrdemClassificacao] = useState('asc');
-    let categoriasSelecionadas = [];
-
+    
     const SwalJSX = withReactContent(Swal)
 
     useEffect(() => {
@@ -77,12 +84,12 @@ const AdminProdutos = () => {
                     confirmButtonColor: "#6085FF",
                     showDenyButton: true,
                     denyButtonText: "Estoque",
-                    denyButtonColor: "#6085FF",
+                    denyButtonColor: "#011640",
                     cancelButtonText: "Fechar",
                     icon: 'info'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        abrirPopupAtualizarProduto(produto);
+                        abrirPopupUpdate(produto);
                     } 
                     else if (result.isDenied) {
                         abrirPopupEstoque(produto);
@@ -90,20 +97,21 @@ const AdminProdutos = () => {
                 });
             } 
             else if (result.isDenied) { // Se o botão "Deletar" for clicado
-                confirmarDelecaoProduto(produto);
+                abrirPopupDelete(produto);
             }
         });
     };
     
     // Função para abrir o modal de atualização do produto
-    const abrirPopupAtualizarProduto = (produto) => {
-        Swal.fire({
-            title: 'Atualizar Produto',
-            html: `
-                <input id="titulo" type="text" class="swal2-input" placeholder="Título" value="${produto.titulo}">
-                <input id="descricao" type="text" class="swal2-input" placeholder="Descrição" value="${produto.descricao}">
-                <select id="plataforma" class="swal2-select" style="margin-top: 1rem; padding: 0.5rem; font-size: 1.25rem; border: 1px solid #ccc; border-radius: 4px; width: 16.3rem; height: 3.5rem; font-family: inherit; outline: none;" onfocus="this.style.borderColor = '#b1cae3'; this.style.borderWidth = '0.25rem';" onblur="this.style.borderColor = '#ccc'; this.style.borderWidth = '1px';">
-                    <option value="${produto.plataforma}" disabled selected hidden>${produto.plataforma}</option>
+    const abrirPopupUpdate = (produto) => {
+        console.log(produto);
+
+        const FormUpdateProduto = () => (
+            <form>
+                <input id="titulo" type="text" className="swal2-input" placeholder="Título" defaultValue={produto.titulo} />
+                <input id="descricao" type="text" className="swal2-input" placeholder="Descrição" defaultValue={produto.descricao} />
+                <select id="plataforma" className="swal2-input" style={{marginTop: '1rem', padding: '0.5rem', fontSize: '1.25rem', border: '1px solid #ccc', borderRadius: '4px', width: '16.3rem', height: '3.5rem', fontFamily: 'inherit', outline: 'none'}} onFocus={(e) => e.target.style.borderColor = '#b1cae3'} onBlur={(e) => e.target.style.borderColor = '#ccc'}>
+                    <option defaultValue={produto.plataforma} selected disabled hidden>{produto.plataforma}</option>
                     <option value="0">XBOX 360</option>
                     <option value="1">XBOX ONE</option>
                     <option value="2">XBOX Series S</option>
@@ -115,40 +123,70 @@ const AdminProdutos = () => {
                     <option value="8">Nintendo DS</option>
                     <option value="9">Nintendo Switch</option>
                 </select>
-                <input id="dataLancamento" type="date" class="swal2-input" placeholder="Data de Lançamento" style="width: 16.3rem;">
-                <input id="marca" type="text" class="swal2-input" placeholder="Marca" value="${produto.marca}">
-                <input id="publisher" type="text" class="swal2-input" placeholder="Publisher" value="${produto.publisher}">
-                <input id="peso" type="number" class="swal2-input" placeholder="Peso (em gramas)" value="${produto.peso}">
-                <input id="comprimento" type="number" class="swal2-input" placeholder="Comprimento (cm)" min="0" step="0.1" value="${produto.comprimento}">
-                <input id="altura" type="number" class="swal2-input" placeholder="Altura (cm)" min="0" step="0.1" value="${produto.altura}">
-                <input id="largura" type="number" class="swal2-input" placeholder="Largura (cm)" min="0" step="0.1" value="${produto.largura}">
-                <input id="codigoBarras" type="text" class="swal2-input" placeholder="Código de Barras" value="${produto.codigoBarras}">
-                <input id="preco" type="number" class="swal2-input" placeholder="Preço" min="10.0" step="0.01" value="${produto.preco}">
-                <select id="status" class="swal2-select" style="margin-top: 1rem; padding: 0.5rem; font-size: 1.25rem; border: 1px solid #ccc; border-radius: 4px; width: 16.3rem; height: 3.5rem; font-family: inherit; outline: none;" onfocus="this.style.borderColor = '#b1cae3'; this.style.borderWidth = '0.25rem';" onblur="this.style.borderColor = '#ccc'; this.style.borderWidth = '1px';">
-                    <option value="" disabled selected hidden>Status</option>
+                <input id="dataLancamento" type="date" className="swal2-input" placeholder="Data de Lançamento" defaultValue={dataMaskEN2(produto.dataLancamento)} style={{width: '16.3rem'}}/>
+                <input id="marca" type="text" className="swal2-input" placeholder="Marca" defaultValue={produto.marca} />
+                <input id="publisher" type="text" className="swal2-input" placeholder="Publisher" defaultValue={produto.publisher} />
+                <input id="peso" type="number" className="swal2-input" placeholder="Peso (em gramas)" defaultValue={produto.peso} />
+                <input id="comprimento" type="number" className="swal2-input" placeholder="Comprimento (cm)" min="0" step="0.1" defaultValue={produto.comprimento} />
+                <input id="altura" type="number" className="swal2-input" placeholder="Altura (cm)" min="0" step="0.1" defaultValue={produto.altura} />
+                <input id="largura" type="number" className="swal2-input" placeholder="Largura (cm)" min="0" step="0.1" defaultValue={produto.largura} />
+                <input id="codigoBarras" type="text" className="swal2-input" placeholder="Código de Barras" defaultValue={produto.codigoBarras} />
+                <input id="preco" type="number" className="swal2-input" placeholder="Preço" min="10.0" step="0.01" defaultValue={produto.preco} />
+                <select id="status" className="swal2-select" style={{marginTop: '1rem', padding: '0.5rem', fontSize: '1.25rem', border: '1px solid #ccc', borderRadius: '4px', width: '16.3rem', height: '3.5rem', fontFamily: 'inherit', outline: 'none'}} defaultValue={produto.status} onFocus={(e) => e.target.style.borderColor = '#b1cae3'} onBlur={(e) => e.target.style.borderColor = '#ccc'}>
+                    <option value="" disabled hidden>Status</option>
                     <option value="0">Inativo</option>
                     <option value="1">Ativo</option>
                     <option value="2">Fora de Mercado</option>
                 </select>
-                <select name="categorias" id="categorias" multiple>
-                    ${categorias.map(categoria => `
-                        <option value="${categoria.id}" ${produto.categorias.some(cat => cat.id === categoria.id) ? 'selected' : ''}>
-                            ${categoria.nome}
-                        </option>
-                    `).join('')}
-                </select>
-            `,
+                <Select
+                    id="categorias"
+                    class="swal2-select" 
+                    styles={{
+                        control: (provided) => ({
+                            ...provided,
+                            width:'16.3rem',
+                            marginTop:'1.1rem',
+                            marginLeft:'6.01rem'
+                        }),
+                        menu: (provided) => ({
+                            ...provided,
+                            width: '16.5rem',
+                            marginLeft: '6rem'
+                            
+                        }),
+                        option: (provided) => ({
+                            ...provided,
+                            fontSize: '1rem',
+                        }),
+                    }}
+                    placeholder="Categorias"
+                    options={categorias.map(categoria => ({ value: categoria.id, label: categoria.nome }))}
+                    isMulti
+                    isClearable
+                    isSearchable
+                    closeMenuOnSelect={false}
+                    defaultValue={produto.categorias.map(categoria => ({ value: categoria.id, label: categoria.nome }))}
+                    onChange={OnChangeCategorias}
+                />
+            </form>
+        );
+    
+        SwalJSX.fire({
+            title: 'Atualizar Produto',
+            html: (
+                <FormUpdateProduto />
+            ),
             showCancelButton: true,
             confirmButtonText: "Atualizar",
             confirmButtonColor: "#6085FF",
             cancelButtonText: "Cancelar",
             icon: "info",
             preConfirm: () => {
-
+                // Obter valores dos campos atualizados
                 const titulo = Swal.getPopup().querySelector('#titulo').value;
                 const descricao = Swal.getPopup().querySelector('#descricao').value;
                 const plataforma = Swal.getPopup().querySelector('#plataforma').value;
-                const dataLancamento = Swal.getPopup().querySelector('#dataLancamento').value;
+                const dataLancamento = dataMaskEN(Swal.getPopup().querySelector('#dataLancamento').value);
                 const marca = Swal.getPopup().querySelector('#marca').value;
                 const publisher = Swal.getPopup().querySelector('#publisher').value;
                 const peso = parseFloat(Swal.getPopup().querySelector('#peso').value);
@@ -158,21 +196,15 @@ const AdminProdutos = () => {
                 const codigoBarras = Swal.getPopup().querySelector('#codigoBarras').value;
                 const preco = parseFloat(Swal.getPopup().querySelector('#preco').value);
                 const status = Swal.getPopup().querySelector('#status').value;
-                // Obter as categorias selecionadas
-                const categoriasSelecionadas = categoriasSelecionadas.map(categoria => categoria.value);
-                // Chame a função para atualizar o produto
-                atualizarProduto(produto.id, titulo, descricao, plataforma, dataLancamento, marca, publisher, peso, comprimento, altura, largura, codigoBarras, preco, status, categoriasSelecionadas);
+                const categorias = categoriasSelecionadas.map(categoria => ({ id: categoria.value }));
+                
+                // Chamando a função para atualizar o produto
+                atualizarProduto(produto.id, titulo, descricao, plataforma, dataLancamento, marca, publisher, peso, comprimento, altura, largura, codigoBarras, preco, status, categorias);
             }
         }).then((result) => {
             if (result.isDismissed) { // Se o usuário clicar em cancelar, volte para abrirPopupInfo
                 abrirPopupInfo(produto); 
             }
-        });
-    
-        // Aplicar estilos aos checkboxes
-        const checkboxes = document.querySelectorAll('.checkbox-container input[type="checkbox"]');
-        checkboxes.forEach(checkbox => {
-            checkbox.style.display = 'none'; // Esconder os inputs originais
         });
     };
     
@@ -200,7 +232,7 @@ const AdminProdutos = () => {
                     codigoBarras, 
                     preco, 
                     status,
-                    categorias: categorias.map(id => ({ id }))
+                    categorias
                 }),
             });
     
@@ -234,7 +266,7 @@ const AdminProdutos = () => {
             preConfirm: () => {
                 const quantidadeEstoque = parseInt(Swal.getPopup().querySelector('#quantidadeEstoque').value);
     
-                // Chame a função para atualizar o estoque
+                // Chamando a função para atualizar o estoque
                 atualizarEstoque(produto.id, quantidadeEstoque);
             }
         }).then((result) => {
@@ -273,7 +305,7 @@ const AdminProdutos = () => {
     };
 
     // Função para solicitar confirmação da deleção do produto
-    const confirmarDelecaoProduto = (produto) => {
+    const abrirPopupDelete = (produto) => {
         Swal.fire({
             title: 'Tem certeza?',
             text: "Esta ação não pode ser revertida!",
@@ -285,7 +317,7 @@ const AdminProdutos = () => {
             cancelButtonText: 'Cancelar'
         })
         .then((result) => {
-            if (result.isConfirmed) { // Se o botão "Confirmar" for clicado
+            if (result.isConfirmed) {
                 deletarProduto(produto.id);
             }
             else if (result.isDismissed) {
@@ -313,27 +345,21 @@ const AdminProdutos = () => {
                 Swal.fire({ title: "Sucesso!", html: `${successMessage}`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
             }
             else {
-                // buscando mensagem de erro que não é JSON
+                // Buscando mensagem de erro que não é JSON
                 const errorMessage = await response.text();
 
                 throw new Error(errorMessage);
             }
         }
         catch (error) {
-            // tratando mensagem de erro
+            // Tratando mensagem de erro
             console.error("Erro ao deletar produto:", error);
             Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao deletar o produto.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
         }
     };
 
     const abrirPopupAdd = () => {
-        const OnChangeCategorias = (categoriasSelecionadasNovas) => {
-            categoriasSelecionadas = categoriasSelecionadasNovas;
-            console.log(categoriasSelecionadasNovas);
-            console.log(categoriasSelecionadas);
-        };
-    
-        const AddProduto = () => (
+        const FormAddProduto = () => (
             <form>
                 <input id="titulo" type="text" className="swal2-input" placeholder="Título" />
                 <input id="descricao" type="text" className="swal2-input" placeholder="Descrição" />
@@ -384,16 +410,16 @@ const AdminProdutos = () => {
                         }),
                         option: (provided) => ({
                             ...provided,
-                            fontSize: '1rem', // Tamanho da fonte das opções
+                            fontSize: '1rem',
                         }),
                     }}
                     placeholder="Categorias"
-                    options={categorias.map(categoria => ({ value: categoria.id, label: categoria.nome }))} // Função de busca assíncrona
+                    options={categorias.map(categoria => ({ value: categoria.id, label: categoria.nome }))}
                     isMulti
                     isClearable
                     isSearchable
                     closeMenuOnSelect={false}
-                    onChange={OnChangeCategorias} // Update state when selection changes
+                    onChange={OnChangeCategorias} 
                 />
             </form>
         );
@@ -401,7 +427,7 @@ const AdminProdutos = () => {
         SwalJSX.fire({
             title: 'Adicionar Produto',
             html:(
-                <AddProduto />
+                <FormAddProduto />
             ) ,
             showCancelButton: true,
             confirmButtonText: "Adicionar",

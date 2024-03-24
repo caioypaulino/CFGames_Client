@@ -34,7 +34,8 @@ const pessoais = () => {
                     <option value="NAO_INFORMAR" ${genero === 'NAO_INFORMAR' ? 'selected' : ''}>Não Informar</option>
                 </select><br>
                 <input id="dataNascimento" type="date" placeholder="Data de Nascimento" value="${dataNascimento}" class="swal2-input" style="width: 18rem;"><br>
-                <input id="telefone" type="text" placeholder="Telefone" value="${telefoneMask(telefone)}" maxlength="15" class="swal2-input" style="width: 18rem;"><br>`,
+                <input id="telefone" type="text" placeholder="Telefone" value="${telefoneMask(telefone)}" maxlength="15" class="swal2-input" style="width: 18rem;"><br>
+            `,
             showCancelButton: true,
             confirmButtonText: "Salvar",
             confirmButtonColor: "#6085FF",
