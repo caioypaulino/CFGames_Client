@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import iconAdd from "../../../assets/buttons/add.svg";
 import styles from "./AdminClientes.module.css";
 import Swal from "sweetalert2";
 import { getToken } from "../../../utils/storage";
@@ -79,7 +78,8 @@ const AdminClientes = () => {
             html: htmlContent,
             icon: 'info',
             confirmButtonText: 'Voltar',
-            confirmButtonColor: "#6085FF"
+            confirmButtonColor: "#6085FF",
+            width: '50rem'
         }).then((result) => {
             if (result.isConfirmed) {
                 abrirPopupInfo(cliente);

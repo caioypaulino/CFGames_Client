@@ -2,27 +2,21 @@ import React from "react";
 import styles from "./linhaDadosPessoais.module.css";
 import { cpfMask, telefoneMask, dataMaskBR } from "../../../utils/mask";
 
-const linhaDadosPessoais = (props) => {
-    let dadoFormatado = props.dado;
+const linhaDadosPessoais = ({ tipo, dado }) => {
+    const formatarMap = {
+        nome: { tipo: 'Nome'},
+        cpf: { tipo: 'CPF', formatter: cpfMask },
+        telefone: { tipo: 'Telefone', formatter: telefoneMask },
+        dataNascimento: { tipo: 'Data de Nascimento', formatter: dataMaskBR },
+        genero: { tipo: 'Gênero', formatter: (dado) => (dado === 'NAO_INFORMAR' ? 'Não Informar' : dado) }
+    };
 
-    // Aplicando a máscara de CPF
-    if (props.tipo === 'cpf') {
-        dadoFormatado = cpfMask(dadoFormatado);
-    }
-
-    // Aplicando a máscara de telefone
-    if (props.tipo === 'telefone') {
-        dadoFormatado = telefoneMask(dadoFormatado);
-    }
-
-    // Aplicando a máscara de data de nascimento
-    if (props.tipo === 'dataNascimento') {
-        dadoFormatado = dataMaskBR(dadoFormatado);
-    }
+    const { tipo: tipoFormatado, formatter } = formatarMap[tipo];
+    const dadoFormatado = formatter ? formatter(dado) : dado;
 
     return (
         <div className={styles.container}>
-            <p className={styles.type}>{props.tipo}:</p>
+            <p className={styles.type}>{tipoFormatado}:</p>
             <p className={styles.data}>{dadoFormatado}</p>
         </div>
     );
