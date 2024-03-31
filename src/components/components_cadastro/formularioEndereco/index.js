@@ -1,10 +1,18 @@
 import React, { useState } from "react";
-import logoCF from "../../../assets/navbar/Logo 2.svg";
-import bannerCadastro from "../../../assets/cadastro/cadastroEndereco.svg";
-import styles from "./formularioEndereco.module.css";
 import { cepMask } from "../../../utils/mask";
 
 export default function FormularioEndereco({ title, onChange }) {
+
+    // Importando estilos condicionalmente
+    let styles;
+
+    if (title === "Endereço Geral") {
+        styles = require("./formularioEnderecoGeral.module.css");
+    } 
+    else {
+        styles = require("./formularioEndereco.module.css");
+    }
+
     const [cep, setCep] = useState("");
     const [complemento, setComplemento] = useState("");
     const [rua, setRua] = useState("");
@@ -13,7 +21,7 @@ export default function FormularioEndereco({ title, onChange }) {
     const [cidade, setCidade] = useState("");
     const [estado, setEstado] = useState("");
     const [pais, setPais] = useState("");
-    const [tipo] = useState("AMBOS");
+    const [tipo] = useState("GERAL");
     const [observacao, setObservacao] = useState("");
 
     const handleChange = () => {

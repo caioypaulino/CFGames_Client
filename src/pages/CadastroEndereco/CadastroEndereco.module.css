@@ -26,9 +26,25 @@
     left: 6%;
 }
 
+.formE FormularioEndereco .date, .input, .select, .inputNum {
+    width: 70%;
+}
+
+.formE1{
+    width: 50%;
+    position: absolute;
+    left: 6%;
+}
+
 .formE2 {
     width: 50%;
-    margin-left: 50%;
+    margin-left: 35.5%;
+    position: absolute;
+}
+
+.formE3 {
+    width: 50%;
+    margin-left: 65%;
     position: absolute;
 }
 

@@ -32,6 +32,16 @@ export default function CadastroEndereco() {
         observacao: ""
     });
 
+    const [enderecoResidencial, setEnderecoResidencial] = useState({
+        numero: "",
+        complemento: "",
+        tipo: "RESIDENCIAL", // Definindo o tipo de endereço como RESIDENCIAL
+        endereco: {
+            cep: ""
+        },
+        observacao: ""
+    });
+
     const handleCheckboxChange = () => {
         setEnderecosDiferentes(!enderecosDiferentes);
     };
@@ -45,8 +55,9 @@ export default function CadastroEndereco() {
             if (enderecosDiferentes) {
                 enderecoEntrega.tipo = "ENTREGA";
                 enderecoCobranca.tipo = "COBRANCA";
+                enderecoResidencial.tipo = "RESIDENCIAL";
 
-                enderecosRequest = [enderecoEntrega, enderecoCobranca];
+                enderecosRequest = [enderecoEntrega, enderecoCobranca, enderecoResidencial];
             }
             else {
                 enderecosRequest = [enderecoEntrega];
@@ -87,21 +98,31 @@ export default function CadastroEndereco() {
                     <a href="/home"><img className="logoCF" src={logoCF} alt="Logo" /></a>
                     <h1>Falta pouco!</h1>
                 </div>
-                <div className={styles.formE}>
-                    <FormularioEndereco
-                        title="Endereço de Entrega"
-                        onChange={(endereco) => setEnderecoEntrega(endereco)}
-                    />
-                </div>
+                {!enderecosDiferentes && (
+                    <div className={styles.formE}>
+                        <FormularioEndereco
+                            title="Endereço Geral"
+                            onChange={(endereco) => setEnderecoEntrega(endereco)}
+                        />
+                    </div>
+                )};
                 <div className={styles.checkbox}>
                     <input
                         type="checkbox"
                         checked={enderecosDiferentes}
                         onChange={handleCheckboxChange}
                     />
-                    <label>Endereço de Entrega DIFERENTE de Cobrança</label>
+                    <label>Endereço de Entrega DIFERENTE de Cobrança e Residencial</label>
                 </div>
                 <button className={styles.enviar} onClick={handleSubmit}>Confirmar</button>
+                {enderecosDiferentes && (
+                    <div className={styles.formE1}>
+                        <FormularioEndereco
+                            title="Endereço Entrega"
+                            onChange={(endereco) => setEnderecoEntrega(endereco)}
+                        />
+                    </div>
+                )};
                 {enderecosDiferentes && (
                     <div className={styles.formE2}>
                         <FormularioEndereco
@@ -109,7 +130,16 @@ export default function CadastroEndereco() {
                             onChange={(endereco) => setEnderecoCobranca(endereco)}
                         />
                     </div>
-                )}
+                )};
+                {enderecosDiferentes && (
+                    <div className={styles.formE3}>
+                        <FormularioEndereco
+                            title="Endereço Residencial"
+                            onChange={(endereco) => setEnderecoResidencial(endereco)}
+                        />
+                    </div>
+                )};
+                
             </div>
 
             {!enderecosDiferentes && (
