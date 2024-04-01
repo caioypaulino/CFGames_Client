@@ -8,8 +8,6 @@
 }
 
 .titleNewProducts {
-  left: 50%;
-  top: 80%;
   transform: translate(-50%, -50%);
   text-align: center;
   font-family: "Roboto";
@@ -18,8 +16,8 @@
   font-size: 50px;
   line-height: 59px;
   color: #011640;
-  margin-top: 50px;
-  margin-left: 55%;
+  margin-top: 3%;
+  margin-left: 60%;
 }
 
 .listProducts {
@@ -28,8 +26,6 @@
   grid-gap: 20px;
   max-width: 900px;
   margin: 0 auto;
-  margin-top: 50px;
-  margin-bottom: 50px;
 }
 
 
