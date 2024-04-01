@@ -1,3 +1,5 @@
+/* ProdutosHome.module.css */
+
 .productGame {
   position: relative;
   background-color: #e2e6ef;
@@ -34,3 +36,37 @@
   background-color: #2349c5;
 }
 
+.productContainer {
+  display: flex;
+  justify-content: center;
+}
+/* Estilo para a div que contém a imagem do produto */
+.imgContainer {
+  width: 40%;
+  height: 20%;
+  margin-right: 2%;
+}
+
+/* Estilo para a imagem do produto */
+.productImage {
+  width: 100%;
+  height: auto;
+}
+
+/* Estilo para o container das informações do produto */
+.productInfo {
+  margin-top: 2%;
+  margin-left: 2%;
+  text-align: justify; /* Justificar o texto */
+}
+
+.productInfo p {
+  font-family: 'Roboto';
+}
+
+.precoProduto {
+  color: #6085FF;
+  font-size: 200%;
+  font-weight: bold;
+  margin-bottom: 5%;
+}

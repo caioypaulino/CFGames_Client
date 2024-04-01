@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import logoCF from "../../assets/navbar/Logo 2.svg";
 import bannerCadastro from "../../assets/cadastro/cadastroEndereco.svg"
 import styles from "./CadastroEndereco.module.css";
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { getToken } from "../../utils/storage";
 import FormularioEndereco from "../../components/components_cadastro/formularioEndereco";
@@ -19,7 +19,8 @@ export default function CadastroEndereco() {
         endereco: {
             cep: ""
         },
-        observacao: ""
+        observacao: "",
+        apelido: ""
     });
 
     const [enderecoCobranca, setEnderecoCobranca] = useState({
@@ -29,17 +30,19 @@ export default function CadastroEndereco() {
         endereco: {
             cep: ""
         },
-        observacao: ""
+        observacao: "",
+        apelido: ""
     });
 
     const [enderecoResidencial, setEnderecoResidencial] = useState({
         numero: "",
         complemento: "",
-        tipo: "RESIDENCIAL", // Definindo o tipo de endereço como RESIDENCIAL
+        tipo: "",
         endereco: {
             cep: ""
         },
-        observacao: ""
+        observacao: "",
+        apelido: ""
     });
 
     const handleCheckboxChange = () => {
@@ -95,7 +98,7 @@ export default function CadastroEndereco() {
         <div className="cadastro">
             <div className={styles.container}>
                 <div className={styles.mini}>
-                    <a href="/home"><img className="logoCF" src={logoCF} alt="Logo" /></a>
+                    <a href="/"><img className="logoCF" src={logoCF} alt="Logo" /></a>
                     <h1>Falta pouco!</h1>
                 </div>
                 {!enderecosDiferentes && (
@@ -105,7 +108,7 @@ export default function CadastroEndereco() {
                             onChange={(endereco) => setEnderecoEntrega(endereco)}
                         />
                     </div>
-                )};
+                )}
                 <div className={styles.checkbox}>
                     <input
                         type="checkbox"
@@ -122,7 +125,7 @@ export default function CadastroEndereco() {
                             onChange={(endereco) => setEnderecoEntrega(endereco)}
                         />
                     </div>
-                )};
+                )}
                 {enderecosDiferentes && (
                     <div className={styles.formE2}>
                         <FormularioEndereco
@@ -130,7 +133,7 @@ export default function CadastroEndereco() {
                             onChange={(endereco) => setEnderecoCobranca(endereco)}
                         />
                     </div>
-                )};
+                )}
                 {enderecosDiferentes && (
                     <div className={styles.formE3}>
                         <FormularioEndereco
@@ -138,7 +141,7 @@ export default function CadastroEndereco() {
                             onChange={(endereco) => setEnderecoResidencial(endereco)}
                         />
                     </div>
-                )};
+                )}
                 
             </div>
 

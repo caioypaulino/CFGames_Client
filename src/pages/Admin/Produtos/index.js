@@ -511,7 +511,7 @@ const AdminProdutos = () => {
             setOrdemClassificacao('asc');
         }
     };
-
+    
     const indexUltimoProduto = paginaAtual * produtosPorPagina;
     const indexPrimeiroProduto = indexUltimoProduto - produtosPorPagina;
 

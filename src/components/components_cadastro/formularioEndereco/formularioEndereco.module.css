@@ -17,7 +17,7 @@
 
 .formGroup {
     flex: 1;
-    margin-right: -24rem; /* Adicione margem direita para separar os campos */
+    margin-right: -23rem; /* Adicione margem direita para separar os campos */
 }
 
 /* Limpe a margem direita do último grupo */

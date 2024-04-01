@@ -111,9 +111,10 @@ export const dataMaskEN2 = (value) => {
 
 // Função para aplicar máscara de valores (ex: 13950,00 para 13950.00)
 export const valueMaskEN = (value) => {
-
-    value = value.replace(",", ".");
-
-    return value;
+    return value.replace(",", ".");
 }
 
+// Função para aplicar máscara de valores (ex: 13950.00 para 13950,00)
+export const valueMaskBR = (value) => {
+    return value.replace(".", ",");
+}

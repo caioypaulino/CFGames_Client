@@ -23,9 +23,11 @@ export default function FormularioEndereco({ title, onChange }) {
     const [pais, setPais] = useState("");
     const [tipo] = useState("GERAL");
     const [observacao, setObservacao] = useState("");
+    const [apelido, setApelido] = useState("");
 
     const handleChange = () => {
         onChange({
+            apelido,
             complemento,
             numero,
             tipo,
@@ -172,17 +174,32 @@ export default function FormularioEndereco({ title, onChange }) {
                         />
                     </label>
                 </div>
-                <div className={styles.formGroup}>
-                    <label>
-                        <p>Observação</p>
-                        <input
-                            className={styles.input}
-                            type="text"
-                            value={observacao}
-                            onChange={(e) => setObservacao(e.target.value)}
-                            onBlur={handleChange}
-                        />
-                    </label>
+                <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                        <label>
+                            <p>Observação</p>
+                            <input
+                                className={styles.input}
+                                type="text"
+                                value={observacao}
+                                onChange={(e) => setObservacao(e.target.value)}
+                                onBlur={handleChange}
+                            />
+                        </label>
+                    </div>
+                    <div className={styles.formGroup}>
+                        <label>
+                            <p>Apelido</p>
+                            <input
+                                className={styles.inputNum}
+                                type="text"
+                                value={apelido}
+                                onChange={(e) => setApelido(e.target.value)}
+                                onBlur={handleChange}
+                                required
+                            />
+                        </label>
+                    </div>
                 </div>
             </form>
         </div>

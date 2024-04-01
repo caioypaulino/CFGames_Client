@@ -3,7 +3,7 @@ import iconAdd from "../../../assets/buttons/add.svg";
 import styles from "./AdminEnderecos.module.css";
 import Swal from "sweetalert2";
 import { getToken } from "../../../utils/storage";
-import { handleCep ,cepMask } from "../../../utils/mask";
+import { handleCep } from "../../../utils/mask";
 
 const AdminEnderecos = () => {
     const [enderecos, setEnderecos] = useState([]);
