@@ -2,20 +2,38 @@ import React, { useEffect, useState } from "react";
 import TabelaActions from "../../../components/components_perfil/tabelaActions";
 import LinhaDadosConta from "../../../components/components_perfil/linhaDadosConta";
 import styles from "./Conta.module.css";
+import Swal from "sweetalert2";
 import { getToken } from "../../../utils/storage";
+import { useNavigate } from "react-router-dom";
 
 const conta = () => {
     const [conta, setConta] = useState({});
 
+    const navigate = useNavigate();
+
     useEffect(() => {
-        const token = getToken();
+        const carregarConta = async () => {
+            const token = getToken();
 
-        fetch('http://localhost:8080/perfil/conta', {
-            headers: { Authorization: "Bearer " + token }
-        }).then(resp => resp.json()).then(json => setConta(json));
+            try {
+                const response = await fetch('http://localhost:8080/perfil/conta', {
+                    headers: { Authorization: "Bearer " + token }
+                });
 
-        // setCliente(clienteData);
-    }, []);
+                if (!response.ok) {
+                    throw new Error('Token Inválido!');
+                }
+
+                setConta(await response.json());  
+            } 
+            catch (error) {
+                console.error('Erro ao carregar dados:', error);
+                Swal.fire({ title: "Erro!", html: `Erro ao carregar dados da conta.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
+            }
+        };
+
+        carregarConta();
+    }, []); 
 
     // utilizando desestruturação
     const { email, senha } = conta;

@@ -5,17 +5,36 @@ import iconAdd from "../../../assets/buttons/add.svg"
 import styles from "./Cartoes.module.css";
 import Swal from "sweetalert2";
 import { getToken } from "../../../utils/storage";
+import { useNavigate } from "react-router-dom";
 import { handleCreditCard, removeMask } from "../../../utils/mask";
 
 const cartoes = () => {
     const [cartoes, setCartoes] = useState({});
 
-    useEffect(() => {
-        const token = getToken();
+    const navigate = useNavigate(); // Usando useNavigate para navegação
 
-        fetch('http://localhost:8080/perfil/cartoes', {
-            headers: { Authorization: "Bearer " + token }
-        }).then(resp => resp.json()).then(json => setCartoes(json));
+    useEffect(() => {
+        const carregarCartoes = async () => {
+            const token = getToken();
+
+            try {
+                const response = await fetch('http://localhost:8080/perfil/cartoes', {
+                    headers: { Authorization: "Bearer " + token }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Token Inválido!');
+                }
+
+                setCartoes(await response.json());
+            } 
+            catch (error) {
+                console.error('Erro ao carregar dados:', error);
+                Swal.fire({ title: "Erro!", html: `Erro ao carregar cartões.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
+            }
+        };
+
+        carregarCartoes();
     }, []);
 
     // função para abrir o formulário de adição de cartão

@@ -20,11 +20,12 @@ const Home = () => {
         const fetchData = async () => {
             try {
                 const response = await fetch('http://localhost:8080/home/');
+                
                 if (!response.ok) {
                     throw new Error('Response error!');
                 }
-                const data = await response.json();
-                setProdutos(data);
+
+                setProdutos(await response.json());
             } 
             catch (error) {
                 console.error('Erro ao carregar dados:', error);

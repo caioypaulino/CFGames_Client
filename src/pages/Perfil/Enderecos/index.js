@@ -6,16 +6,35 @@ import styles from "./Enderecos.module.css";
 import Swal from "sweetalert2";
 import { getToken } from "../../../utils/storage";
 import { handleCep, cepMask } from '../../../utils/mask';
+import { useNavigate } from "react-router-dom";
 
 const enderecos = () => {
     const [enderecos, setEnderecos] = useState({});
 
-    useEffect(() => {
-        const token = getToken();
+    const navigate = useNavigate();
 
-        fetch('http://localhost:8080/perfil/enderecos', {
-            headers: { Authorization: "Bearer " + token }
-        }).then(resp => resp.json()).then(json => setEnderecos(json));
+    useEffect(() => {
+        const carregarEnderecos = async () => {
+            const token = getToken();
+
+            try {
+                const response = await fetch('http://localhost:8080/perfil/enderecos', {
+                    headers: { Authorization: "Bearer " + token }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Token Inválido!');
+                }
+
+                setEnderecos(await response.json());
+            } 
+            catch (error) {
+                console.error('Erro ao carregar dados:', error);
+                Swal.fire({ title: "Erro!", html: `Erro ao carregar endereços.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => {  navigate("/login"); });
+            }
+        };
+
+        carregarEnderecos();
     }, []);
 
     // função para abrir o formulário de adição de endereço

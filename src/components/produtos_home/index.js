@@ -4,19 +4,13 @@ import Swal from 'sweetalert2';
 import withReactContent from "sweetalert2-react-content";
 import { dataMaskBR2 } from "../../utils/mask";
 import imagemExemplo from "../../assets/products/image 3.svg";
+import { getToken } from "../../utils/storage";
 
 function ProdutoHome(props) {
 
     const { key, imagem, produto } = props;
 
     const SwalJSX = withReactContent(Swal)
-
-    const salvarNoCarrinho = (produto) => {
-        console.log(produto);
-        const carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
-        carrinho.push(produto);
-        localStorage.setItem('carrinho', JSON.stringify(carrinho));
-    };
 
     // Abre um modal com os detalhes do produto usando o SweetAlert2
     const abrirPopupInfo = (produto) => {
@@ -28,7 +22,7 @@ function ProdutoHome(props) {
         for (let i = 1; i <= produto.quantidade; i++) {
             opcoesQuantidade.push(<option value={i}>{i}</option>);
         }
-    
+
         const InfoProduto = () => (
             <div className={style.productContainer}>
                 <div className={style.imgContainer}>
@@ -49,7 +43,7 @@ function ProdutoHome(props) {
                 </div>
             </div>
         );
-    
+
         SwalJSX.fire({
             title: `<h2 style='color:#011640'>${produto.titulo}</h2>`,
             html: (
@@ -68,7 +62,7 @@ function ProdutoHome(props) {
                 SwalJSX.fire({
                     title: `<h2 style='color:#011640'>Adicionar ao Carrinho</h2><h5 style='margin-bottom:-1rem'>Selecione a quantidade</h5>`,
                     html: (
-                        <select id="quantidade" className="swal2-select" style={{marginTop: '1rem', padding: '0.5rem', fontSize: '1.25rem', border: '1px solid #ccc', borderRadius: '4px', width: '16.3rem', height: '3.5rem', fontFamily: 'inherit', outline: 'none'}} defaultValue={produto.status} onFocus={(e) => e.target.style.borderColor = '#b1cae3'} onBlur={(e) => e.target.style.borderColor = '#ccc'}>
+                        <select id="quantidadeSelect" className="swal2-select" style={{ marginTop: '1rem', padding: '0.5rem', fontSize: '1.25rem', border: '1px solid #ccc', borderRadius: '4px', width: '16.3rem', height: '3.5rem', fontFamily: 'inherit', outline: 'none' }} defaultValue={produto.status} onFocus={(e) => e.target.style.borderColor = '#b1cae3'} onBlur={(e) => e.target.style.borderColor = '#ccc'}>
                             <option value="1" selected hidden>1</option>
                             {opcoesQuantidade}
                         </select>
@@ -78,8 +72,9 @@ function ProdutoHome(props) {
                     confirmButtonColor: "#6085FF",
                     cancelButtonText: "Voltar",
                     preConfirm: () => {
-                        const quantidade = Swal.getPopup().querySelector("#quantidade").value;
-                        console.log(quantidade);
+                        const quantidadeSelecionada = Swal.getPopup().querySelector("#quantidadeSelect").value;
+
+                        adicionarCarrinho(produto, quantidadeSelecionada);
                     },
                 }).then((result) => {
                     if (result.isDismissed) {
@@ -88,6 +83,78 @@ function ProdutoHome(props) {
                 })
             }
         });
+    };
+
+    // função para adicionar um carrinho de compras
+    const adicionarCarrinho = async (produto, quantidadeSelecionada) => {
+        try {
+            const token = getToken();
+
+            const response = await fetch("http://localhost:8080/carrinhodecompra/add", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + token,
+                },
+                body: JSON.stringify({
+                    itensCarrinho: [
+                        {
+                            produto: {
+                                id: produto.id
+                            },
+                            quantidade: quantidadeSelecionada
+                        }
+                    ]
+                }),
+            });
+
+            if (response.ok) {
+                Swal.fire({ title: "Sucesso!", text: "Item(ns) adicionado(s) com sucesso ao carrinho de compras.", icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
+            }
+            else {
+                adicionarItemCarrinho(produto, quantidadeSelecionada);
+            }
+        }
+        catch (error) {
+            // tratando mensagem de erro
+            console.error("Erro ao adicionar item:", error);
+            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao adicionar item(ns) ao carrinho de compras.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
+        }
+    };
+
+    const adicionarItemCarrinho = async (produto, quantidadeSelecionada) => {
+        try {
+            const token = getToken();
+
+            const response = await fetch("http://localhost:8080/carrinhodecompra/add/itemcarrinho", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + token,
+                },
+                body: JSON.stringify({
+                    produto: {
+                        id: produto.id
+                    },
+                    quantidade: quantidadeSelecionada
+                }),
+            });
+
+            if (response.ok) {
+                Swal.fire({ title: "Sucesso!", text: "Item(ns) adicionado(s) com sucesso ao carrinho de compras.", icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
+            }
+            else {
+                // buscando mensagem de erro que não é JSON
+                const errorMessage = await response.text();
+
+                throw new Error(errorMessage);
+            }
+        }
+        catch (error) {
+            // tratando mensagem de erro
+            console.error("Erro ao adicionar item:", error);
+            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao adicionar item(ns) ao carrinho de compras.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
+        }
     };
 
     return (
