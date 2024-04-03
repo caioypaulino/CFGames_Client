@@ -12,11 +12,12 @@
   width: 85%;
   max-height: 260px;
   border-radius: 7.5px;
+  padding: 1%;
 }
 
 .productInfo {
   display: inline;
-  margin-left: 10px;
+  margin-left: -50%;
 }
 
 .qtdChange {
@@ -78,4 +79,5 @@ p {
 
 .price {
   color: #6085ff;
+  font-weight: bold;
 }

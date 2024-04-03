@@ -5,11 +5,13 @@ import withReactContent from "sweetalert2-react-content";
 import { dataMaskBR2 } from "../../utils/mask";
 import imagemExemplo from "../../assets/products/image 3.svg";
 import { getToken } from "../../utils/storage";
+import { useNavigate } from "react-router-dom";
 
 function ProdutoHome(props) {
 
     const { key, imagem, produto } = props;
 
+    const navigate = useNavigate();
     const SwalJSX = withReactContent(Swal)
 
     // Abre um modal com os detalhes do produto usando o SweetAlert2
@@ -118,7 +120,7 @@ function ProdutoHome(props) {
         catch (error) {
             // tratando mensagem de erro
             console.error("Erro ao adicionar item:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao adicionar item(ns) ao carrinho de compras.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
+            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao adicionar item(ns) ao carrinho de compras.<br><br>Faça login novamente!<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
         }
     };
 
@@ -153,7 +155,7 @@ function ProdutoHome(props) {
         catch (error) {
             // tratando mensagem de erro
             console.error("Erro ao adicionar item:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao adicionar item(ns) ao carrinho de compras.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
+            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao adicionar item(ns) ao carrinho de compras.<br><br>Faça login novamente!<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
         }
     };
 

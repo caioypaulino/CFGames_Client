@@ -114,7 +114,7 @@ export const valueMaskEN = (value) => {
     return value.replace(",", ".");
 }
 
-// Função para aplicar máscara de valores (ex: 13950.00 para 13950,00)
+// Função para aplicar máscara de valores (duas casas decimais)
 export const valueMaskBR = (value) => {
-    return value.replace(".", ",");
+    return value.toFixed(2);
 }

@@ -1,21 +1,22 @@
 .container {
     display: flex;
     flex-direction: column;
-    margin-bottom: 100px;
+    margin-bottom: 6%;
+    margin-left: 23%;
 }
 
 .containerListProduct {
     position: relative;
     display: flex;
-    width: 85%;
+    width: 49.5%;
     margin: 20px;
     margin-bottom: 40px;
 }
 
 .btnRemove {
     position: absolute;
-    height: 30px;
-    width: 150px;
+    height: 25%;
+    width: 10%;
     background: #6085ff;
     color: #e2e6ef;
     border-radius: 5px;
@@ -23,8 +24,8 @@
     cursor: pointer;
     margin: 10px;
     z-index: 2;
-    top: 60%;
-    left: 55%;
+    top: 55%;
+    left: 71.5%;
 }
   
 .btnRemove:hover {
