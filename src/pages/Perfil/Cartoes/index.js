@@ -8,7 +8,7 @@ import { getToken } from "../../../utils/storage";
 import { useNavigate } from "react-router-dom";
 import { handleCreditCard, removeMask } from "../../../utils/mask";
 
-const cartoes = () => {
+const Cartoes = () => {
     const [cartoes, setCartoes] = useState({});
 
     const navigate = useNavigate(); // Usando useNavigate para navegação
@@ -122,4 +122,4 @@ const cartoes = () => {
     );
 };
 
-export default cartoes;
+export default Cartoes;

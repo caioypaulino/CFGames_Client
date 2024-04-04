@@ -4,6 +4,11 @@ export const removeMask = (value) => {
     return value;
 }
 
+export const handleNumber = (event) => {
+    let input = event.target;
+    input.value = removeMask(input.value);
+}
+
 export const handleCep = (event) => {
     let input = event.target;
     input.value = cepMask(input.value);

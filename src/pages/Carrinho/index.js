@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from "react";
 import styles from "./Carrinho.module.css";
 import ItemCarrinho from "../../components/components_carrinho/item_carrinho";
-import Enderecos from "../../components/components_carrinho/endereco";
-import Resumo from "../../components/components_carrinho/resumo";
+import EnderecosCheckout from "../../components/components_checkout/endereco_checkout";
+import ResumoCarrinho from "../../components/components_carrinho/resumo_carrinho";
 import Swal from "sweetalert2";
 import { getToken } from "../../utils/storage";
 import { useNavigate } from "react-router-dom";
@@ -106,14 +106,9 @@ const Carrinho = () => {
 
     return (
         <div className={styles.container}>
-            <div className="resumoAndEnderecos">
-                <Enderecos />
-            </div>
             <div className="resumo">
-                <Resumo
+                <ResumoCarrinho
                     valorCarrinho={carrinhoCompras !== undefined && carrinhoCompras.valorCarrinho || 0}
-                    frete={22}
-                    quantidade={jogos.reduce((accumulator, jogo) => accumulator + jogo.quantidade, 0)}
                 />
             </div>
             <div className="listProducts">

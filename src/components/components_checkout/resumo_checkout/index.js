@@ -1,10 +1,10 @@
 // Resumo.js
 import React, { useState, useEffect } from "react";
-import style from "./Resumo.module.css";
+import style from "./ResumoCheckout.module.css";
 import cuponsData from "../../../utils/cupons.json";
 import { valueMaskBR } from "../../../utils/mask";
 
-const Resumo = (props) => {
+const ResumoCheckout = (props) => {
     const [inputValue, setInputValue] = useState("");
     const [cupons, setProducts] = useState([]);
 
@@ -67,4 +67,4 @@ const Resumo = (props) => {
     );
 };
 
-export default Resumo;
+export default ResumoCheckout;

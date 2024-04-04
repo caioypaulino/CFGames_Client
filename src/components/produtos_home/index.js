@@ -60,7 +60,11 @@ function ProdutoHome(props) {
             denyButtonColor: "#6085FF",
             width: '80rem'
         }).then((result) => {
-            if (result.isDenied) { // Se o botão "Adicionar ao Carrinho" for clicado
+            if (result.isConfirmed) {
+                adicionarCarrinho(produto, 1);
+                navigate("/carrinho");
+            }
+            else if (result.isDenied) { // Se o botão "Adicionar ao Carrinho" for clicado
                 SwalJSX.fire({
                     title: `<h2 style='color:#011640'>Adicionar ao Carrinho</h2><h5 style='margin-bottom:-1rem'>Selecione a quantidade</h5>`,
                     html: (
