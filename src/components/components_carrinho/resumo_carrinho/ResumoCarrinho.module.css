@@ -10,7 +10,7 @@
   font-size: 90%;
 }
 
-.btn {
+.btn, .btnContinuar, .btnExcluir {
   height: 14%;
   width: 90%;
   background: #6085ff;
@@ -21,15 +21,20 @@
   margin: 10px;
 }
 
+.btn:hover {
+  background-color: #2349c5;
+}
+
+.btnContinuar {
+  background: #011640;
+}
+
+.btnContinuar:hover {
+  background-color: #04338f;
+}
+
 .btnExcluir {
-  height: 14%;
-  width: 90%;
   background: red;
-  color: #e2e6ef;
-  border-radius: 5px;
-  border-color: transparent;
-  cursor: pointer;
-  margin: 10px;
 }
 
 .btnExcluir:hover {
@@ -41,6 +46,3 @@
   text-decoration: none;
 }
 
-.btn:hover {
-  background-color: #2349c5;
-}

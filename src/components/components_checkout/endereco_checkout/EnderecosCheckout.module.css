@@ -14,24 +14,37 @@
   padding: 1%;
 }
 
+
+.selectEndereco {
+  font-family: 'Roboto';
+  width: 65%;
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
+
 .enderecoList {
-    margin: 10px;
+  margin: 10px;
 }
 
 h1 {
-    margin: 10px;
+  margin: 10px;
 }
 
 li {
-    list-style: none;
+  list-style: none;
 }
 
 p {
-    margin: 10px;
+  margin: 10px;
+  margin-left: 2%;
 }
 
-.functionsEndereco{
-    display: flex;
+.functionsEndereco {
+  display: flex;
 }
 
 .btnNewAddress,
@@ -44,6 +57,10 @@ p {
   border-color: transparent;
   cursor: pointer;
   margin: 10px;
+}
+
+.btnCalcFrete {
+  background: #011640
 }
 
 .btnNewAddress:hover,

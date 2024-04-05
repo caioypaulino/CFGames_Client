@@ -4,8 +4,11 @@ import style from "./ResumoCarrinho.module.css";
 import { valueMaskBR } from "../../../utils/mask";
 import Swal from "sweetalert2";
 import { getToken } from "../../../utils/storage";
+import { useNavigate } from "react-router-dom";
 
 const ResumoCarrinho = (props) => {
+    const navigate = useNavigate();
+
     // Função para abrir popup de confirmação de exclusão
     const abrirPopupDelete = () => {
         Swal.fire({
@@ -62,7 +65,7 @@ const ResumoCarrinho = (props) => {
                 <h1>Resumo</h1>
                 <p>Total: R${valueMaskBR(props.valorCarrinho)}</p>
                 <button className={style.btn}><a className={style.link} href="/checkout">Finalizar Pedido</a></button>
-                <button className={style.btn}><a className={style.link} href="/">Continuar Comprando</a></button>
+                <button className={style.btnContinuar}><a className={style.link} href="/">Continuar Comprando</a></button>
                 <button className={style.btnExcluir} onClick={abrirPopupDelete}>Excluir Carrinho</button>
             </div>
         </>

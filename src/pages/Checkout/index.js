@@ -1,13 +1,11 @@
 // Carrinho.js
 import React, { useEffect, useState } from "react";
 import styles from "./Checkout.module.css";
-import ItemCarrinho from "../../components/components_carrinho/item_carrinho";
 import EnderecosCheckout from "../../components/components_checkout/endereco_checkout";
 import ResumoCheckout from "../../components/components_checkout/resumo_checkout";
 import Swal from "sweetalert2";
 import { getToken } from "../../utils/storage";
 import { useNavigate } from "react-router-dom";
-import { valueMaskBR } from "../../utils/mask";
 
 const Checkout = () => {
     const localCarrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
@@ -51,15 +49,12 @@ const Checkout = () => {
     return (
         <div className={styles.container}>
             <div className="resumoAndEnderecos">
-                <EnderecosCheckout />
-            </div>
-            <div className="resumo">
-                <ResumoCheckout
+                <EnderecosCheckout 
                     valorCarrinho={carrinhoCompras !== undefined && carrinhoCompras.valorCarrinho || 0}
-                    frete={22}
                     quantidade={jogos.reduce((accumulator, jogo) => accumulator + jogo.quantidade, 0)}
                 />
             </div>
+            
         </div>
     );
 }

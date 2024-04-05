@@ -40,15 +40,12 @@ const ResumoCheckout = (props) => {
             <div className={style.resumo}>
                 <h1>Resumo</h1>
                 <p>Valor: R${valueMaskBR(props.valorCarrinho)}</p>
-                <p>Frete: R${valueMaskBR(props.frete)}</p>
-                <p>Desconto: R${(discount)}</p>
-                <p>Total: R${valueMaskBR(props.valorCarrinho + props.frete - discount)}</p>
-                <button className={style.btn}>Pagamento</button>
-                <button className={style.btn}>
-                    <a className={style.link} href="/">
-                        Continuar comprando
-                    </a>
-                </button>
+                <p>Frete: R${props.frete !== undefined && parseFloat(props.frete) || '0.00'}</p>
+                <p>Prazo: {props.prazo !== undefined && props.prazo + ' Dia(s)'|| 'Indefinido'}</p>
+                <p>Desconto: R${(discount !== undefined && discount || '0.00')}</p><br></br>
+                <p>Total: R${valueMaskBR(props.frete !== undefined && (props.valorCarrinho + parseFloat(props.frete) - discount) || props.valorCarrinho)}</p>
+                <button className={style.btn}>Confirmar Pedido</button>
+                <button className={style.btnContinuar}><a className={style.link} href="/carrinho">Voltar ao Carrinho</a></button>
             </div>
             <div className={style.cupom}>
                 <h1>Desconto</h1>
@@ -59,9 +56,7 @@ const ResumoCheckout = (props) => {
                     onChange={handleInputChange}
                     placeholder="Código do cupom"
                 />
-                <button className={style.btn} onClick={() => aplicaDesconto(inputValue)}>
-                    Aplicar cupom
-                </button>
+                <button className={style.btnCupom} onClick={() => aplicaDesconto(inputValue)}>Aplicar cupom</button>
             </div>
         </>
     );
