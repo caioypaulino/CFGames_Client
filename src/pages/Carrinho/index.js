@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "./Carrinho.module.css";
 import ItemCarrinho from "../../components/components_carrinho/item_carrinho";
-import EnderecosCheckout from "../../components/components_checkout/endereco_checkout";
 import ResumoCarrinho from "../../components/components_carrinho/resumo_carrinho";
 import Swal from "sweetalert2";
 import { getToken } from "../../utils/storage";
@@ -10,9 +9,6 @@ import { useNavigate } from "react-router-dom";
 import { valueMaskBR } from "../../utils/mask";
 
 const Carrinho = () => {
-    const localCarrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
-    const [jogos, setJogos] = useState(localCarrinho);
-
     const [carrinhoCompras, setCarrinhoCompras] = useState({});
     const { itensCarrinho } = carrinhoCompras;
 

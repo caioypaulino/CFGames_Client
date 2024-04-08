@@ -6,7 +6,7 @@ import styles from "./Cartoes.module.css";
 import Swal from "sweetalert2";
 import { getToken } from "../../../utils/storage";
 import { useNavigate } from "react-router-dom";
-import { handleCreditCard, removeMask } from "../../../utils/mask";
+import { handleCreditCard, handleNumber, removeMask } from "../../../utils/mask";
 
 const Cartoes = () => {
     const [cartoes, setCartoes] = useState({});
@@ -46,7 +46,7 @@ const Cartoes = () => {
                 <input id="nomeCartao" type="text" placeholder="Nome do Titular" class="swal2-input">
                 <input id="mesVencimento" type="number" placeholder="Mês de Vencimento" max="12" class="swal2-input">
                 <input id="anoVencimento" type="number" placeholder="Ano de Vencimento" min="2024" class="swal2-input">
-                <input id="cvc" type="text" placeholder="CVC" class="swal2-input">`,
+                <input id="cvc" type="text" placeholder="CVC" inputmode="numeric" maxlength="4" class="swal2-input">`,
             showCancelButton: true,
             confirmButtonText: "Adicionar",
             confirmButtonColor: "#6085FF",
@@ -64,7 +64,9 @@ const Cartoes = () => {
         
         // adicionando um ouvinte de evento ao campo de numeroCartao para chamar a função handleCreditCard que cria uma máscara dinâmica
         const numeroCartaoInput = document.getElementById('numeroCartao');
+        const cvcInput = document.getElementById('cvc');
         numeroCartaoInput.addEventListener('input', handleCreditCard);
+        cvcInput.addEventListener('input', handleNumber);
     };
 
     // função para adicionar um novo cartão

@@ -1,16 +1,13 @@
 // Carrinho.js
 import React, { useEffect, useState } from "react";
 import styles from "./Checkout.module.css";
-import EnderecosCheckout from "../../components/components_checkout/endereco_checkout";
-import ResumoCheckout from "../../components/components_checkout/resumo_checkout";
+import EnderecosCheckout from "../../components/components_checkout/enderecos_checkout";
+import CartoesCheckout from "../../components/components_checkout/cartoes_checkout";
 import Swal from "sweetalert2";
 import { getToken } from "../../utils/storage";
 import { useNavigate } from "react-router-dom";
 
 const Checkout = () => {
-    const localCarrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
-    const [jogos, setJogos] = useState(localCarrinho);
-
     const [carrinhoCompras, setCarrinhoCompras] = useState({});
     const { itensCarrinho } = carrinhoCompras;
 
@@ -33,7 +30,7 @@ const Checkout = () => {
                         throw new Error('Token Inválido!');
                     }
                     else if (response.status === 400) {
-                        setCarrinhoCompras([]);
+                        Swal.fire({ title: "Erro!", html: `Erro ao carregar carrinho de compras.<br><br>Carrinho de Compras Vazio!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/carrinho"); });
                     }
                 }
             }
@@ -49,12 +46,11 @@ const Checkout = () => {
     return (
         <div className={styles.container}>
             <div className="resumoAndEnderecos">
-                <EnderecosCheckout 
+                <EnderecosCheckout
                     valorCarrinho={carrinhoCompras !== undefined && carrinhoCompras.valorCarrinho || 0}
-                    quantidade={jogos.reduce((accumulator, jogo) => accumulator + jogo.quantidade, 0)}
                 />
+                {console.log(carrinhoCompras)}
             </div>
-            
         </div>
     );
 }

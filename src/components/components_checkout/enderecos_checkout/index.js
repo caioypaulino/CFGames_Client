@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import style from "./EnderecosCheckout.module.css";
 import Swal from "sweetalert2";
+import Select from "react-select";
 import { useNavigate } from 'react-router-dom';
 import { getToken } from "../../../utils/storage";
 import ResumoCheckout from "../resumo_checkout";
 import { cepMask, handleCep, handleNumber } from "../../../utils/mask";
 
 const EnderecosCheckout = (props) => {
-    const {valorCarrinho, quantidade} = props;
+    const {valorCarrinho} = props;
     const [enderecosCliente, setEnderecosCliente] = useState([]);
     const [enderecoSelecionado, setEnderecoSelecionado] = useState("");
     const [frete, setFrete] = useState({});
@@ -117,9 +118,9 @@ const EnderecosCheckout = (props) => {
         }
     };
 
-    const handleChangeEndereco = (event) => {
-        setEnderecoSelecionado(event.target.value);
-        calcularFrete(event.target.value);
+    const handleChangeEndereco = (enderecoCliente) => {
+        setEnderecoSelecionado(enderecoCliente);
+        calcularFrete(enderecoCliente);
     };
 
     const calcularFrete = async (enderecoSelecionado) => {
@@ -137,7 +138,7 @@ const EnderecosCheckout = (props) => {
                     Authorization: "Bearer " + token,
                 },
                 body: JSON.stringify({
-                    id: enderecoSelecionado
+                    id: enderecoSelecionado.value
                 }),
             });
 
@@ -161,18 +162,36 @@ const EnderecosCheckout = (props) => {
 
     return (
         <div className={style.selectAdress}>
-            <h1>Selecione o endereço de entrega</h1>
+            <h1>Selecione o Endereço para Entrega</h1>
             <form className={style.enderecoList}>
-                <select className={style.selectEndereco} value={enderecoSelecionado} onChange={handleChangeEndereco}>
-                    <option value="" hidden>Selecione um endereço</option>
-                    {enderecosCliente.map((enderecoCliente) => (
-                        <option key={enderecoCliente.id} value={enderecoCliente.id}>
-                            {`${enderecoCliente.tipo}, ${enderecoCliente.apelido}, ${enderecoCliente.endereco.cep}, ${enderecoCliente.endereco.rua}, ${enderecoCliente.numero}, ${enderecoCliente.endereco.bairro}, ${enderecoCliente.endereco.cidade} - ${enderecoCliente.endereco.estado}`}
-                        </option>
-                    ))}
-                </select>
+                <Select
+                    id="enderecos"
+                    class="swal2-select"
+                    styles={{
+                        control: (provided) => ({
+                            ...provided,
+                            width:'65%',
+                            marginTop:'3%'  
+                            
+                        }),
+                        menu: (provided) => ({
+                            ...provided,
+                            width: '65%',
+                            
+                        }),
+                        option: (provided) => ({
+                            ...provided,
+                            fontSize: '1rem',
+                        }),
+                    }}
+                    placeholder="Selecione um endereço"
+                    options={enderecosCliente.map((enderecoCliente) => ({ value: enderecoCliente.id, label: `${enderecoCliente.tipo}, ${enderecoCliente.apelido}, ${enderecoCliente.endereco.cep}, ${enderecoCliente.endereco.rua}, ${enderecoCliente.numero}, ${enderecoCliente.endereco.bairro}, ${enderecoCliente.endereco.cidade} - ${enderecoCliente.endereco.estado}`}))}
+                    isSearchable
+                    closeMenuOnSelect={true}
+                    defaultValue={enderecosCliente.map((enderecoCliente) => ({ value: enderecoCliente.id, label: `${enderecoCliente.tipo}, ${enderecoCliente.apelido}, ${enderecoCliente.endereco.cep}, ${enderecoCliente.endereco.rua}, ${enderecoCliente.numero}, ${enderecoCliente.endereco.bairro}, ${enderecoCliente.endereco.cidade} - ${enderecoCliente.endereco.estado}`}))}
+                    onChange={handleChangeEndereco}
+                />
             </form>
-            <p>Endereço selecionado: {enderecoSelecionado}</p>
             <div className={style.functionsEndereco}>
                 <button type="submit" className={style.btnNewAddress} onClick={abrirPopupEndereco}>Novo Endereço</button>
                 <button className={style.btnCalcFrete} onClick={() => calcularFrete(enderecoSelecionado)}>Calcular Frete</button>
@@ -182,7 +201,7 @@ const EnderecosCheckout = (props) => {
                     valorCarrinho={valorCarrinho}
                     frete={frete.price}
                     prazo={frete.delivery_time}
-                    quantidade={quantidade}
+                    enderecoEntrega={enderecoSelecionado}
                 />
             </div>
         </div>

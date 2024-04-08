@@ -4,30 +4,3 @@
     margin-bottom: 6%;
     margin-left: 23%;
 }
-
-.containerListProduct {
-    position: relative;
-    display: flex;
-    width: 49.5%;
-    margin: 20px;
-    margin-bottom: 40px;
-}
-
-.btnRemove {
-    position: absolute;
-    height: 25%;
-    width: 10%;
-    background: #6085ff;
-    color: #e2e6ef;
-    border-radius: 5px;
-    border-color: transparent;
-    cursor: pointer;
-    margin: 10px;
-    z-index: 2;
-    top: 55%;
-    left: 71.5%;
-}
-  
-.btnRemove:hover {
-    background-color: #2349c5;
-}

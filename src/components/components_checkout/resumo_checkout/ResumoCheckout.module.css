@@ -69,3 +69,20 @@
   margin-bottom: 20px;
   padding-left: 10px;
 }
+
+.pagamento {
+  width: 243.75%;
+  margin-top: 10%;
+  margin-left: -5.2%;
+}
+
+.justifyText {
+  text-align: justify;
+}
+
+.justifyText h2{
+  text-align: center;
+}
+.swal2-popup {
+  padding: 0;
+}

@@ -9,6 +9,7 @@ import Carrinho from "./pages/Carrinho";
 import Checkout from "./pages/Checkout"
 import Layout from "./components/layout/index.js";
 import LayoutAdmin from "./components/layout_admin/index.js";
+import LayoutCarrinhoCheckout from "./components/layout_carrinho_checkout";
 import PerfilPessoais from "./pages/Perfil/Pessoais";
 import PerfilConta from "./pages/Perfil/Conta";
 import PerfilEnderecos from "./pages/Perfil/Enderecos";
@@ -23,8 +24,8 @@ export default function App() {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Layout><Home /></Layout>} />
-                <Route path="/carrinho" element={<Layout><Carrinho /></Layout>} />
-                <Route path="/checkout" element={<Layout><Checkout /></Layout>} />
+                <Route path="/carrinho" element={<LayoutCarrinhoCheckout><Carrinho /></LayoutCarrinhoCheckout>} />
+                <Route path="/checkout" element={<LayoutCarrinhoCheckout><Checkout /></LayoutCarrinhoCheckout>} />
                 <Route path="/perfil/conta" element={<Layout><PerfilConta /></Layout>} />
                 <Route path="/perfil/pessoal" element={<Layout><PerfilPessoais /></Layout>} />
                 <Route path="/perfil/enderecos" element={<Layout><PerfilEnderecos /></Layout>} />

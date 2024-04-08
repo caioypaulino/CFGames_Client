@@ -1,12 +1,13 @@
-.selectAdress {
+.selectPagamento {
   display: block;
   grid-template-columns: repeat(3, 1fr);
   grid-gap: 20px;
   background-color: #e2e6ef;
   margin: 1.15%;
   margin-top: 3%;
+  margin-bottom: 5.2%;
   width: 41%;
-  max-height: 260px;
+  max-height: auto;
   border-radius: 7.5px;
   font-family: "Roboto", sans-serif;
   color: #011640;
@@ -26,8 +27,9 @@
   margin-bottom: 10px;
 }
 
-.enderecoList {
+.cartaoList {
   margin: 10px;
+  margin-bottom: 4%;
 }
 
 h1 {
@@ -43,12 +45,16 @@ p {
   margin-left: 2%;
 }
 
-.functionsEndereco {
+.functionsCartoes {
   display: flex;
 }
 
-.btnNewAddress,
-.btnCalcFrete {
+.functionsCartoes button {
+  margin-right: .05%;
+}
+
+.btnNovoCartao,
+.btnEditValorParcial {
   height: 30px;
   max-width: 150px;
   background: #6085ff;
@@ -59,11 +65,37 @@ p {
   margin: 10px;
 }
 
-.btnCalcFrete {
+.btnEditValorParcial {
   background: #011640
 }
 
-.btnNewAddress:hover,
-.btnCalcFrete:hover {
+.btnNovoCartao:hover,
+.btnEditValorParcial:hover {
   background-color: #2349c5;
+}
+
+.cartaoParcial p {
+  font-family: 'Roboto';
+  font-weight: bold;
+  color: #011640;
+}
+
+.inputEditValorParcial {
+  font-size: 100%;
+  font-family: "Roboto";
+  width: 20%;
+  max-height: 30px;
+  background-color: #FFFFFF;
+  margin-left: 10px;
+  height: 100px;
+  border-radius: 5px;
+  border-color: transparent;
+  margin-bottom: 20px;
+  padding-left: 10px;
+  transition: border-color 0.2s ease;
+}
+
+.inputEditValorParcial:focus {
+  border: 2px solid #2684ff;
+  outline: none; /* Remove a borda padrão do navegador */
 }

@@ -1,0 +1,61 @@
+.selectAdress {
+  display: block;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 20px;
+  background-color: #e2e6ef;
+  margin: 1.15%;
+  margin-top: 3%;
+  width: 41%;
+  max-height: 10rem;
+  border-radius: 7.5px;
+  font-family: "Roboto", sans-serif;
+  color: #011640;
+  font-size: 85%;
+  padding: 1%;
+}
+
+.enderecoList {
+  margin: 10px;
+}
+
+h1 {
+  margin: 10px;
+}
+
+li {
+  list-style: none;
+}
+
+p {
+  margin: 10px;
+  margin-left: 2%;
+}
+
+.functionsEndereco {
+  display: flex;
+}
+
+.functionsEndereco button{
+  margin-right: .05%;
+}
+
+.btnNewAddress,
+.btnCalcFrete {
+  height: 30px;
+  max-width: 150px;
+  background: #6085ff;
+  color: #e2e6ef;
+  border-radius: 5px;
+  border-color: transparent;
+  cursor: pointer;
+  margin: 10px;
+}
+
+.btnCalcFrete {
+  background: #011640
+}
+
+.btnNewAddress:hover,
+.btnCalcFrete:hover {
+  background-color: #2349c5;
+}
