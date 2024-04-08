@@ -17,6 +17,7 @@ const ResumoCheckout = (props) => {
     const [cartoesSelecionados, setCartoesSelecionados] = useState([]);
     const [valorParcialPorCartao, setValorParcialPorCartao] = useState({});
     const [parcelasPorCartao, setParcelasPorCartao] = useState({});
+    const [valorParcialEditado, setValorParcialEditado] = useState(false);
 
     const navigate = useNavigate();
 
@@ -77,8 +78,8 @@ const ResumoCheckout = (props) => {
             return; // Return para evitar a abertura do popup de confirmação
         }
 
-        const detalhesPedido = 
-        `
+        const detalhesPedido =
+            `
             <h2>Detalhes</h2>
             <div class=${style.justifyText}>
                 <p><strong>Valor Total:</strong> R$ ${valueMaskBR(valorTotal)}</p>
@@ -87,15 +88,15 @@ const ResumoCheckout = (props) => {
                 <p><strong>Desconto:</strong> R$ ${valueMaskBR(desconto || 0)}</p>
                 <h2>Pagamento:</h2>
                 ${cartoesSelecionados && cartoesSelecionados.map(cartao => {
-                    const valorParcial = valorParcialPorCartao[cartao.value];
-                    const parcelas = parcelasPorCartao[cartao.value];
+                const valorParcial = valorParcialPorCartao[cartao.value];
+                const parcelas = parcelasPorCartao[cartao.value];
 
-                    return `
+                return `
                             <p><strong>Cartão:</strong> ${cartao.label}</p>
                             <p><strong>Valor Parcial:</strong> R$ ${valueMaskBR(valorParcial || 0)}</p>
                             <p><strong>Parcelas:</strong> ${parcelas}x R$ ${(valueMaskBR(valorParcial / parcelas) || 0)}</p>
                         `;
-                }).join("<br>") || 'Não Selecionado'}
+            }).join("<br>") || 'Não Selecionado'}
                 <h2>Entrega:</h2>
                 <p><strong>Endereço:</strong> ${(enderecoEntrega && enderecoEntrega.label) || 'Não selecionado'}</p>
                 <p><strong>Prazo:</strong> ${prazo !== undefined && prazo + ' Dia(s)' || 'Indefinido'}</p>
@@ -122,8 +123,6 @@ const ResumoCheckout = (props) => {
         try {
             const token = getToken();
 
-            
-
             const response = await fetch("http://localhost:8080/pedido/add", {
                 method: "POST",
                 headers: {
@@ -134,14 +133,22 @@ const ResumoCheckout = (props) => {
                     enderecoCliente: {
                         id: enderecoEntrega.value
                     },
-                    cupons: [], 
-                    cartoes: cartoesSelecionados.map(cartaoSelecionado => ({
-                        cartao: {
-                            numeroCartao: cartaoSelecionado ? cartaoSelecionado.value : '' // Verifica se cartao está definido antes de acessar numeroCartao
-                        },
-                        valorParcial: valorParcialPorCartao[cartaoSelecionado.value] || 0,
-                        parcelas: parcelasPorCartao[cartaoSelecionado.value] || 1
-                    }))
+                    cupons: [],
+                    cartoes: cartoesSelecionados.map(cartaoSelecionado => {
+                        const cartaoObj = {
+                            cartao: {
+                                numeroCartao: cartaoSelecionado ? cartaoSelecionado.value : ''
+                            },
+                            parcelas: parcelasPorCartao[cartaoSelecionado.value] || 1
+                        };
+
+                        // Adiciona valorParcial somente se valorParcialEditado for verdadeiro
+                        if (valorParcialEditado) {
+                            cartaoObj.valorParcial = valorParcialPorCartao[cartaoSelecionado.value] || 0;
+                        }
+
+                        return cartaoObj;
+                    })
                 }),
             });
 
@@ -184,6 +191,7 @@ const ResumoCheckout = (props) => {
                     valorTotal={valorTotal}
                     cartoesPedido={[cartoesSelecionados, setCartoesSelecionados]} // passando como props
                     valorParcialPedido={[valorParcialPorCartao, setValorParcialPorCartao]}
+                    valorParcialEdit={[valorParcialEditado, setValorParcialEditado]}
                     parcelasPedido={[parcelasPorCartao, setParcelasPorCartao]}
                 />
             </div>

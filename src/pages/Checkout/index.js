@@ -49,7 +49,6 @@ const Checkout = () => {
                 <EnderecosCheckout
                     valorCarrinho={carrinhoCompras !== undefined && carrinhoCompras.valorCarrinho || 0}
                 />
-                {console.log(carrinhoCompras)}
             </div>
         </div>
     );

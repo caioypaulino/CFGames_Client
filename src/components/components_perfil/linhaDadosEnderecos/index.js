@@ -12,7 +12,7 @@ const linhaDadosEnderecos = (props) => {
     const { cep, rua, bairro, cidade, estado, pais } = endereco;
 
     // formatando endereço utilizando Template Literals
-    const enderecoFormatado = `${cep}, ${rua}, ${numero}, ${bairro}, ${cidade}, ${estado}`;
+    const enderecoFormatado = `${apelido}, ${cep}, ${rua}, ${numero}, ${bairro}, ${cidade}, ${estado}`;
 
     // utilizando sweet alert 2 como popup para informações e edição
     const abrirPopupInfo = () => {

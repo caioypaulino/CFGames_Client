@@ -8,39 +8,79 @@ import ResumoCheckout from "../resumo_checkout";
 import { cepMask, handleCep, handleNumber } from "../../../utils/mask";
 
 const EnderecosCheckout = (props) => {
-    const {valorCarrinho} = props;
+    const { valorCarrinho } = props;
     const [enderecosCliente, setEnderecosCliente] = useState([]);
     const [enderecoSelecionado, setEnderecoSelecionado] = useState("");
     const [frete, setFrete] = useState({});
 
+    const [enderecoAdicionado, setEnderecoAdicionado] = useState();
+    // Checkbox para verificar se o Endereço será adicionado ao perfil
+    const [adicionarAoPerfil, setAdicionarAoPerfil] = useState(true);
+
+    const [isReloading, setIsReloading] = useState(false); // Flag para indicar se a página está sendo recarregada
     const navigate = useNavigate();
 
+    // carregando enderecosCliente por padrão
     useEffect(() => {
-        const carregarEnderecosCliente = async () => {
-            const token = getToken();
-
-            try {
-                const response = await fetch('http://localhost:8080/perfil/enderecos', {
-                    headers: { Authorization: "Bearer " + token }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Token Inválido!');
-                }
-
-                setEnderecosCliente(await response.json());
-            }
-            catch (error) {
-                console.error('Erro ao carregar dados:', error);
-                Swal.fire({ title: "Erro!", html: `Erro ao carregar endereços.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
-            }
-        };
-
         carregarEnderecosCliente();
     }, []);
 
+    // Verifica se a página está sendo recarregada
+    useEffect(() => {
+        const handleBeforeUnload = () => {
+            setIsReloading(true);
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, []);
+
+    // Executa ação ao recarregar a página
+    useEffect(() => {
+        if (!adicionarAoPerfil && enderecoAdicionado && isReloading) {
+            excluirEndereco(enderecoAdicionado);
+        }
+    }, [adicionarAoPerfil, enderecoAdicionado, isReloading]);
+
+    useEffect(() => {
+        const novoEndereco = enderecosCliente.find(endereco => endereco.id === enderecoAdicionado);
+    
+        if (enderecoAdicionado && novoEndereco) {
+            const enderecoSelecionadoObj = {
+                value: novoEndereco.id,
+                label: `${novoEndereco.tipo}, ${novoEndereco.apelido}, ${novoEndereco.endereco.cep}, ${novoEndereco.endereco.rua}, ${novoEndereco.numero}, ${novoEndereco.endereco.bairro}, ${novoEndereco.endereco.cidade} - ${novoEndereco.endereco.estado}`
+            };
+    
+            setEnderecoSelecionado(enderecoSelecionadoObj);
+            calcularFrete(enderecoSelecionadoObj);
+        }
+    }, [enderecoAdicionado, enderecosCliente]);
+
+    const carregarEnderecosCliente = async () => {
+        const token = getToken();
+
+        try {
+            const response = await fetch('http://localhost:8080/perfil/enderecos', {
+                headers: { Authorization: "Bearer " + token }
+            });
+
+            if (!response.ok) {
+                throw new Error('Token Inválido!');
+            }
+
+            setEnderecosCliente(await response.json());
+        }
+        catch (error) {
+            console.error('Erro ao carregar dados:', error);
+            Swal.fire({ title: "Erro!", html: `Erro ao carregar endereços.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
+        }
+    };
+
     // função para abrir o formulário de adição de endereço
-    const abrirPopupEndereco= () => {
+    const abrirPopupEndereco = () => {
         Swal.fire({
             title: "Adicionar Novo Endereço",
             html: `
@@ -55,7 +95,11 @@ const EnderecosCheckout = (props) => {
                     <option value="3">Geral</option>
                 </select>
                 <input id="cep" type="text" placeholder="CEP" maxlength="9" class="swal2-input" style="width: 18rem;">
-                <input id="observacao" type="text" placeholder="Observação" class="swal2-input" style="width: 18rem;">`,
+                <input id="observacao" type="text" placeholder="Observação" class="swal2-input" style="width: 18rem;">
+                <div>
+                <input id="adicionarAoPerfil" type="checkbox" checked style="margin-top:1rem; margin-right: 0.5rem;">
+                <label for="adicionarAoPerfil">Adicionar ao Perfil</label>
+            </div>`,
             showCancelButton: true,
             confirmButtonText: "Adicionar",
             confirmButtonColor: "#6085FF",
@@ -68,6 +112,9 @@ const EnderecosCheckout = (props) => {
                 const tipo = Swal.getPopup().querySelector("#tipo").value;
                 const cep = cepMask(Swal.getPopup().querySelector("#cep").value);
                 const observacao = Swal.getPopup().querySelector("#observacao").value;
+                const checkboxInput = document.getElementById('adicionarAoPerfil').checked;
+
+                setAdicionarAoPerfil(checkboxInput);
                 adicionarEndereco(apelido, numero, complemento, tipo, cep, observacao);
             },
         });
@@ -82,7 +129,12 @@ const EnderecosCheckout = (props) => {
     // função para adicionar um novo endereço
     const adicionarEndereco = async (apelido, numero, complemento, tipo, cep, observacao) => {
         try {
+            if (!adicionarAoPerfil && enderecoAdicionado) {
+                excluirEndereco(enderecoAdicionado);
+            }
+
             const token = getToken();
+
             const response = await fetch("http://localhost:8080/perfil/add/endereco", {
                 method: "POST",
                 headers: {
@@ -102,7 +154,12 @@ const EnderecosCheckout = (props) => {
             });
 
             if (response.ok) {
-                Swal.fire({ title: "Sucesso!", text: "Endereço adicionado com sucesso.", icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
+                const novoEnderecoId = await response.json();
+
+                Swal.fire({ title: "Sucesso!", text: "Endereço adicionado com sucesso.", icon: "success", confirmButtonColor: "#6085FF" }).then(() => {
+                    setEnderecoAdicionado(novoEnderecoId);
+                    carregarEnderecosCliente();
+                });
             }
             else {
                 // buscando mensagem de erro que não é JSON
@@ -110,6 +167,7 @@ const EnderecosCheckout = (props) => {
 
                 throw new Error(errorMessage);
             }
+
         }
         catch (error) {
             // tratando mensagem de erro
@@ -160,8 +218,43 @@ const EnderecosCheckout = (props) => {
         }
     };
 
+    // função request delete endereço
+    const excluirEndereco = async (enderecoId) => {
+        try {
+            const token = getToken();
+
+            const response = await fetch("http://localhost:8080/perfil/remove/endereco", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + token,
+                },
+                body: JSON.stringify({
+                    id: enderecoId,
+                }),
+            });
+
+            if (response.ok) {
+                carregarEnderecosCliente();
+            }
+            else {
+                // buscando mensagem de erro que não é JSON
+                const errorMessage = await response.text();
+
+                throw new Error(errorMessage);
+            }
+        }
+        catch (error) {
+            // tratando mensagem de erro
+            console.error("Erro ao excluir endereço:", error);
+            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao excluir o endereço.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
+        }
+    };
+
     return (
         <div className={style.selectAdress}>
+            {console.log(adicionarAoPerfil)}
+            {console.log(enderecoAdicionado)}
             <h1>Selecione o Endereço para Entrega</h1>
             <form className={style.enderecoList}>
                 <Select
@@ -170,14 +263,14 @@ const EnderecosCheckout = (props) => {
                     styles={{
                         control: (provided) => ({
                             ...provided,
-                            width:'65%',
-                            marginTop:'3%'  
-                            
+                            width: '65%',
+                            marginTop: '3%'
+
                         }),
                         menu: (provided) => ({
                             ...provided,
                             width: '65%',
-                            
+
                         }),
                         option: (provided) => ({
                             ...provided,
@@ -185,11 +278,11 @@ const EnderecosCheckout = (props) => {
                         }),
                     }}
                     placeholder="Selecione um endereço"
-                    options={enderecosCliente.map((enderecoCliente) => ({ value: enderecoCliente.id, label: `${enderecoCliente.tipo}, ${enderecoCliente.apelido}, ${enderecoCliente.endereco.cep}, ${enderecoCliente.endereco.rua}, ${enderecoCliente.numero}, ${enderecoCliente.endereco.bairro}, ${enderecoCliente.endereco.cidade} - ${enderecoCliente.endereco.estado}`}))}
+                    options={enderecosCliente.map((enderecoCliente) => ({ value: enderecoCliente.id, label: `${enderecoCliente.tipo}, ${enderecoCliente.apelido}, ${enderecoCliente.endereco.cep}, ${enderecoCliente.endereco.rua}, ${enderecoCliente.numero}, ${enderecoCliente.endereco.bairro}, ${enderecoCliente.endereco.cidade} - ${enderecoCliente.endereco.estado}` }))}
                     isSearchable
                     closeMenuOnSelect={true}
-                    defaultValue={enderecosCliente.map((enderecoCliente) => ({ value: enderecoCliente.id, label: `${enderecoCliente.tipo}, ${enderecoCliente.apelido}, ${enderecoCliente.endereco.cep}, ${enderecoCliente.endereco.rua}, ${enderecoCliente.numero}, ${enderecoCliente.endereco.bairro}, ${enderecoCliente.endereco.cidade} - ${enderecoCliente.endereco.estado}`}))}
                     onChange={handleChangeEndereco}
+                    value={enderecoSelecionado}
                 />
             </form>
             <div className={style.functionsEndereco}>

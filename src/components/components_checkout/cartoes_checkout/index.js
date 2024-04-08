@@ -7,18 +7,18 @@ import { getToken } from "../../../utils/storage";
 import { creditCardXXXXMask, removeMask, handleCreditCard, handleNumber, valueMaskBR } from "../../../utils/mask";
 
 const CartoesCheckout = (props) => {
-    const { valorTotal, cartoesPedido, valorParcialPedido, parcelasPedido } = props;
+    const { valorTotal, cartoesPedido, valorParcialPedido, valorParcialEdit, parcelasPedido } = props;
 
     const [cartoesSelecionados, setCartoesSelecionados] = cartoesPedido;
     const [valorParcialPorCartao, setValorParcialPorCartao] = valorParcialPedido;
+    const [valorParcialEditado, setValorParcialEditado] = valorParcialEdit;
+
     const [parcelasPorCartao, setParcelasPorCartao] = parcelasPedido;
 
     const [cartoesCliente, setCartoesCliente] = useState([]);
 
     const [parcelas, setParcelas] = useState([]);
     const [parcelasSelecionadas, setParcelasSelecionadas] = useState({});
-
-    
 
     const [editarValorParcial, setEditarValorParcial] = useState(false);
 
@@ -64,6 +64,7 @@ const CartoesCheckout = (props) => {
 
                 setValorParcialPorCartao(novoValorParcialPorCartao);
                 setParcelasPorCartao(novoParcelasPorCartao);
+                setValorParcialEditado(false);
             }
             else {
                 setValorParcialPorCartao({});
@@ -155,10 +156,17 @@ const CartoesCheckout = (props) => {
     };
 
     const handleValorParcialChange = (numeroCartao, newValue) => {
-        const novoValorParcialPorCartao = { ...valorParcialPorCartao };
-        novoValorParcialPorCartao[numeroCartao] = newValue;
-
-        setValorParcialPorCartao(novoValorParcialPorCartao);
+        // Verificar se o valor é um número válido
+        if (!isNaN(newValue)) {
+            const novoValorParcialPorCartao = { ...valorParcialPorCartao };
+            novoValorParcialPorCartao[numeroCartao] = parseFloat(newValue);
+    
+            setValorParcialPorCartao(novoValorParcialPorCartao);
+            setValorParcialEditado(true);
+        } 
+        else {
+            Swal.fire({ title: "Erro!", html: `Valor Parcial Inválido.<br><br>`, icon: "error", confirmButtonColor: "#6085FF" });
+        }
     };
 
     const handleParcelasChange = (numeroCartao, parcelaSelecionada) => {
@@ -211,8 +219,16 @@ const CartoesCheckout = (props) => {
                     {cartoesSelecionados.map(cartao => (
                         <div key={cartao.value} >
                             <p>Cartão: {cartao.label}</p>
-                            <p>Valor Parcial: {editarValorParcial ? <input type="text" className={style.inputEditValorParcial} value={valorParcialPorCartao[cartao.value]} onChange={(e) => handleValorParcialChange(cartao.value, e.target.value)} /> : `R$ ${valueMaskBR(valorParcialPorCartao[cartao.value] || 0)}`}</p>
-                            <p>Valor da Parcela: R$ {valueMaskBR(valorParcialPorCartao[cartao.value] / parcelasPorCartao[cartao.value])}</p>
+                            <p>Valor Parcial: {editarValorParcial ? 
+                            <input
+                                type="number"
+                                className={style.inputEditValorParcial}
+                                value={valorParcialPorCartao[cartao.value]}
+                                onChange={(e) => handleValorParcialChange(cartao.value, e.target.value)}
+                                title="Apenas números, pontos e vírgulas são permitidos"
+                            />
+                            : `R$ ${valueMaskBR(valorParcialPorCartao[cartao.value] || 0)}`}</p>
+                            <p>Valor da Parcela: R$ {valueMaskBR((valorParcialPorCartao[cartao.value] / parcelasPorCartao[cartao.value]) || 0)}</p>
                             <Select
                                 styles={{
                                     control: (provided) => ({
@@ -256,6 +272,7 @@ const CartoesCheckout = (props) => {
                         ) : (
                             <button type="button" className={style.btnEditValorParcial} onClick={handleEditValorParcial}>Editar Valor Parcial</button>
                         )}
+                        {console.log(valorParcialEditado)}
                     </>
                 )}
             </div>
