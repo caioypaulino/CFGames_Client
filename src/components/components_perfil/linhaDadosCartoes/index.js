@@ -66,7 +66,6 @@ const linhaDadosCartoes = (props) => {
             if (response.ok) {
                 // Exibindo mensagem de sucesso
                 Swal.fire({ title: "Removido!", text: "Cartão foi removido com sucesso.", icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-                // Recarregar a página ou atualizar os dados, conforme necessário
             }
             else {
                 // Buscando mensagem de erro que não é JSON

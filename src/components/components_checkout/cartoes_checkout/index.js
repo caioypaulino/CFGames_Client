@@ -22,31 +22,34 @@ const CartoesCheckout = (props) => {
 
     const [editarValorParcial, setEditarValorParcial] = useState(false);
 
+    const [cartoesAdicionados, setCartoesAdicionados] = useState([]);
+
+    const [isReloading, setIsReloading] = useState(false); // Flag para indicar se a página está sendo recarregada
     const navigate = useNavigate();
 
     useEffect(() => {
-        const carregarCartoesCliente = async () => {
-            const token = getToken();
-
-            try {
-                const response = await fetch('http://localhost:8080/perfil/cartoes', {
-                    headers: { Authorization: "Bearer " + token }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Token Inválido!');
-                }
-
-                setCartoesCliente(await response.json());
-            }
-            catch (error) {
-                console.error('Erro ao carregar dados:', error);
-                Swal.fire({ title: "Erro!", html: `Erro ao carregar cartões.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
-            }
-        };
-
         carregarCartoesCliente();
     }, []);
+
+    // Verifica se a página está sendo recarregada
+    useEffect(() => {
+        const handleBeforeUnload = () => {
+            setIsReloading(true);
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, []);
+
+    // Executa ação ao recarregar a página
+    useEffect(() => {
+        if (cartoesAdicionados.length > 0 && isReloading) {
+            excluirCartoes(cartoesAdicionados);
+        }
+    }, [cartoesAdicionados, isReloading]);
 
     // Calculando automaticamente o valorParcial e definindo parcelas por cartoesSelecionados
     useEffect(() => {
@@ -85,6 +88,26 @@ const CartoesCheckout = (props) => {
         setParcelasSelecionadas({});
     }, [valorTotal]);
 
+    const carregarCartoesCliente = async () => {
+        const token = getToken();
+
+        try {
+            const response = await fetch('http://localhost:8080/perfil/cartoes', {
+                headers: { Authorization: "Bearer " + token }
+            });
+
+            if (!response.ok) {
+                throw new Error('Token Inválido!');
+            }
+
+            setCartoesCliente(await response.json());
+        }
+        catch (error) {
+            console.error('Erro ao carregar dados:', error);
+            Swal.fire({ title: "Erro!", html: `Erro ao carregar cartões.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
+        }
+    };
+
     const abrirPopupCartao = () => {
         Swal.fire({
             title: "Adicionar Novo Cartão",
@@ -93,7 +116,12 @@ const CartoesCheckout = (props) => {
                 <input id="nomeCartao" type="text" placeholder="Nome do Titular" class="swal2-input">
                 <input id="mesVencimento" type="number" placeholder="Mês de Vencimento" max="12" class="swal2-input">
                 <input id="anoVencimento" type="number" placeholder="Ano de Vencimento" min="2024" class="swal2-input">
-                <input id="cvc" type="text" placeholder="CVC" inputmode="numeric" maxlength="4" class="swal2-input">`,
+                <input id="cvc" type="text" placeholder="CVC" inputmode="numeric" maxlength="4" class="swal2-input">
+                <div>
+                    <input id="salvarNoPerfil" type="checkbox" checked style="margin-top:1rem; margin-right: 0.5rem;">
+                    <label for="salvarNoPerfil">Salvar no Perfil</label>
+                </div>
+            `,
             showCancelButton: true,
             confirmButtonText: "Adicionar",
             confirmButtonColor: "#6085FF",
@@ -105,7 +133,9 @@ const CartoesCheckout = (props) => {
                 const mesVencimento = Swal.getPopup().querySelector("#mesVencimento").value;
                 const anoVencimento = Swal.getPopup().querySelector("#anoVencimento").value;
                 const cvc = Swal.getPopup().querySelector("#cvc").value;
-                adicionarCartao(numeroCartao, nomeCartao, mesVencimento, anoVencimento, cvc);
+                const salvarNoPerfil = document.getElementById('salvarNoPerfil').checked;
+
+                adicionarCartao(numeroCartao, nomeCartao, mesVencimento, anoVencimento, cvc, salvarNoPerfil);
             },
         });
 
@@ -115,7 +145,7 @@ const CartoesCheckout = (props) => {
         cvcInput.addEventListener('input', handleNumber);
     };
 
-    const adicionarCartao = async (numeroCartao, nomeCartao, mesVencimento, anoVencimento, cvc) => {
+    const adicionarCartao = async (numeroCartao, nomeCartao, mesVencimento, anoVencimento, cvc, salvarNoPerfil) => {
         try {
             const token = getToken();
             const response = await fetch("http://localhost:8080/perfil/add/cartao", {
@@ -134,7 +164,13 @@ const CartoesCheckout = (props) => {
             });
 
             if (response.ok) {
-                Swal.fire({ title: "Sucesso!", text: "Cartão adicionado com sucesso.", icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
+                const novoCartaoNumero = await response.json();
+
+                Swal.fire({ title: "Sucesso!", text: "Cartão adicionado com sucesso.", icon: "success", confirmButtonColor: "#6085FF" }).then(() => {
+                    const novoCartao = { numeroCartao: novoCartaoNumero, salvar: salvarNoPerfil }
+                    setCartoesAdicionados([...cartoesAdicionados, novoCartao]);
+                    carregarCartoesCliente();
+                });
             }
             else {
                 const errorMessage = await response.text();
@@ -145,6 +181,44 @@ const CartoesCheckout = (props) => {
             console.error("Erro ao adicionar cartão:", error);
             Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao adicionar o cartão.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
         }
+    };
+
+    // função request delete cartao
+    const excluirCartoes = async (cartoesAdicionados) => {
+        cartoesAdicionados.forEach(async (cartao) => {
+            if (!cartao.salvar && cartao.numeroCartao) {
+                // fazer um foreach para cartoes adicionados
+                try {
+                    const token = getToken();
+
+                    const response = await fetch("http://localhost:8080/perfil/remove/cartao", {
+                        method: "DELETE",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: "Bearer " + token,
+                        },
+                        body: JSON.stringify({
+                            numeroCartao: cartao.numeroCartao,
+                        }),
+                    });
+
+                    if (response.ok) {
+                        carregarCartoesCliente();
+                    }
+                    else {
+                        // Buscando mensagem de erro que não é JSON
+                        const errorMessage = await response.text();
+
+                        throw new Error(errorMessage);
+                    }
+                }
+                catch (error) {
+                    // Tratando mensagem de erro
+                    console.error("Erro ao excluir cartão:", error);
+                    Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao excluir o cartão.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
+                }
+            }
+        });
     };
 
     const handleEditValorParcial = () => {
@@ -160,10 +234,10 @@ const CartoesCheckout = (props) => {
         if (!isNaN(newValue)) {
             const novoValorParcialPorCartao = { ...valorParcialPorCartao };
             novoValorParcialPorCartao[numeroCartao] = parseFloat(newValue);
-    
+
             setValorParcialPorCartao(novoValorParcialPorCartao);
             setValorParcialEditado(true);
-        } 
+        }
         else {
             Swal.fire({ title: "Erro!", html: `Valor Parcial Inválido.<br><br>`, icon: "error", confirmButtonColor: "#6085FF" });
         }
@@ -183,6 +257,8 @@ const CartoesCheckout = (props) => {
 
     return (
         <div className={style.selectPagamento}>
+            {console.log(cartoesAdicionados)}
+            {console.log(cartoesAdicionados.length)}
             <h1>Selecione o(s) Método(s) de Pagamento</h1>
             <form className={style.cartaoList}>
                 <Select
@@ -219,15 +295,15 @@ const CartoesCheckout = (props) => {
                     {cartoesSelecionados.map(cartao => (
                         <div key={cartao.value} >
                             <p>Cartão: {cartao.label}</p>
-                            <p>Valor Parcial: {editarValorParcial ? 
-                            <input
-                                type="number"
-                                className={style.inputEditValorParcial}
-                                value={valorParcialPorCartao[cartao.value]}
-                                onChange={(e) => handleValorParcialChange(cartao.value, e.target.value)}
-                                title="Apenas números, pontos e vírgulas são permitidos"
-                            />
-                            : `R$ ${valueMaskBR(valorParcialPorCartao[cartao.value] || 0)}`}</p>
+                            <p>Valor Parcial: {editarValorParcial ?
+                                <input
+                                    type="number"
+                                    className={style.inputEditValorParcial}
+                                    value={valorParcialPorCartao[cartao.value]}
+                                    onChange={(e) => handleValorParcialChange(cartao.value, e.target.value)}
+                                    title="Apenas números, pontos e vírgulas são permitidos"
+                                />
+                                : `R$ ${valueMaskBR(valorParcialPorCartao[cartao.value] || 0)}`}</p>
                             <p>Valor da Parcela: R$ {valueMaskBR((valorParcialPorCartao[cartao.value] / parcelasPorCartao[cartao.value]) || 0)}</p>
                             <Select
                                 styles={{
@@ -272,7 +348,6 @@ const CartoesCheckout = (props) => {
                         ) : (
                             <button type="button" className={style.btnEditValorParcial} onClick={handleEditValorParcial}>Editar Valor Parcial</button>
                         )}
-                        {console.log(valorParcialEditado)}
                     </>
                 )}
             </div>

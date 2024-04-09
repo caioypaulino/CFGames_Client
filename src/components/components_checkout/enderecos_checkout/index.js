@@ -13,9 +13,7 @@ const EnderecosCheckout = (props) => {
     const [enderecoSelecionado, setEnderecoSelecionado] = useState("");
     const [frete, setFrete] = useState({});
 
-    const [enderecoAdicionado, setEnderecoAdicionado] = useState();
-    // Checkbox para verificar se o Endereço será adicionado ao perfil
-    const [adicionarAoPerfil, setAdicionarAoPerfil] = useState(true);
+    const [enderecoAdicionado, setEnderecoAdicionado] = useState({});
 
     const [isReloading, setIsReloading] = useState(false); // Flag para indicar se a página está sendo recarregada
     const navigate = useNavigate();
@@ -40,20 +38,20 @@ const EnderecosCheckout = (props) => {
 
     // Executa ação ao recarregar a página
     useEffect(() => {
-        if (!adicionarAoPerfil && enderecoAdicionado && isReloading) {
-            excluirEndereco(enderecoAdicionado);
+        if (!enderecoAdicionado.salvar && enderecoAdicionado.id && isReloading) {
+            excluirEndereco(enderecoAdicionado.id);
         }
-    }, [adicionarAoPerfil, enderecoAdicionado, isReloading]);
+    }, [enderecoAdicionado, isReloading]);
 
     useEffect(() => {
-        const novoEndereco = enderecosCliente.find(endereco => endereco.id === enderecoAdicionado);
-    
-        if (enderecoAdicionado && novoEndereco) {
+        const novoEndereco = enderecosCliente.find(endereco => endereco.id === enderecoAdicionado.id);
+
+        if (enderecoAdicionado.id && novoEndereco) {
             const enderecoSelecionadoObj = {
                 value: novoEndereco.id,
                 label: `${novoEndereco.tipo}, ${novoEndereco.apelido}, ${novoEndereco.endereco.cep}, ${novoEndereco.endereco.rua}, ${novoEndereco.numero}, ${novoEndereco.endereco.bairro}, ${novoEndereco.endereco.cidade} - ${novoEndereco.endereco.estado}`
             };
-    
+
             setEnderecoSelecionado(enderecoSelecionadoObj);
             calcularFrete(enderecoSelecionadoObj);
         }
@@ -97,9 +95,10 @@ const EnderecosCheckout = (props) => {
                 <input id="cep" type="text" placeholder="CEP" maxlength="9" class="swal2-input" style="width: 18rem;">
                 <input id="observacao" type="text" placeholder="Observação" class="swal2-input" style="width: 18rem;">
                 <div>
-                <input id="adicionarAoPerfil" type="checkbox" checked style="margin-top:1rem; margin-right: 0.5rem;">
-                <label for="adicionarAoPerfil">Adicionar ao Perfil</label>
-            </div>`,
+                    <input id="salvarNoPerfil" type="checkbox" checked style="margin-top:1rem; margin-right: 0.5rem;">
+                    <label for="salvarNoPerfil">Salvar ao Perfil</label>
+                </div>
+            `,
             showCancelButton: true,
             confirmButtonText: "Adicionar",
             confirmButtonColor: "#6085FF",
@@ -112,10 +111,9 @@ const EnderecosCheckout = (props) => {
                 const tipo = Swal.getPopup().querySelector("#tipo").value;
                 const cep = cepMask(Swal.getPopup().querySelector("#cep").value);
                 const observacao = Swal.getPopup().querySelector("#observacao").value;
-                const checkboxInput = document.getElementById('adicionarAoPerfil').checked;
+                const salvarNoPerfil = document.getElementById('salvarNoPerfil').checked;
 
-                setAdicionarAoPerfil(checkboxInput);
-                adicionarEndereco(apelido, numero, complemento, tipo, cep, observacao);
+                adicionarEndereco(apelido, numero, complemento, tipo, cep, observacao, salvarNoPerfil);
             },
         });
 
@@ -127,10 +125,10 @@ const EnderecosCheckout = (props) => {
     };
 
     // função para adicionar um novo endereço
-    const adicionarEndereco = async (apelido, numero, complemento, tipo, cep, observacao) => {
+    const adicionarEndereco = async (apelido, numero, complemento, tipo, cep, observacao, salvarNoPerfil) => {
         try {
-            if (!adicionarAoPerfil && enderecoAdicionado) {
-                excluirEndereco(enderecoAdicionado);
+            if (!enderecoAdicionado.salvar && enderecoAdicionado.id) {
+                excluirEndereco(enderecoAdicionado.id);
             }
 
             const token = getToken();
@@ -157,7 +155,7 @@ const EnderecosCheckout = (props) => {
                 const novoEnderecoId = await response.json();
 
                 Swal.fire({ title: "Sucesso!", text: "Endereço adicionado com sucesso.", icon: "success", confirmButtonColor: "#6085FF" }).then(() => {
-                    setEnderecoAdicionado(novoEnderecoId);
+                    setEnderecoAdicionado({ id: novoEnderecoId, salvar: salvarNoPerfil });
                     carregarEnderecosCliente();
                 });
             }
@@ -253,8 +251,6 @@ const EnderecosCheckout = (props) => {
 
     return (
         <div className={style.selectAdress}>
-            {console.log(adicionarAoPerfil)}
-            {console.log(enderecoAdicionado)}
             <h1>Selecione o Endereço para Entrega</h1>
             <form className={style.enderecoList}>
                 <Select
@@ -295,6 +291,8 @@ const EnderecosCheckout = (props) => {
                     frete={frete.price}
                     prazo={frete.delivery_time}
                     enderecoEntrega={enderecoSelecionado}
+                    enderecoAdicionado={enderecoAdicionado}
+                    excluirEndereco={excluirEndereco}
                 />
             </div>
         </div>

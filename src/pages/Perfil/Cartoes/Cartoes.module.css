@@ -22,8 +22,8 @@
     padding: 0;
     cursor: pointer;
     display: flex; /* Transformar em um flex container */
-    width: 20%; /* Definir largura */
-    height: 20%; /* Definir altura */
+    width: 15%; /* Definir largura */
+    height: 15%; /* Definir altura */
     margin-left: 24%;
 }
 

@@ -8,7 +8,8 @@ import { getToken } from "../../../utils/storage";
 import { useNavigate } from "react-router-dom";
 
 const ResumoCheckout = (props) => {
-    const { valorCarrinho, frete, prazo, enderecoEntrega } = props;
+    const { valorCarrinho, frete, prazo, enderecoEntrega, enderecoAdicionado, excluirEndereco } = props;
+
     const [inputValue, setInputValue] = useState("");
     const [cupons, setProducts] = useState([]);
     const [desconto, setDesconto] = useState("");
@@ -153,6 +154,10 @@ const ResumoCheckout = (props) => {
             });
 
             if (response.ok) {
+                if (!enderecoAdicionado.adicionar && enderecoAdicionado.id) {
+                    excluirEndereco(enderecoAdicionado.id);
+                }
+                
                 Swal.fire({ title: "Sucesso!", text: "Pedido adicionado com sucesso.", icon: "success", confirmButtonColor: "#6085FF" }).then(() => { navigate('/perfil/pedidos'); });
             }
             else {
