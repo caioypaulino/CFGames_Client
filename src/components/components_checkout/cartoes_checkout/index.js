@@ -7,11 +7,12 @@ import { getToken } from "../../../utils/storage";
 import { creditCardXXXXMask, removeMask, handleCreditCard, handleNumber, valueMaskBR } from "../../../utils/mask";
 
 const CartoesCheckout = (props) => {
-    const { valorTotal, cartoesPedido, valorParcialPedido, valorParcialEdit, parcelasPedido } = props;
+    const { valorTotal, cartoesPedido, valorParcialPedido, valorParcialEdit, parcelasPedido, cartoesAdded, excluirCartoes } = props;
 
     const [cartoesSelecionados, setCartoesSelecionados] = cartoesPedido;
     const [valorParcialPorCartao, setValorParcialPorCartao] = valorParcialPedido;
     const [valorParcialEditado, setValorParcialEditado] = valorParcialEdit;
+    const [cartoesAdicionados, setCartoesAdicionados] = cartoesAdded;
 
     const [parcelasPorCartao, setParcelasPorCartao] = parcelasPedido;
 
@@ -22,9 +23,6 @@ const CartoesCheckout = (props) => {
 
     const [editarValorParcial, setEditarValorParcial] = useState(false);
 
-    const [cartoesAdicionados, setCartoesAdicionados] = useState([]);
-
-    const [isReloading, setIsReloading] = useState(false); // Flag para indicar se a página está sendo recarregada
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -34,7 +32,9 @@ const CartoesCheckout = (props) => {
     // Verifica se a página está sendo recarregada
     useEffect(() => {
         const handleBeforeUnload = () => {
-            setIsReloading(true);
+            if (cartoesAdicionados.length > 0) {
+                excluirCartoes(cartoesAdicionados);
+            }
         };
 
         window.addEventListener('beforeunload', handleBeforeUnload);
@@ -42,14 +42,7 @@ const CartoesCheckout = (props) => {
         return () => {
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };
-    }, []);
-
-    // Executa ação ao recarregar a página
-    useEffect(() => {
-        if (cartoesAdicionados.length > 0 && isReloading) {
-            excluirCartoes(cartoesAdicionados);
-        }
-    }, [cartoesAdicionados, isReloading]);
+    }, [cartoesAdicionados]);
 
     // Calculando automaticamente o valorParcial e definindo parcelas por cartoesSelecionados
     useEffect(() => {
@@ -183,44 +176,6 @@ const CartoesCheckout = (props) => {
         }
     };
 
-    // função request delete cartao
-    const excluirCartoes = async (cartoesAdicionados) => {
-        cartoesAdicionados.forEach(async (cartao) => {
-            if (!cartao.salvar && cartao.numeroCartao) {
-                // fazer um foreach para cartoes adicionados
-                try {
-                    const token = getToken();
-
-                    const response = await fetch("http://localhost:8080/perfil/remove/cartao", {
-                        method: "DELETE",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: "Bearer " + token,
-                        },
-                        body: JSON.stringify({
-                            numeroCartao: cartao.numeroCartao,
-                        }),
-                    });
-
-                    if (response.ok) {
-                        carregarCartoesCliente();
-                    }
-                    else {
-                        // Buscando mensagem de erro que não é JSON
-                        const errorMessage = await response.text();
-
-                        throw new Error(errorMessage);
-                    }
-                }
-                catch (error) {
-                    // Tratando mensagem de erro
-                    console.error("Erro ao excluir cartão:", error);
-                    Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao excluir o cartão.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
-                }
-            }
-        });
-    };
-
     const handleEditValorParcial = () => {
         setEditarValorParcial(true);
     };
@@ -257,8 +212,6 @@ const CartoesCheckout = (props) => {
 
     return (
         <div className={style.selectPagamento}>
-            {console.log(cartoesAdicionados)}
-            {console.log(cartoesAdicionados.length)}
             <h1>Selecione o(s) Método(s) de Pagamento</h1>
             <form className={style.cartaoList}>
                 <Select
@@ -285,7 +238,6 @@ const CartoesCheckout = (props) => {
                     isClearable
                     isSearchable
                     closeMenuOnSelect={false}
-                    isOptionDisabled={() => cartoesSelecionados.length >= 2}
                     defaultValue={cartoesCliente.map((cartaoCliente) => ({ value: cartaoCliente.numeroCartao, label: `${cartaoCliente.bandeira}, ${creditCardXXXXMask(cartaoCliente.numeroCartao)}, ${cartaoCliente.nomeCartao}  [${cartaoCliente.mesVencimento}/${cartaoCliente.anoVencimento}]` }))}
                     onChange={(cartaoSelecionado) => setCartoesSelecionados(cartaoSelecionado)}
                 />

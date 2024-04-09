@@ -18,6 +18,7 @@ import AdminProdutos from "./pages/Admin/Produtos"
 import AdminCategorias from "./pages/Admin/Categorias";
 import AdminClientes from "./pages/Admin/Clientes";
 import AdminEnderecos from "./pages/Admin/Enderecos";
+import AdminPedidos from "./pages/Admin/Pedidos";
 
 export default function App() {
     return (
@@ -38,7 +39,7 @@ export default function App() {
                 <Route path="/admin/categorias" element={<LayoutAdmin><AdminCategorias /></LayoutAdmin>} />
                 <Route path="/admin/clientes" element={<LayoutAdmin><AdminClientes /></LayoutAdmin>} />
                 <Route path="/admin/enderecos" element={<LayoutAdmin><AdminEnderecos /></LayoutAdmin>} />
-                <Route path="/admin/pedidos" />
+                <Route path="/admin/pedidos" element={<LayoutAdmin><AdminPedidos /></LayoutAdmin>} />
             </Routes>
         </BrowserRouter>
     );

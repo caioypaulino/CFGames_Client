@@ -15,7 +15,6 @@ const EnderecosCheckout = (props) => {
 
     const [enderecoAdicionado, setEnderecoAdicionado] = useState({});
 
-    const [isReloading, setIsReloading] = useState(false); // Flag para indicar se a página está sendo recarregada
     const navigate = useNavigate();
 
     // carregando enderecosCliente por padrão
@@ -23,25 +22,20 @@ const EnderecosCheckout = (props) => {
         carregarEnderecosCliente();
     }, []);
 
-    // Verifica se a página está sendo recarregada
+    // Verifica se está saindo da página
     useEffect(() => {
-        const handleBeforeUnload = () => {
-            setIsReloading(true);
+        const handleBeforeUnload = async () => {
+            if (enderecoAdicionado.id) {
+                await excluirEndereco(enderecoAdicionado.id);
+            }
         };
-
+    
         window.addEventListener('beforeunload', handleBeforeUnload);
-
+    
         return () => {
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };
-    }, []);
-
-    // Executa ação ao recarregar a página
-    useEffect(() => {
-        if (!enderecoAdicionado.salvar && enderecoAdicionado.id && isReloading) {
-            excluirEndereco(enderecoAdicionado.id);
-        }
-    }, [enderecoAdicionado, isReloading]);
+    }, [enderecoAdicionado]);
 
     useEffect(() => {
         const novoEndereco = enderecosCliente.find(endereco => endereco.id === enderecoAdicionado.id);

@@ -19,6 +19,7 @@ const ResumoCheckout = (props) => {
     const [valorParcialPorCartao, setValorParcialPorCartao] = useState({});
     const [parcelasPorCartao, setParcelasPorCartao] = useState({});
     const [valorParcialEditado, setValorParcialEditado] = useState(false);
+    const [cartoesAdicionados, setCartoesAdicionados] = useState([]);
 
     const navigate = useNavigate();
 
@@ -57,26 +58,19 @@ const ResumoCheckout = (props) => {
     const abrirPopupConfirmarPedido = () => {
         // Verificando se o endereço de entrega foi selecionado
         if (!enderecoEntrega) {
-            Swal.fire({
-                title: 'Erro!',
-                text: 'Por favor, selecione um endereço de entrega.',
-                icon: 'error',
-                confirmButtonColor: "#6085FF",
-            });
-
-            return; // Return para evitar a abertura do popup de confirmação
+            return Swal.fire({ title: 'Erro!', text: 'Por favor, selecione um endereço de entrega.', icon: 'error', confirmButtonColor: "#6085FF", });// Return para evitar a abertura do popup de confirmação
         }
 
         // Verificando se pelo menos um cartão foi selecionado
         if (cartoesSelecionados.length === 0) {
-            Swal.fire({
-                title: 'Erro!',
-                text: 'Por favor, selecione ao menos um método de pagamento.',
-                icon: 'error',
-                confirmButtonColor: "#6085FF",
-            });
+            return Swal.fire({ title: 'Erro!', text: 'Por favor, selecione ao menos um método de pagamento.', icon: 'error', confirmButtonColor: "#6085FF", });
+        }
 
-            return; // Return para evitar a abertura do popup de confirmação
+        // Verificando se algum valor parcial por cartão é menor ou igual a 10
+        const minValorParcial = cartoesSelecionados.some(cartaoSelecionado => valorParcialPorCartao[cartaoSelecionado.value] < 10);
+
+        if (minValorParcial) {
+            return Swal.fire({ title: 'Erro!', text: 'Valor parcial mínimo por cartão é R$ 10,00.', icon: 'error', confirmButtonColor: "#6085FF", });
         }
 
         const detalhesPedido =
@@ -157,8 +151,14 @@ const ResumoCheckout = (props) => {
                 if (!enderecoAdicionado.adicionar && enderecoAdicionado.id) {
                     excluirEndereco(enderecoAdicionado.id);
                 }
-                
-                Swal.fire({ title: "Sucesso!", text: "Pedido adicionado com sucesso.", icon: "success", confirmButtonColor: "#6085FF" }).then(() => { navigate('/perfil/pedidos'); });
+
+                if (cartoesAdicionados.length > 0) {
+                    excluirCartoes(cartoesAdicionados);
+                }
+
+                const successMessage = await response.text();
+
+                Swal.fire({ title: "Sucesso!", text: `${successMessage}`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { navigate('/perfil/pedidos'); });
             }
             else {
                 // buscando mensagem de erro que não é JSON
@@ -174,8 +174,45 @@ const ResumoCheckout = (props) => {
         }
     };
 
+    // função request delete cartao
+    const excluirCartoes = async (cartoesAdicionados) => {
+        // fazer um foreach para cartoes adicionados
+        try {
+            const token = getToken();
+
+            const cartoesParaExcluir = cartoesAdicionados
+                .filter(cartao => !cartao.salvar && cartao.numeroCartao)
+                .map(cartao => ({ numeroCartao: cartao.numeroCartao }));
+
+            const response = await fetch("http://localhost:8080/perfil/remove/cartoes", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + token,
+                },
+                body: JSON.stringify(cartoesParaExcluir),
+            });
+
+            if (response.ok) {
+
+            } 
+            else {
+                // Buscando mensagem de erro que não é JSON
+                const errorMessage = await response.text();
+
+                throw new Error(errorMessage);
+            }
+        } 
+        catch (error) {
+            // Tratando mensagem de erro
+            console.error("Erro ao excluir cartão:", error);
+            Swal.fire({title: "Erro!", html: `Ocorreu um erro ao excluir o cartão.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF"});
+        }
+    };
+
     return (
         <>
+            {console.log(valorParcialPorCartao)}
             <div className={style.resumo}>
                 <h1>Resumo</h1>
                 <p>Valor Carrinho: R$ {valueMaskBR(valorCarrinho)}</p>
@@ -198,6 +235,8 @@ const ResumoCheckout = (props) => {
                     valorParcialPedido={[valorParcialPorCartao, setValorParcialPorCartao]}
                     valorParcialEdit={[valorParcialEditado, setValorParcialEditado]}
                     parcelasPedido={[parcelasPorCartao, setParcelasPorCartao]}
+                    cartoesAdded={[cartoesAdicionados, setCartoesAdicionados]}
+                    excluirCartoes={excluirCartoes}
                 />
             </div>
         </>
