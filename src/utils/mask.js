@@ -1,6 +1,6 @@
 // Função para remover máscara e mostrar apenas dígitos
 export const removeMask = (value) => {
-    value = value.replace(/\D/g,'');
+    value = value.replace(/\D/g, '');
     return value;
 }
 
@@ -13,13 +13,13 @@ export const handleCep = (event) => {
     let input = event.target;
     input.value = cepMask(input.value);
 }
-  
+
 // Função para aplicar máscara ao número de CEP
 export const cepMask = (value) => {
     if (!value) return "";
 
     value = removeMask(value);
-    value = value.replace(/(\d{5})(\d)/,'$1-$2');
+    value = value.replace(/(\d{5})(\d)/, '$1-$2');
 
     return value;
 }
@@ -61,9 +61,9 @@ export const cpfMask = (value) => {
     if (!value) return "";
 
     value = removeMask(value);
-    value = value.replace(/(\d{3})(\d)/,'$1.$2');
-    value = value.replace(/(\d{3})(\d)/,'$1.$2');
-    value = value.replace(/(\d{3})(\d{1,2})$/,'$1-$2');
+    value = value.replace(/(\d{3})(\d)/, '$1.$2');
+    value = value.replace(/(\d{3})(\d)/, '$1.$2');
+    value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
 
     return value;
 }
@@ -129,4 +129,9 @@ export const valueMaskEN = (value) => {
 // Função para aplicar máscara de valores (duas casas decimais)
 export const valueMaskBR = (value) => {
     return value.toFixed(2);
+}
+
+export const statusMask = (value) => {
+    const palavras = value.toLowerCase().split('_').map(palavra => palavra.charAt(0).toUpperCase() + palavra.slice(1));
+    return palavras.join(' ');
 }

@@ -83,6 +83,11 @@
 .justifyText h2{
   text-align: center;
 }
+
+.justifyText hr {
+  border-color: #011640;
+}
+
 .swal2-popup {
   padding: 0;
 }

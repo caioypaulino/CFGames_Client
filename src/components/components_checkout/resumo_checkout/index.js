@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import style from "./ResumoCheckout.module.css";
+import styles from "./ResumoCheckout.module.css";
 import Swal from "sweetalert2";
 import cuponsData from "../../../utils/cupons.json";
 import { valueMaskBR } from "../../../utils/mask";
@@ -73,33 +73,36 @@ const ResumoCheckout = (props) => {
             return Swal.fire({ title: 'Erro!', text: 'Valor parcial mínimo por cartão é R$ 10,00.', icon: 'error', confirmButtonColor: "#6085FF", });
         }
 
-        const detalhesPedido =
-            `
-            <h2>Detalhes</h2>
-            <div class=${style.justifyText}>
+        const detalhesPedido =`
+            <div class=${styles.justifyText}>
+                <hr>
+                <h2>Detalhes</h2>
                 <p><strong>Valor Total:</strong> R$ ${valueMaskBR(valorTotal)}</p>
                 <p><strong>Valor Carrinho:</strong> R$ ${valueMaskBR(valorCarrinho)}</p>
                 <p><strong>Frete:</strong> R$ ${valueMaskBR(parseFloat(frete) || 0)}</p>
                 <p><strong>Desconto:</strong> R$ ${valueMaskBR(desconto || 0)}</p>
-                <h2>Pagamento:</h2>
+                <hr>
+                <h2>Pagamento</h2>
                 ${cartoesSelecionados && cartoesSelecionados.map(cartao => {
                 const valorParcial = valorParcialPorCartao[cartao.value];
                 const parcelas = parcelasPorCartao[cartao.value];
 
                 return `
-                            <p><strong>Cartão:</strong> ${cartao.label}</p>
-                            <p><strong>Valor Parcial:</strong> R$ ${valueMaskBR(valorParcial || 0)}</p>
-                            <p><strong>Parcelas:</strong> ${parcelas}x R$ ${(valueMaskBR(valorParcial / parcelas) || 0)}</p>
-                        `;
-            }).join("<br>") || 'Não Selecionado'}
-                <h2>Entrega:</h2>
-                <p><strong>Endereço:</strong> ${(enderecoEntrega && enderecoEntrega.label) || 'Não selecionado'}</p>
-                <p><strong>Prazo:</strong> ${prazo !== undefined && prazo + ' Dia(s)' || 'Indefinido'}</p>
+                    <p><strong>Cartão:</strong> ${cartao.label}</p>
+                    <p><strong>Valor Parcial:</strong> R$ ${valueMaskBR(valorParcial || 0)}</p>
+                    <p><strong>Parcelas:</strong> ${parcelas}x R$ ${(valueMaskBR(valorParcial / parcelas) || 0)}</p>
+                `;
+            }).join("<br>")}
+                <hr>
+                <h2>Entrega</h2>
+                <p><strong>Endereço:</strong> ${(enderecoEntrega && enderecoEntrega.label)}</p>
+                <p><strong>Prazo:</strong> ${enderecoEntrega !== undefined && prazo + ' Dia(s)' || 'Indefinido'}</p>
+                <hr>
             </div>
         `;
 
         Swal.fire({
-            title: "<h3 style='margin-bottom:-5%; color:#011640;'>Deseja Finalizar o Pedido?</h3>",
+            title: "<h3 style='color:#011640;'>Deseja Finalizar o Pedido?</h3>",
             html: detalhesPedido,
             confirmButtonText: 'Confirmar',
             confirmButtonColor: "#6085FF",
@@ -107,6 +110,7 @@ const ResumoCheckout = (props) => {
             showCancelButton: true,
             showCloseButton: true,
             icon: 'warning',
+            width: '40%',
             preConfirm: () => {
                 adicionarPedido(enderecoEntrega, cartoesSelecionados, valorParcialPorCartao, parcelasPorCartao);
             },
@@ -158,7 +162,7 @@ const ResumoCheckout = (props) => {
 
                 const successMessage = await response.text();
 
-                Swal.fire({ title: "Sucesso!", text: `${successMessage}`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { navigate('/perfil/pedidos'); });
+                Swal.fire({ title: "Sucesso!", html: `${successMessage}`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { navigate('/perfil/pedidos'); });
             }
             else {
                 // buscando mensagem de erro que não é JSON
@@ -213,22 +217,22 @@ const ResumoCheckout = (props) => {
     return (
         <>
             {console.log(valorParcialPorCartao)}
-            <div className={style.resumo}>
+            <div className={styles.resumo}>
                 <h1>Resumo</h1>
                 <p>Valor Carrinho: R$ {valueMaskBR(valorCarrinho)}</p>
                 <p>Frete: R$ {frete !== undefined && parseFloat(frete) || '0.00'}</p>
                 <p>Prazo de Entrega: {prazo !== undefined && prazo + ' Dia(s)' || 'Indefinido'}</p>
                 <p>Desconto: R$ {(desconto !== undefined && desconto || '0.00')}</p><br></br>
                 <p>Total: R$ {valueMaskBR(valorTotal)}</p>
-                <button className={style.btn} onClick={abrirPopupConfirmarPedido}>Confirmar Pedido</button>
-                <button className={style.btnContinuar}><a className={style.link} href="/carrinho">Voltar ao Carrinho</a></button>
+                <button className={styles.btn} onClick={abrirPopupConfirmarPedido}>Confirmar Pedido</button>
+                <button className={styles.btnContinuar}><a className={styles.link} href="/carrinho">Voltar ao Carrinho</a></button>
             </div>
-            <div className={style.cupom}>
+            <div className={styles.cupom}>
                 <h1>Desconto</h1>
-                <input className={style.inputTextCupom} type="text" value={inputValue} onChange={handleInputChange} placeholder="Código do cupom" />
-                <button className={style.btnCupom} onClick={() => aplicaDesconto(inputValue)}>Aplicar cupom</button>
+                <input className={styles.inputTextCupom} type="text" value={inputValue} onChange={handleInputChange} placeholder="Código do cupom" />
+                <button className={styles.btnCupom} onClick={() => aplicaDesconto(inputValue)}>Aplicar cupom</button>
             </div>
-            <div className={style.pagamento}>
+            <div className={styles.pagamento}>
                 <CartoesCheckout
                     valorTotal={valorTotal}
                     cartoesPedido={[cartoesSelecionados, setCartoesSelecionados]} // passando como props
