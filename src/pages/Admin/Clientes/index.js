@@ -3,6 +3,7 @@ import styles from "./AdminClientes.module.css";
 import Swal from "sweetalert2";
 import { getToken } from "../../../utils/storage";
 import { dataMaskBR, telefoneMask, cpfMask } from "../../../utils/mask";
+import { useNavigate } from "react-router-dom";
 
 const AdminClientes = () => {
     const [clientes, setClientes] = useState([]);
@@ -11,18 +12,40 @@ const AdminClientes = () => {
     const [colunaClassificada, setColunaClassificada] = useState(null);
     const [ordemClassificacao, setOrdemClassificacao] = useState('asc');
 
-    useEffect(() => {
-        const token = getToken();
+    const navigate = useNavigate();
 
-        fetch('http://localhost:8080/admin/clientes', {
-            headers: { Authorization: "Bearer " + token }
-        })
-            .then(resp => resp.json())
-            .then(json => {
-                const sortedClientes = json.sort((a, b) => a.id - b.id); // Ordena os clientes por ID
-                setClientes(sortedClientes);
-            });
+    useEffect(() => {
+        carregarClientes();
     }, []);
+    
+    const carregarClientes = async () => {
+        const token = getToken();
+    
+        try {
+            const response = await fetch('http://localhost:8080/admin/clientes', {
+                headers: { Authorization: "Bearer " + token }
+            });
+    
+            if (response.ok) {
+                const json = await response.json();
+                const sortedClientes = json.sort((a, b) => a.id - b.id); // Ordena os clientes por ID
+    
+                setClientes(sortedClientes);
+            } 
+            else {
+                if (response.status === 500) {
+                    throw new Error('Token Inválido!');
+                } 
+                else if (response.status === 400) {
+                    Swal.fire({ title: "Erro!", html: `Erro ao carregar endereços!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
+                }
+            }
+        } 
+        catch (error) {
+            console.error('Erro ao carregar dados:', error);
+            Swal.fire({ title: "Erro!", html: `Erro ao carregar painel de administrador.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
+        }
+    };
 
     // Abre os detalhes do cliente usando o SweetAlert2
     const abrirPopupInfo = (cliente) => {
@@ -60,10 +83,10 @@ const AdminClientes = () => {
     const formatEnderecos = (enderecosCliente) => {
         return enderecosCliente.map((enderecoCliente) => {
             // Utilizando desestruturação de enderecoCliente e endereco
-            const { id, numero, tipo, endereco } = enderecoCliente;
+            const { id, apelido, numero, tipo, endereco } = enderecoCliente;
             const { cep, rua, bairro, cidade, estado, pais } = endereco;
 
-            return `Endereço ${id}: ${cep}, ${rua}, ${numero}, ${bairro}, ${cidade} - ${estado} (${pais}) [Tipo: ${tipo}]`;
+            return `Endereço ${id}: ${apelido}, ${cep}, ${rua}, ${numero}, ${bairro}, ${cidade} - ${estado} (${pais}) [Tipo: ${tipo}]`;
         });
     };
 

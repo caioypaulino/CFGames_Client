@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "./Checkout.module.css";
 import EnderecosCheckout from "../../components/components_checkout/enderecos_checkout";
-import CartoesCheckout from "../../components/components_checkout/cartoes_checkout";
 import Swal from "sweetalert2";
 import { getToken } from "../../utils/storage";
 import { useNavigate } from "react-router-dom";

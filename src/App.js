@@ -14,6 +14,7 @@ import PerfilPessoais from "./pages/Perfil/Pessoais";
 import PerfilConta from "./pages/Perfil/Conta";
 import PerfilEnderecos from "./pages/Perfil/Enderecos";
 import PerfilCartoes from "./pages/Perfil/Cartoes";
+import PerfilPedidos from "./pages/Perfil/Pedidos";
 import AdminProdutos from "./pages/Admin/Produtos"
 import AdminCategorias from "./pages/Admin/Categorias";
 import AdminClientes from "./pages/Admin/Clientes";
@@ -31,6 +32,7 @@ export default function App() {
                 <Route path="/perfil/pessoal" element={<Layout><PerfilPessoais /></Layout>} />
                 <Route path="/perfil/enderecos" element={<Layout><PerfilEnderecos /></Layout>} />
                 <Route path="/perfil/cartoes" element={<Layout><PerfilCartoes /></Layout>} />
+                <Route path="/perfil/pedidos" element={<Layout><PerfilPedidos /></Layout>} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/cadastro/cliente" element={<CadastroCliente />} />
                 <Route path="/cadastro/endereco" element={<CadastroEndereco />} />

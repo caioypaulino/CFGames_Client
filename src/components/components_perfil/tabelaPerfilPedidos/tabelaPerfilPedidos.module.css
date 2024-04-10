@@ -5,19 +5,22 @@
 }
 
 .table {
-    width: 70%; /* Aumenta a largura da tabela */
+    width: 70%;
+    /* Aumenta a largura da tabela */
     border-collapse: collapse;
     border-radius: 10px;
     overflow: hidden;
     table-layout: fixed;
-    margin-left: 15%; /* Centraliza a tabela */
+    margin-left: 15%;
+    /* Centraliza a tabela */
 }
 
 thead {
     background-color: #011640;
 }
 
-th, td {
+th,
+td {
     color: white;
     font-family: 'Roboto', sans-serif;
     font-weight: bold;
@@ -34,7 +37,7 @@ th span {
 }
 
 tbody {
-    background-color: #EBEBEB;
+    background-color: #e2e6ef;
 }
 
 td {
@@ -88,7 +91,7 @@ td {
 }
 
 .pagination button:hover {
-    background-color: #011640; 
+    background-color: #011640;
 }
 
 .pagination button.active {
@@ -96,13 +99,13 @@ td {
     color: white;
 }
 
-.paginaAtual{
+.paginaAtual {
     color: #6085FF;
     font-weight: bold;
     font-family: 'Roboto';
 }
 
-.totalPaginas{
+.totalPaginas {
     color: #000a99;
     font-weight: bold;
     font-family: 'Roboto';
@@ -113,17 +116,22 @@ td {
     border: none;
     padding: 0;
     cursor: pointer;
-    display: flex; /* Transformar em um flex container */
-    width: 6%; /* Definir largura */
-    height: 6%; /* Definir altura */
+    display: flex;
+    /* Transformar em um flex container */
+    width: 6%;
+    /* Definir largura */
+    height: 6%;
+    /* Definir altura */
     left: 77.5%;
     bottom: 14%;
     position: absolute;
 }
 
 .btnIcon:hover {
-    background-color: #f0f0f0; /* Adicionar cor de fundo ao passar o mouse */
-    border-radius: 50%; /* Fazer o botão parecer um círculo */
+    background-color: #f0f0f0;
+    /* Adicionar cor de fundo ao passar o mouse */
+    border-radius: 50%;
+    /* Fazer o botão parecer um círculo */
 }
 
 .iconAdd {
@@ -148,7 +156,8 @@ td {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5); /* Cor de fundo semi-transparente */
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Cor de fundo semi-transparente */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -193,4 +202,16 @@ td {
     background-color: #6085FF;
     color: white;
     cursor: pointer;
+}
+
+.justifyText {
+    text-align: justify;
+}
+
+.justifyText h2 {
+    text-align: center;
+}
+
+.justifyText hr {
+    border-color: #011640;
 }

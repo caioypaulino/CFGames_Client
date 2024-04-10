@@ -6,6 +6,7 @@ import withReactContent from "sweetalert2-react-content";
 import Select from "react-select";
 import { getToken } from "../../../utils/storage";
 import { dataMaskBR2, dataMaskEN, dataMaskEN2, valueMaskEN } from "../../../utils/mask";
+import { useNavigate } from "react-router-dom";
 
 const AdminProdutos = () => {
     const [produtos, setProdutos] = useState([]);
@@ -24,27 +25,46 @@ const AdminProdutos = () => {
     const [ordemClassificacao, setOrdemClassificacao] = useState('asc');
     
     const SwalJSX = withReactContent(Swal)
+    const navigate = useNavigate();
 
     useEffect(() => {
-        const token = getToken();
-
-        fetch('http://localhost:8080/admin/produtos', {
-            headers: { Authorization: "Bearer " + token }
-        })
-            .then(resp => resp.json())
-            .then(json => {
-                const sortedProdutos = json.sort((a, b) => a.id - b.id); // Ordena os produtos por ID
-                setProdutos(sortedProdutos);
-            });
-
-        fetch('http://localhost:8080/admin/categorias', {
-            headers: { Authorization: "Bearer " + token }
-        })
-            .then(resp => resp.json())
-            .then(json => {
-                setCategorias(json); // Definindo categorias
-            });
+        carregarProdutos();
     }, []);
+    
+    const carregarProdutos = async () => {
+        const token = getToken();
+    
+        try {
+            const responseProdutos = await fetch('http://localhost:8080/admin/produtos', {
+                headers: { Authorization: "Bearer " + token }
+            });
+    
+            const responseCategorias = await fetch('http://localhost:8080/admin/categorias', {
+                headers: { Authorization: "Bearer " + token }
+            });
+    
+            if (responseProdutos.ok && responseCategorias.ok) {
+                const jsonProdutos = await responseProdutos.json();
+                const jsonCategorias = await responseCategorias.json();
+    
+                const sortedProdutos = jsonProdutos.sort((a, b) => a.id - b.id); // Ordena os produtos por ID
+    
+                setProdutos(sortedProdutos);
+                setCategorias(jsonCategorias); // Definindo categorias
+            } 
+            else {
+                if (responseProdutos.status === 500 || responseCategorias.status === 500) {
+                    throw new Error('Token Inválido!');
+                } 
+                else if (responseProdutos.status === 400 || responseCategorias.status === 400) {
+                    Swal.fire({ title: "Erro!", html: `Erro ao carregar produtos ou categorias!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
+                }
+            }
+        } catch (error) {
+            console.error('Erro ao carregar dados:', error);
+            Swal.fire({ title: "Erro!", html: `Erro ao carregar painel de administrador.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
+        }
+    };
 
     // Abre um modal com os detalhes do produto usando o SweetAlert2
     const abrirPopupInfo = (produto) => {

@@ -45,7 +45,6 @@ td {
     border: .15rem solid white;
 }
 
-/* Estilos para o botão de ações */
 .buttonAcoes {
     border: none;
     color: black;
@@ -59,10 +58,11 @@ td {
     transition-duration: 0.4s;
     cursor: pointer;
     border-radius: 5px;
+    background-color: #e2e6ef;
 }
 
 .buttonAcoes:hover {
-    background-color: #e2e6ef; /* Cor de fundo verde escuro ao passar o mouse */
+    background-color: #b8c8ec
 }
 
 .pagination {

@@ -4,6 +4,7 @@ import styles from "./AdminEnderecos.module.css";
 import Swal from "sweetalert2";
 import { getToken } from "../../../utils/storage";
 import { handleCep } from "../../../utils/mask";
+import { useNavigate } from "react-router-dom";
 
 const AdminEnderecos = () => {
     const [enderecos, setEnderecos] = useState([]);
@@ -14,18 +15,40 @@ const AdminEnderecos = () => {
     const [colunaClassificada, setColunaClassificada] = useState(null);
     const [ordemClassificacao, setOrdemClassificacao] = useState('asc');
 
-    useEffect(() => {
-        const token = getToken();
+    const navigate = useNavigate();
 
-        fetch('http://localhost:8080/admin/enderecos', {
-            headers: { Authorization: "Bearer " + token }
-        })
-            .then(resp => resp.json())
-            .then(json => {
-                const sortedEnderecos = json.sort((a, b) => a.cep.localeCompare(b.cep)); // Ordena os endereços por CEP
-                setEnderecos(sortedEnderecos);
-            });
+    useEffect(() => {
+        carregarEnderecos();
     }, []);
+    
+    const carregarEnderecos = async () => {
+        const token = getToken();
+    
+        try {
+            const response = await fetch('http://localhost:8080/admin/enderecos', {
+                headers: { Authorization: "Bearer " + token }
+            });
+    
+            if (response.ok) {
+                const json = await response.json();
+                const sortedEnderecos = json.sort((a, b) => a.cep.localeCompare(b.cep)); // Ordena os endereços por CEP
+    
+                setEnderecos(sortedEnderecos);
+            } 
+            else {
+                if (response.status === 500) {
+                    throw new Error('Token Inválido!');
+                } 
+                else if (response.status === 400) {
+                    Swal.fire({ title: "Erro!", html: `Erro ao carregar endereços!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
+                }
+            }
+        } 
+        catch (error) {
+            console.error('Erro ao carregar dados:', error);
+            Swal.fire({ title: "Erro!", html: `Erro ao carregar painel de administrador.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
+        }
+    };
 
     // Abre os detalhes do endereço usando o SweetAlert2
     const abrirPopupInfo = (endereco) => {

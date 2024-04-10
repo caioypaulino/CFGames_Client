@@ -3,6 +3,7 @@ import iconAdd from "../../../assets/buttons/add.svg";
 import styles from "./AdminCategorias.module.css";
 import Swal from "sweetalert2";
 import { getToken } from "../../../utils/storage";
+import { useNavigate } from "react-router-dom";
 
 const AdminCategorias = () => {
     const [categorias, setCategorias] = useState([]);
@@ -13,19 +14,37 @@ const AdminCategorias = () => {
     const [colunaClassificada, setColunaClassificada] = useState(null);
     const [ordemClassificacao, setOrdemClassificacao] = useState('asc');
 
+    const navigate = useNavigate();
+
     useEffect(() => {
-        const token = getToken();
-
-        fetch('http://localhost:8080/admin/categorias', {
-            headers: { Authorization: "Bearer " + token }
-        })
-            .then(resp => resp.json())
-            .then(json => {
-                const sortedCategorias = json.sort((a, b) => a.id - b.id);
-                setCategorias(sortedCategorias); // Definindo categorias
-            });
+        carregarCategorias();
     }, []);
-
+    
+    const carregarCategorias = async () => {
+        const token = getToken();
+    
+        try {
+            const response = await fetch('http://localhost:8080/admin/categorias', {
+                headers: { Authorization: "Bearer " + token }
+            });
+    
+            if (response.ok) {
+                const json = await response.json();
+                const sortedCategorias = json.sort((a, b) => a.id - b.id);
+    
+                setCategorias(sortedCategorias); // Definindo categorias
+            } else {
+                if (response.status === 500) {
+                    throw new Error('Token Inválido!');
+                } else if (response.status === 400) {
+                    Swal.fire({ title: "Erro!", html: `Erro ao carregar categorias!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
+                }
+            }
+        } catch (error) {
+            console.error('Erro ao carregar dados:', error);
+            Swal.fire({ title: "Erro!", html: `Erro ao carregar painel de administrador.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
+        }
+    };
     // Abre um modal com os detalhes da categoria usando o SweetAlert2
     const abrirPopupInfo = (categoria) => {
         Swal.fire({

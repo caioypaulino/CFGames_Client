@@ -1,53 +1,20 @@
 import React, { useEffect, useState } from "react";
-import styles from "./AdminPedidos.module.css";
+import styles from "./tabelaPerfilPedidos.module.css";
 import Swal from "sweetalert2";
 import { getToken } from "../../../utils/storage";
 import { dataHoraMaskBR, valueMaskBR, statusMask, creditCardXXXXMask, dataMaskBR, cpfMask, telefoneMask } from "../../../utils/mask";
 import { useNavigate } from "react-router-dom";
 
-const AdminPedidos = () => {
-    const [pedidos, setPedidos] = useState([]);
+const TabelaPerfilPedidos = (props) => {
+    const {pedidos} = props;
 
     const [paginaAtual, setPaginaAtual] = useState(1);
-    const [pedidosPorPagina] = useState(9);
+    const [pedidosPorPagina] = useState(6);
 
     const [colunaClassificada, setColunaClassificada] = useState(null);
     const [ordemClassificacao, setOrdemClassificacao] = useState('asc');
 
     const navigate = useNavigate();
-
-    useEffect(() => {
-        carregarPedidos();
-    }, []);
-
-    const carregarPedidos = async () => {
-        const token = getToken();
-
-        try {
-            const response = await fetch('http://localhost:8080/admin/pedidos', {
-                headers: { Authorization: "Bearer " + token }
-            });
-
-            if (response.ok) {
-                const json = await response.json()
-                const sortedPedidos = json.sort((a, b) => a.id - b.id); // Ordena os pedidos por ID
-
-                setPedidos(sortedPedidos);
-            }
-            else {
-                if (response.status === 500) {
-                    throw new Error('Token Inválido!');
-                }
-                else if (response.status === 400) {
-                    Swal.fire({ title: "Erro!", html: `Erro ao carregar pedidos!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-                }
-            }
-        }
-        catch (error) {
-            console.error('Erro ao carregar dados:', error);
-            Swal.fire({ title: "Erro!", html: `Erro ao carregar painel de administrador.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
-        }
-    };
 
     // Abre um modal com os detalhes do pedido usando o SweetAlert2
     const abrirPopupInfo = (pedido) => {
@@ -61,24 +28,15 @@ const AdminPedidos = () => {
                 <p><strong>Valor Total:</strong> R$ ${valueMaskBR(pedido.valorTotal)}</p>
                 <p><strong>Frete:</strong> R$ ${valueMaskBR(pedido.frete)}</p>
                 <hr>
-                <h2>Cliente</h2>
-                <p><strong>ID:</strong> ${pedido.cliente.id}</p>
-                <p><strong>Nome:</strong> ${pedido.cliente.nome}</p>
-                <p><strong>CPF:</strong> ${cpfMask(pedido.cliente.cpf)}</p>
-                <p><strong>Email:</strong> ${pedido.cliente.email}</p>
-                <p><strong>Data de Nascimento:</strong> ${dataMaskBR(pedido.cliente.dataNascimento)}</p>
-                <p><strong>Telefone:</strong> ${telefoneMask(pedido.cliente.telefone)}</p>
-                <hr>
                 <h2>Carrinho de Compras</h2>
-                <p><strong>ID:</strong> ${pedido.carrinhoCompra.id}</p>
+                <p><strong>Código:</strong> #${pedido.carrinhoCompra.id}</p>
                 <p><strong>Valor Carrinho:</strong> R$ ${valueMaskBR(pedido.carrinhoCompra.valorCarrinho)}</p>
                 <p><strong>Peso Total:</strong> ${valueMaskBR(pedido.carrinhoCompra.pesoTotal/1000)} kg</p>
                 <hr>
                 <h3>Itens do Carrinho:</h3>
                 ${pedido.carrinhoCompra.itensCarrinho.map(item => {
                     return `
-                        <p><strong>ID:</strong> ${item.id}</p>
-                        <p><strong>Produto (ID ${item.produto.id}):</strong> ${item.produto.titulo}</p>
+                        <p><strong>Produto:</strong> ${item.produto.titulo}</p>
                         <p><strong>Quantidade:</strong> ${item.quantidade}</p>
                         <p><strong>Preço Unitário:</strong> R$ ${valueMaskBR(item.produto.preco)}</p>
                         <p><strong>Valor Total do Item:</strong> R$ ${valueMaskBR(item.valorItem)}</p>
@@ -97,7 +55,6 @@ const AdminPedidos = () => {
                 }).join("")}
                 <hr>
                 <h2>Entrega</h2>
-                <p><strong>ID:</strong> ${pedido.enderecoCliente.id}</p>
                 <p><strong>Endereço:</strong> ${pedido.enderecoCliente.tipo}, ${pedido.enderecoCliente.apelido}, ${pedido.enderecoCliente.endereco.cep}, ${pedido.enderecoCliente.endereco.rua}, ${pedido.enderecoCliente.numero}, ${pedido.enderecoCliente.endereco.bairro}, ${pedido.enderecoCliente.endereco.cidade} - ${pedido.enderecoCliente.endereco.estado}</p>
                 <p><strong>Prazo:</strong> ${pedido.prazoDias + ' Dia(s)'}</p>
                 <p><strong>Observação:</strong> ${pedido.enderecoCliente.observacao}</p>
@@ -113,7 +70,7 @@ const AdminPedidos = () => {
             confirmButtonColor: "#6085FF",
             cancelButtonText: "Fechar",
             showDenyButton: true,
-            denyButtonText: "Deletar",
+            denyButtonText: "Cancelar Pedido",
 
             width: '40%',
         }).then((result) => {
@@ -144,7 +101,7 @@ const AdminPedidos = () => {
                 });
             } 
             else if (result.isDenied) { // Se o botão "Deletar" for clicado
-                abrirPopupDelete(pedido);
+                abrirPopupCancel(pedido);
             }
         });
     };
@@ -270,7 +227,7 @@ const AdminPedidos = () => {
     };
 
     // Função para solicitar confirmação da deleção do pedido
-    const abrirPopupDelete = (pedido) => {
+    const abrirPopupCancel = (pedido) => {
         Swal.fire({
             title: 'Tem certeza?',
             text: "Esta ação não pode ser revertida!",
@@ -278,12 +235,12 @@ const AdminPedidos = () => {
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Sim, deletar!',
-            cancelButtonText: 'Cancelar'
+            confirmButtonText: 'Sim, cancelar!',
+            cancelButtonText: 'Voltar'
         })
             .then((result) => {
                 if (result.isConfirmed) {
-                    deletarPedido(pedido.id);
+                    cancelarPedido(pedido.id);
                 }
                 else if (result.isDismissed) {
                     abrirPopupInfo(pedido);
@@ -292,11 +249,11 @@ const AdminPedidos = () => {
     };
 
     // Função para deletar um pedido
-    const deletarPedido = async (pedidoId) => {
+    const cancelarPedido = async (pedidoId) => {
         try {
             const token = getToken();
 
-            const response = await fetch(`http://localhost:8080/admin/pedidos/delete/${pedidoId}`, {
+            const response = await fetch(`http://localhost:8080/perfil/cancel/pedido/${pedidoId}`, {
                 method: "DELETE",
                 headers: {
                     Authorization: "Bearer " + token,
@@ -319,7 +276,7 @@ const AdminPedidos = () => {
         catch (error) {
             // Tratando mensagem de erro
             console.error("Erro ao deletar pedido:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao deletar o pedido.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
+            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao cancelar o pedido.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
         }
     };
 
@@ -347,12 +304,12 @@ const AdminPedidos = () => {
         else if (colunaClassificada === 'Valor Total') {
             return ordemClassificacao === 'asc' ? a.valorTotal - b.valorTotal : b.valorTotal - a.valorTotal;
         } 
-        else if (colunaClassificada === 'Cliente ID') {
-            return ordemClassificacao === 'asc' ? a.cliente.id - b.cliente.id : b.cliente.id - a.cliente.id;
-        } 
         else if (colunaClassificada === 'Status') {
             return ordemClassificacao === 'asc' ? a.status.localeCompare(b.status) : b.status.localeCompare(a.status);
         }
+        else if (colunaClassificada === 'Data Atualizacao') {
+            return ordemClassificacao === 'asc' ? new Date(a.dataAtualizacao) - new Date(b.dataAtualizacao) : new Date(b.dataAtualizacao) - new Date(a.dataAtualizacao);
+        } 
         return 0;
     });
 
@@ -375,7 +332,7 @@ const AdminPedidos = () => {
                     <thead>
                         <tr>
                             <th onClick={() => handleSort('ID')}>
-                                ID
+                                Código
                                 {colunaClassificada === 'ID' && (
                                     <span>{ordemClassificacao === 'asc' ? '▲' : '▼'}</span>
                                 )}
@@ -392,29 +349,29 @@ const AdminPedidos = () => {
                                     <span>{ordemClassificacao === 'asc' ? '▲' : '▼'}</span>
                                 )}
                             </th>
-                            <th onClick={() => handleSort('Cliente ID')}>
-                                Cliente ID
-                                {colunaClassificada === 'Cliente ID' && (
-                                    <span>{ordemClassificacao === 'asc' ? '▲' : '▼'}</span>
-                                )}
-                            </th>
                             <th onClick={() => handleSort('Status')}>
                                 Status
                                 {colunaClassificada === 'Status' && (
                                     <span>{ordemClassificacao === 'asc' ? '▲' : '▼'}</span>
                                 )}
                             </th>
-                            <th>Ações</th>
+                            <th onClick={() => handleSort('Data Atualizacao')}>
+                                Data Atualização
+                                {colunaClassificada === 'Data Atualizacao' && (
+                                    <span>{ordemClassificacao === 'asc' ? '▲' : '▼'}</span>
+                                )}
+                            </th>
+                            <th>Detalhes</th>
                         </tr>
                     </thead>
                     <tbody>
                         {pedidosAtuais.map(pedido => (
                             <tr key={pedido.id}>
-                                <td>{pedido.id}</td>
+                                <td>{'#' + pedido.id}</td>
                                 <td>{dataHoraMaskBR(pedido.data)}</td>
                                 <td>{'R$ ' + valueMaskBR(pedido.valorTotal)}</td>
-                                <td>{pedido.cliente.id}</td>
                                 <td>{statusMask(pedido.status)}</td>
+                                <td>{dataHoraMaskBR(pedido.dataAtualizacao)}</td>
                                 <td>
                                     <button className={styles.buttonAcoes} onClick={() => abrirPopupInfo(pedido)}>. . .</button>
                                 </td>
@@ -433,4 +390,4 @@ const AdminPedidos = () => {
     );
 };
 
-export default AdminPedidos;
+export default TabelaPerfilPedidos;
