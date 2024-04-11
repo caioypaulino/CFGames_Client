@@ -24,7 +24,7 @@ const AdminProdutos = () => {
     const [colunaClassificada, setColunaClassificada] = useState(null);
     const [ordemClassificacao, setOrdemClassificacao] = useState('asc');
     
-    const SwalJSX = withReactContent(Swal)
+    const SwalJSX = withReactContent(Swal);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -124,8 +124,6 @@ const AdminProdutos = () => {
     
     // Função para abrir o modal de atualização do produto
     const abrirPopupUpdate = (produto) => {
-        console.log(produto);
-
         const FormUpdateProduto = () => (
             <form>
                 <input id="titulo" type="text" className="swal2-input" placeholder="Título" defaultValue={produto.titulo} />
