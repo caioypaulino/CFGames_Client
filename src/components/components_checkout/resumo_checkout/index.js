@@ -216,7 +216,6 @@ const ResumoCheckout = (props) => {
 
     return (
         <>
-            {console.log(valorParcialPorCartao)}
             <div className={styles.resumo}>
                 <h1>Resumo</h1>
                 <p>Valor Carrinho: R$ {valueMaskBR(valorCarrinho)}</p>

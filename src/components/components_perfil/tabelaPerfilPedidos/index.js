@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import styles from "./tabelaPerfilPedidos.module.css";
 import Swal from "sweetalert2";
-import withReactContent from "sweetalert2-react-content";
-import Select from "react-select";
 import { getToken } from "../../../utils/storage";
 import { dataHoraMaskBR, valueMaskBR, statusMask, creditCardXXXXMask, dataMaskBR, cpfMask, telefoneMask } from "../../../utils/mask";
-import { useNavigate } from "react-router-dom";
+import FormTrocaDevolucao from "./FormTrocaDevolucao";
 
 const TabelaPerfilPedidos = (props) => {
     const { pedidos } = props;
@@ -16,10 +14,10 @@ const TabelaPerfilPedidos = (props) => {
     const [colunaClassificada, setColunaClassificada] = useState(null);
     const [ordemClassificacao, setOrdemClassificacao] = useState('asc');
 
+    const [pedido, setPedido] = useState({});
     const [itensTroca, setItensTroca] = useState([]);
 
-    const SwalJSX = withReactContent(Swal);
-    const navigate = useNavigate();
+    const [abrirFormTrocaDevolucao, setAbrirFormTrocaDevolucao] = useState(false);
 
     // Abre um modal com os detalhes do pedido usando o SweetAlert2
     const abrirPopupInfo = (pedido) => {
@@ -80,71 +78,16 @@ const TabelaPerfilPedidos = (props) => {
             width: '40%',
         }).then((result) => {
             if (result.isConfirmed) { // Se o botão "Editar" for clicado
-                abrirPopupTrocaDevolucao(pedido);
+                if (pedido.status != "ENTREGUE") {
+                    Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao solicitar troca/devolução.<br><br>Não é possível realizar a solicitação de troca. (Pedido não entregue)`, icon: "error", confirmButtonColor: "#6085FF" });
+                }
+                else{
+                    setPedido(pedido);
+                    setAbrirFormTrocaDevolucao(true);
+                }
             }
             else if (result.isDenied) { // Se o botão "Deletar" for clicado
                 abrirPopupCancel(pedido);
-            }
-        });
-    };
-
-    // Função para abrir o modal de troca/devolução do pedido
-    const abrirPopupTrocaDevolucao = (pedido) => {
-        const FormTrocaDevolucao = () => (
-            <>
-                <h3>Selecione o(s) Item(nas) para Troca/Devolução</h3>
-                <form>
-                    <Select
-                        id="itensTroca"
-                        class="swal2-select"
-                        styles={{
-                            control: (provided) => ({
-                                ...provided,
-                                width: '100%',
-                                marginTop: '3%'
-                            }),
-                            menu: (provided) => ({
-                                ...provided,
-                                width: '65%',
-                            }),
-                            option: (provided) => ({
-                                ...provided,
-                                fontSize: '1rem',
-                            }),
-                        }}
-                        placeholder="Selecione o(s) Item(ns)"
-                        options={pedido.carrinhoCompra.itensCarrinho.map((itemPedido) => ({ value: itemPedido.id, label: `${itemPedido.produto.titulo}, ${itemPedido.produto.plataforma}, ${itemPedido.produto.publisher}` }))}
-                        isMulti
-                        isClearable
-                        isSearchable
-                        closeMenuOnSelect={false}
-                        onChange={(itemSelecionado) => setItensTroca(itemSelecionado)}
-                    />
-                </form>
-            </>
-        );
-
-        SwalJSX.fire({
-            title: 'Solicitar Troca/Devolução',
-            html: (
-                <FormTrocaDevolucao />
-            ),
-            showCancelButton: true,
-            confirmButtonText: "Atualizar",
-            confirmButtonColor: "#6085FF",
-            cancelButtonText: "Cancelar",
-            icon: "warning",
-            width: '30%',
-            heightAuto: false,
-            height: '100rem',
-            preConfirm: () => {
-
-
-
-            }
-        }).then((result) => {
-            if (result.isDismissed) { // Se o usuário clicar em cancelar, volte para abrirPopupInfo
-                abrirPopupInfo(pedido);
             }
         });
     };
@@ -248,67 +191,76 @@ const TabelaPerfilPedidos = (props) => {
     };
 
     return (
-        <div className={styles.container}>
-            {console.log(pedidos)}
-            <div className={styles.tbInfo}>
-                <table className={styles.table}>
-                    <thead>
-                        <tr>
-                            <th onClick={() => handleSort('ID')}>
-                                Código
-                                {colunaClassificada === 'ID' && (
-                                    <span>{ordemClassificacao === 'asc' ? '▲' : '▼'}</span>
-                                )}
-                            </th>
-                            <th onClick={() => handleSort('Data')}>
-                                Data
-                                {colunaClassificada === 'Data' && (
-                                    <span>{ordemClassificacao === 'asc' ? '▲' : '▼'}</span>
-                                )}
-                            </th>
-                            <th onClick={() => handleSort('Valor Total')}>
-                                Valor Total
-                                {colunaClassificada === 'Valor Total' && (
-                                    <span>{ordemClassificacao === 'asc' ? '▲' : '▼'}</span>
-                                )}
-                            </th>
-                            <th onClick={() => handleSort('Status')}>
-                                Status
-                                {colunaClassificada === 'Status' && (
-                                    <span>{ordemClassificacao === 'asc' ? '▲' : '▼'}</span>
-                                )}
-                            </th>
-                            <th onClick={() => handleSort('Data Atualizacao')}>
-                                Data Atualização
-                                {colunaClassificada === 'Data Atualizacao' && (
-                                    <span>{ordemClassificacao === 'asc' ? '▲' : '▼'}</span>
-                                )}
-                            </th>
-                            <th>Detalhes</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {pedidosAtuais.map(pedido => (
-                            <tr key={pedido.id}>
-                                <td>{'#' + pedido.id}</td>
-                                <td>{dataHoraMaskBR(pedido.data)}</td>
-                                <td>{'R$ ' + valueMaskBR(pedido.valorTotal)}</td>
-                                <td>{statusMask(pedido.status)}</td>
-                                <td>{dataHoraMaskBR(pedido.dataAtualizacao)}</td>
-                                <td>
-                                    <button className={styles.buttonAcoes} onClick={() => abrirPopupInfo(pedido)}>. . .</button>
-                                </td>
+        <div>
+            <div className={styles.container}>
+                <div className={styles.tbInfo}>
+                    <table className={styles.table}>
+                        <thead>
+                            <tr>
+                                <th onClick={() => handleSort('ID')}>
+                                    Código
+                                    {colunaClassificada === 'ID' && (
+                                        <span>{ordemClassificacao === 'asc' ? '▲' : '▼'}</span>
+                                    )}
+                                </th>
+                                <th onClick={() => handleSort('Data')}>
+                                    Data
+                                    {colunaClassificada === 'Data' && (
+                                        <span>{ordemClassificacao === 'asc' ? '▲' : '▼'}</span>
+                                    )}
+                                </th>
+                                <th onClick={() => handleSort('Valor Total')}>
+                                    Valor Total
+                                    {colunaClassificada === 'Valor Total' && (
+                                        <span>{ordemClassificacao === 'asc' ? '▲' : '▼'}</span>
+                                    )}
+                                </th>
+                                <th onClick={() => handleSort('Status')}>
+                                    Status
+                                    {colunaClassificada === 'Status' && (
+                                        <span>{ordemClassificacao === 'asc' ? '▲' : '▼'}</span>
+                                    )}
+                                </th>
+                                <th onClick={() => handleSort('Data Atualizacao')}>
+                                    Data Atualização
+                                    {colunaClassificada === 'Data Atualizacao' && (
+                                        <span>{ordemClassificacao === 'asc' ? '▲' : '▼'}</span>
+                                    )}
+                                </th>
+                                <th>Detalhes</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-                <div className={styles.pagination}>
-                    <button onClick={handlePaginaAnterior} disabled={paginaAtual === 1}>&lt;</button>
-                    <span className={styles.paginaAtual}>{paginaAtual}</span><span className={styles.totalPaginas}>/{totalPaginas}</span>
-                    <button onClick={handleProximaPagina} disabled={paginaAtual === totalPaginas}>&gt;</button>
+                        </thead>
+                        <tbody>
+                            {pedidosAtuais.map(pedido => (
+                                <tr key={pedido.id}>
+                                    <td>{'#' + pedido.id}</td>
+                                    <td>{dataHoraMaskBR(pedido.data)}</td>
+                                    <td>{'R$ ' + valueMaskBR(pedido.valorTotal)}</td>
+                                    <td>{statusMask(pedido.status)}</td>
+                                    <td>{dataHoraMaskBR(pedido.dataAtualizacao)}</td>
+                                    <td>
+                                        <button className={styles.buttonAcoes} onClick={() => abrirPopupInfo(pedido)}>. . .</button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    <div className={styles.pagination}>
+                        <button onClick={handlePaginaAnterior} disabled={paginaAtual === 1}>&lt;</button>
+                        <span className={styles.paginaAtual}>{paginaAtual}</span><span className={styles.totalPaginas}>/{totalPaginas}</span>
+                        <button onClick={handleProximaPagina} disabled={paginaAtual === totalPaginas}>&gt;</button>
+                    </div>
                 </div>
 
             </div>
+            {console.log(itensTroca)}
+            <FormTrocaDevolucao
+                isOpen={abrirFormTrocaDevolucao}
+                onRequestClose={() => setAbrirFormTrocaDevolucao(false)}
+                pedido={pedido}
+                itensTroca={itensTroca}
+                setItensTroca={setItensTroca}
+            />
         </div>
     );
 };

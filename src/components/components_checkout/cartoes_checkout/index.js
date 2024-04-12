@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import style from "./CartoesCheckout.module.css";
+import styles from "./CartoesCheckout.module.css";
 import Swal from "sweetalert2";
 import Select from "react-select";
 import { useNavigate } from 'react-router-dom';
@@ -211,9 +211,10 @@ const CartoesCheckout = (props) => {
     };
 
     return (
-        <div className={style.selectPagamento}>
+        <div className={styles.selectPagamento}>
+            {console.log(parcelasSelecionadas)}
             <h1>Selecione o(s) Método(s) de Pagamento</h1>
-            <form className={style.cartaoList}>
+            <form className={styles.cartaoList}>
                 <Select
                     id="cartoes"
                     class="swal2-select"
@@ -243,14 +244,14 @@ const CartoesCheckout = (props) => {
                 />
             </form>
             {cartoesSelecionados.length > 0 && (
-                <div className={style.cartaoParcial}>
+                <div className={styles.cartaoParcial}>
                     {cartoesSelecionados.map(cartao => (
                         <div key={cartao.value} >
                             <p>Cartão: {cartao.label}</p>
                             <p>Valor Parcial: {editarValorParcial ?
                                 <input
                                     type="number"
-                                    className={style.inputEditValorParcial}
+                                    className={styles.inputEditValorParcial}
                                     value={valorParcialPorCartao[cartao.value]}
                                     onChange={(e) => handleValorParcialChange(cartao.value, e.target.value)}
                                     title="Apenas números, pontos e vírgulas são permitidos"
@@ -290,15 +291,15 @@ const CartoesCheckout = (props) => {
                 </div>
             )}
 
-            <div className={style.functionsCartoes}>
-                <button type="button" className={style.btnNovoCartao} onClick={abrirPopupCartao}>Novo Cartão</button>
+            <div className={styles.functionsCartoes}>
+                <button type="button" className={styles.btnNovoCartao} onClick={abrirPopupCartao}>Novo Cartão</button>
 
                 {cartoesSelecionados.length > 0 && (
                     <>
                         {editarValorParcial ? (
-                            <button type="button" className={style.btnEditValorParcial} onClick={handleSaveValorParcial}>Salvar</button>
+                            <button type="button" className={styles.btnEditValorParcial} onClick={handleSaveValorParcial}>Salvar</button>
                         ) : (
-                            <button type="button" className={style.btnEditValorParcial} onClick={handleEditValorParcial}>Editar Valor Parcial</button>
+                            <button type="button" className={styles.btnEditValorParcial} onClick={handleEditValorParcial}>Editar Valor Parcial</button>
                         )}
                     </>
                 )}
