@@ -14,7 +14,7 @@ const tabelaActions = (props) => {
         <Link to="/perfil/enderecos"><button>Endereços </button></Link>
         <Link to="/perfil/cartoes"><button>Cartões de crédito</button></Link>
         <Link to="/perfil/pedidos"><button>Meus pedidos</button></Link>
-        <button>Meus Cupons</button>
+        <Link to="/perfil/cupons"><button>Meus Cupons</button></Link>
         <Link to="/perfil/solicitacoes_troca_devolucao"><button>Trocas e Devoluções</button></Link>
       </div>
     </div>

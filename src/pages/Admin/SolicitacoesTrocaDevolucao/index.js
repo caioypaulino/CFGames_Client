@@ -222,16 +222,7 @@ const AdminSolicitacoesTrocaDevolucao = () => {
 
     // Função para atualizar status solicitação
     const abrirPopupConcluirSolicitacao = (solicitacao) => {
-        if (solicitacao.status === "CONCLUIDA") {
-            Swal.fire({ title: "Conclusão Inválida!", html: `Não é possível concluir a solicitação.<br></br>(Solicitação já foi Concluída)`, icon: "warning", confirmButtonColor: "#6085FF" });
-        }
-        else if (solicitacao.status === "CANCELADA") {
-            Swal.fire({ title: "Conclusão Inválida!", html: `Não é possível concluir a solicitação.<br></br>(Solicitação Cancelada)`, icon: "warning", confirmButtonColor: "#6085FF" });
-        }
-        else if (solicitacao.status !== "CONCLUIDA") {
-            Swal.fire({ title: "Conclusão Inválida!", html: `Não é possível concluir a solicitação.<br></br>(Solicitação ainda não foi aprovada ou itens ainda não foram recebidos)`, icon: "warning", confirmButtonColor: "#6085FF" });
-        }
-        else {
+        if (solicitacao.status === "APROVADA" || solicitacao.status === "PRODUTOS_RECEBIDOS") {
             // Preenche itensReposicao ao abrirPopup
             setItensReposicao(solicitacao.itensTroca.map((item) => ({
                 itemTroca: { id: item.id },
@@ -328,6 +319,15 @@ const AdminSolicitacoesTrocaDevolucao = () => {
                     abrirPopupInfo(solicitacao);
                 }
             });
+        }
+        else if (solicitacao.status === "CONCLUIDA") {
+            Swal.fire({ title: "Conclusão Inválida!", html: `Não é possível concluir a solicitação.<br></br>(Solicitação já foi Concluída)`, icon: "warning", confirmButtonColor: "#6085FF" });
+        }
+        else if (solicitacao.status === "CANCELADA") {
+            Swal.fire({ title: "Conclusão Inválida!", html: `Não é possível concluir a solicitação.<br></br>(Solicitação Cancelada)`, icon: "warning", confirmButtonColor: "#6085FF" });
+        }
+        else if (solicitacao.status !== "CONCLUIDA") {
+            Swal.fire({ title: "Conclusão Inválida!", html: `Não é possível concluir a solicitação.<br></br>(Solicitação ainda não foi aprovada ou itens ainda não foram recebidos)`, icon: "warning", confirmButtonColor: "#6085FF" });
         }
     };
 

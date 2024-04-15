@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
 import styles from "./ResumoCheckout.module.css";
 import Swal from "sweetalert2";
-import cuponsData from "../../../utils/cupons.json";
 import { valueMaskBR } from "../../../utils/mask";
 import CartoesCheckout from "../cartoes_checkout";
+import CuponsCheckout from "../cupons_checkout";
 import { getToken } from "../../../utils/storage";
 import { useNavigate } from "react-router-dom";
+import { dataHoraMaskBR } from "../../../utils/mask";
 
 const ResumoCheckout = (props) => {
     const { valorCarrinho, frete, prazo, enderecoEntrega, enderecoAdicionado, excluirEndereco } = props;
 
-    const [inputValue, setInputValue] = useState("");
-    const [cupons, setProducts] = useState([]);
-    const [desconto, setDesconto] = useState("");
+    const [desconto, setDesconto] = useState(0);
+    const [troco, setTroco] = useState(0);
     const [valorTotal, setValorTotal] = useState(0);
 
     const [cartoesSelecionados, setCartoesSelecionados] = useState([]);
@@ -21,39 +21,44 @@ const ResumoCheckout = (props) => {
     const [valorParcialEditado, setValorParcialEditado] = useState(false);
     const [cartoesAdicionados, setCartoesAdicionados] = useState([]);
 
-    const navigate = useNavigate();
+    const [cuponsSelecionados, setCuponsSelecionados] = useState([]);
 
-    useEffect(() => {
-        setProducts(cuponsData);
-    }, []);
+    const navigate = useNavigate();
 
     // Atualizando o valor total sempre que houver mudanças nos valores do carrinho, frete ou desconto
     useEffect(() => {
         const total = valorCarrinho + parseFloat(frete || 0) - desconto;
 
-        setValorTotal(total);
+        if (total < 0) {
+            setValorTotal(0);
+            setTroco(total * (-1));
+        }
+        else {
+            setValorTotal(total);
+            setTroco(0);
+        }
     }, [valorCarrinho, frete, desconto]);
 
-    const handleInputChange = (event) => {
-        setInputValue(event.target.value);
-    };
+    useEffect(() => {
+        if (cuponsSelecionados.length > 0) {
+            let descontoTotal = 0;
 
-    const verificaCupom = (codeToCheck) => {
-        return cupons.some((cupom) => cupom.code === codeToCheck);
-    };
+            cuponsSelecionados.forEach(cupom => {
+                descontoTotal += cupom.desconto;
+            });
 
-    const aplicaDesconto = (code) => {
-        if (verificaCupom(code)) {
-            const cupomEncontrado = cupons.find((cupom) => cupom.code === code);
-            if (cupomEncontrado) {
-                setDesconto(cupomEncontrado.discount);
-            } else {
-                window.alert(`Cupom ${cupons} encontrado, mas inválido`);
-            }
-        } else {
-            window.alert(`Cupom ${cupons} não encontrado ou inválido`);
+            setDesconto(descontoTotal);
         }
-    };
+        else {
+            setDesconto(0);
+        }
+    }, [cuponsSelecionados, desconto]);
+
+    useEffect(() => {
+        if (cartoesSelecionados.length > 0 && valorTotal <= 0) {
+            setCartoesSelecionados([]);
+        }
+    }, [cuponsSelecionados, cartoesSelecionados, valorTotal]);
 
     const abrirPopupConfirmarPedido = () => {
         // Verificando se o endereço de entrega foi selecionado
@@ -61,19 +66,18 @@ const ResumoCheckout = (props) => {
             return Swal.fire({ title: 'Erro!', text: 'Por favor, selecione um endereço de entrega.', icon: 'error', confirmButtonColor: "#6085FF", });// Return para evitar a abertura do popup de confirmação
         }
 
-        // Verificando se pelo menos um cartão foi selecionado
-        if (cartoesSelecionados.length === 0) {
+        // Verificando se pelo menos um cartão ou cupom foi selecionado
+        if (cuponsSelecionados.length === 0 && cartoesSelecionados.length === 0) {
             return Swal.fire({ title: 'Erro!', text: 'Por favor, selecione ao menos um método de pagamento.', icon: 'error', confirmButtonColor: "#6085FF", });
         }
 
-        // Verificando se algum valor parcial por cartão é menor ou igual a 10
         const minValorParcial = cartoesSelecionados.some(cartaoSelecionado => valorParcialPorCartao[cartaoSelecionado.value] < 10);
 
-        if (minValorParcial) {
+        if (cuponsSelecionados.length > 0 && minValorParcial && cartoesSelecionados.length > 1) {
             return Swal.fire({ title: 'Erro!', text: 'Valor parcial mínimo por cartão é R$ 10,00.', icon: 'error', confirmButtonColor: "#6085FF", });
         }
 
-        const detalhesPedido =`
+        const detalhesPedido = `
             <div class=${styles.justifyText}>
                 <hr>
                 <h2>Detalhes</h2>
@@ -83,16 +87,23 @@ const ResumoCheckout = (props) => {
                 <p><strong>Desconto:</strong> R$ ${valueMaskBR(desconto || 0)}</p>
                 <hr>
                 <h2>Pagamento</h2>
+                ${cuponsSelecionados && cuponsSelecionados.map(cupom => {
+            return `
+                            <p><strong>Cupom:</strong> ${cupom.value}</p>
+                            <p><strong>Desconto Parcial:</strong> R$ ${valueMaskBR(cupom.desconto || 0)}</p>
+                        `;
+        }).join("<br>")}
+                <br>
                 ${cartoesSelecionados && cartoesSelecionados.map(cartao => {
-                const valorParcial = valorParcialPorCartao[cartao.value];
-                const parcelas = parcelasPorCartao[cartao.value];
+            const valorParcial = valorParcialPorCartao[cartao.value];
+            const parcelas = parcelasPorCartao[cartao.value];
 
-                return `
-                    <p><strong>Cartão:</strong> ${cartao.label}</p>
-                    <p><strong>Valor Parcial:</strong> R$ ${valueMaskBR(valorParcial || 0)}</p>
-                    <p><strong>Parcelas:</strong> ${parcelas}x R$ ${(valueMaskBR(valorParcial / parcelas) || 0)}</p>
-                `;
-            }).join("<br>")}
+            return `
+                        <p><strong>Cartão:</strong> ${cartao.label}</p>
+                        <p><strong>Valor Parcial:</strong> R$ ${valueMaskBR(valorParcial || 0)}</p>
+                        <p><strong>Parcelas:</strong> ${parcelas}x R$ ${(valueMaskBR(valorParcial / parcelas) || 0)}</p>
+                    `;
+        }).join("<br>")}
                 <hr>
                 <h2>Entrega</h2>
                 <p><strong>Endereço:</strong> ${(enderecoEntrega && enderecoEntrega.label)}</p>
@@ -132,7 +143,13 @@ const ResumoCheckout = (props) => {
                     enderecoCliente: {
                         id: enderecoEntrega.value
                     },
-                    cupons: [],
+                    cupons: cuponsSelecionados.map(cupomSelecionado => {
+                        const cupomObj = {
+                            codigoCupom: cupomSelecionado ? cupomSelecionado.value : ''
+                        };
+
+                        return cupomObj;
+                    }),
                     cartoes: cartoesSelecionados.map(cartaoSelecionado => {
                         const cartaoObj = {
                             cartao: {
@@ -199,18 +216,18 @@ const ResumoCheckout = (props) => {
 
             if (response.ok) {
 
-            } 
+            }
             else {
                 // Buscando mensagem de erro que não é JSON
                 const errorMessage = await response.text();
 
                 throw new Error(errorMessage);
             }
-        } 
+        }
         catch (error) {
             // Tratando mensagem de erro
             console.error("Erro ao excluir cartão:", error);
-            Swal.fire({title: "Erro!", html: `Ocorreu um erro ao excluir o cartão.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF"});
+            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao excluir o cartão.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" });
         }
     };
 
@@ -221,15 +238,11 @@ const ResumoCheckout = (props) => {
                 <p>Valor Carrinho: R$ {valueMaskBR(valorCarrinho)}</p>
                 <p>Frete: R$ {frete !== undefined && parseFloat(frete) || '0.00'}</p>
                 <p>Prazo de Entrega: {prazo !== undefined && prazo + ' Dia(s)' || 'Indefinido'}</p>
-                <p>Desconto: R$ {(desconto !== undefined && desconto || '0.00')}</p><br></br>
+                <p>Desconto: R$ {(desconto !== undefined && valueMaskBR(desconto) || '0.00')}</p>
+                <p>Troco: R$ {(troco !== undefined && valueMaskBR(troco) || '0.00')}</p><br></br>
                 <p>Total: R$ {valueMaskBR(valorTotal)}</p>
                 <button className={styles.btn} onClick={abrirPopupConfirmarPedido}>Confirmar Pedido</button>
                 <button className={styles.btnContinuar}><a className={styles.link} href="/carrinho">Voltar ao Carrinho</a></button>
-            </div>
-            <div className={styles.cupom}>
-                <h1>Desconto</h1>
-                <input className={styles.inputTextCupom} type="text" value={inputValue} onChange={handleInputChange} placeholder="Código do cupom" />
-                <button className={styles.btnCupom} onClick={() => aplicaDesconto(inputValue)}>Aplicar cupom</button>
             </div>
             <div className={styles.pagamento}>
                 <CartoesCheckout
@@ -242,6 +255,12 @@ const ResumoCheckout = (props) => {
                     excluirCartoes={excluirCartoes}
                 />
             </div>
+            <div className={styles.pagamento}>
+                <CuponsCheckout
+                    valorTotal={valorTotal}
+                    cuponsPedido={[cuponsSelecionados, setCuponsSelecionados]} // passando como props
+                />
+            </div><br></br>
         </>
     );
 };

@@ -16,6 +16,7 @@ import PerfilEnderecos from "./pages/Perfil/Enderecos";
 import PerfilCartoes from "./pages/Perfil/Cartoes";
 import PerfilPedidos from "./pages/Perfil/Pedidos";
 import PerfilSolicitacoes from "./pages/Perfil/SolicitacoesTrocaDevolucao"
+import PerfilCupons from "./pages/Perfil/Cupons"
 import AdminProdutos from "./pages/Admin/Produtos"
 import AdminCategorias from "./pages/Admin/Categorias";
 import AdminClientes from "./pages/Admin/Clientes";
@@ -36,6 +37,7 @@ export default function App() {
                 <Route path="/perfil/cartoes" element={<Layout><PerfilCartoes /></Layout>} />
                 <Route path="/perfil/pedidos" element={<Layout><PerfilPedidos /></Layout>} />
                 <Route path="/perfil/solicitacoes_troca_devolucao" element={<Layout><PerfilSolicitacoes /></Layout>} />
+                <Route path="/perfil/cupons" element={<Layout><PerfilCupons /></Layout>} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/cadastro/cliente" element={<CadastroCliente />} />
                 <Route path="/cadastro/endereco" element={<CadastroEndereco />} />

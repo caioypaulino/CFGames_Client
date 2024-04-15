@@ -81,6 +81,17 @@ const CartoesCheckout = (props) => {
         setParcelasSelecionadas({});
     }, [valorTotal]);
 
+    const handleSelecionarCartao = (cartaoSelecionado) => {
+        // Verificar se o valor total é menor que 0
+        if (valorTotal <= 0) {
+            Swal.fire({ title: "Erro!", html: `Não é possível selecionar cartão.<br><br>Valor Total é R$ 0.00!`, icon: "error", confirmButtonColor: "#6085FF" });
+        } 
+        else {
+            // Permitir a seleção do cartão
+            setCartoesSelecionados(cartaoSelecionado);
+        }
+    };
+
     const carregarCartoesCliente = async () => {
         const token = getToken();
 
@@ -212,7 +223,6 @@ const CartoesCheckout = (props) => {
 
     return (
         <div className={styles.selectPagamento}>
-            {console.log(parcelasSelecionadas)}
             <h1>Selecione o(s) Método(s) de Pagamento</h1>
             <form className={styles.cartaoList}>
                 <Select
@@ -239,8 +249,8 @@ const CartoesCheckout = (props) => {
                     isClearable
                     isSearchable
                     closeMenuOnSelect={false}
-                    defaultValue={cartoesCliente.map((cartaoCliente) => ({ value: cartaoCliente.numeroCartao, label: `${cartaoCliente.bandeira}, ${creditCardXXXXMask(cartaoCliente.numeroCartao)}, ${cartaoCliente.nomeCartao}  [${cartaoCliente.mesVencimento}/${cartaoCliente.anoVencimento}]` }))}
-                    onChange={(cartaoSelecionado) => setCartoesSelecionados(cartaoSelecionado)}
+                    value={cartoesSelecionados}
+                    onChange={handleSelecionarCartao}
                 />
             </form>
             {cartoesSelecionados.length > 0 && (

@@ -372,8 +372,7 @@ const AdminPedidos = () => {
     };
 
     return (
-        <div className={styles.container}>
-            {console.log(pedidos)}
+        <div className={styles.container}>z
             <div className={styles.tbInfo}>
                 <table className={styles.table}>
                     <thead>

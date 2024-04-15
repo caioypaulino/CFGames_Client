@@ -4,7 +4,7 @@
   grid-gap: 20px;
   background-color: #e2e6ef;
   margin: 1.15%;
-  margin-top: 3%;
+  margin-top: -1rem;
   width: 41%;
   max-height: auto;
   border-radius: 7.5px;
@@ -14,7 +14,7 @@
   padding: 1%;
 }
 
-.cartaoList {
+.cupomList {
   margin: 10px;
   margin-bottom: 4%;
 }
@@ -61,7 +61,7 @@ p {
   background-color: #2349c5;
 }
 
-.cartaoParcial p {
+.cupomParcial p {
   font-family: 'Roboto';
   font-weight: bold;
   color: #011640;
@@ -84,5 +84,6 @@ p {
 
 .inputEditValorParcial:focus {
   border: 2px solid #2684ff;
-  outline: none; /* Remove a borda padrão do navegador */
+  outline: none;
+  /* Remove a borda padrão do navegador */
 }
