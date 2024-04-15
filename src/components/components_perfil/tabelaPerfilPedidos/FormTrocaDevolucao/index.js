@@ -50,7 +50,7 @@ const FormTrocaDevolucao = ({
                         itemCarrinho: {
                             id: item.value
                         },
-                        quantidade: item.quantidadeTroca
+                        quantidadeTroca: item.quantidadeTroca
                     })),
                     observacao: document.getElementById("motivo").value
                 }),

@@ -132,6 +132,14 @@ export const valueMaskBR = (value) => {
 }
 
 export const statusMask = (value) => {
-    const palavras = value.toLowerCase().split('_').map(palavra => palavra.charAt(0).toUpperCase() + palavra.slice(1));
-    return palavras.join(' ');
+    if (value === "EM_TRANSITO") {
+        return "Em Trânsito";
+    }
+    else if (value === "CONCLUIDA") {
+        return "Concluída";
+    }
+    else {
+        const palavras = value.toLowerCase().split('_').map(palavra => palavra.charAt(0).toUpperCase() + palavra.slice(1));
+        return palavras.join(' ');
+    }
 }

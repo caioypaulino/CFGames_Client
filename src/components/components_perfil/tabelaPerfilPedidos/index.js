@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "./tabelaPerfilPedidos.module.css";
 import Swal from "sweetalert2";
 import { getToken } from "../../../utils/storage";
-import { dataHoraMaskBR, valueMaskBR, statusMask, creditCardXXXXMask, dataMaskBR, cpfMask, telefoneMask } from "../../../utils/mask";
+import { dataHoraMaskBR, valueMaskBR, statusMask, creditCardXXXXMask} from "../../../utils/mask";
 import FormTrocaDevolucao from "./FormTrocaDevolucao";
 
 const TabelaPerfilPedidos = (props) => {
@@ -74,25 +74,33 @@ const TabelaPerfilPedidos = (props) => {
             cancelButtonText: "Fechar",
             showDenyButton: true,
             denyButtonText: "Cancelar Pedido",
-
             width: '40%',
         }).then((result) => {
             if (result.isConfirmed) { // Se o botão "Editar" for clicado
-                if (pedido.status != "ENTREGUE") {
-                    Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao solicitar troca/devolução.<br><br>Não é possível realizar a solicitação de troca. (Pedido não entregue)`, icon: "error", confirmButtonColor: "#6085FF" });
+                if (pedido.status.includes("TROCA")) {
+                    Swal.fire({ title: "Solicitação Inválida!", html: `Não é possível realizar a solicitação de troca.<br></br>(Solicitação já realizada)`, icon: "warning", confirmButtonColor: "#6085FF" });
+                }
+                else if (pedido.status === "PAGAMENTO_REPROVADO") {
+                    Swal.fire({ title: "Solicitação Inválida!", html: `Não é possível realizar a solicitação de troca.<br></br>(${statusMask(pedido.status)})`, icon: "warning", confirmButtonColor: "#6085FF" });
+                }
+                else if (pedido.status === "PAGAMENTO_APROVADO") {
+                    Swal.fire({ title: "Solicitação Inválida!", html: `Não é possível realizar a solicitação de troca.<br></br>(Aguarde a entrega do Pedido)`, icon: "warning", confirmButtonColor: "#6085FF" });
+                }
+                else if (pedido.status !== "ENTREGUE") {
+                    Swal.fire({ title: "Solicitação Inválida!", html: `Não é possível realizar a solicitação de troca.<br></br>(Pedido ${statusMask(pedido.status)})`, icon: "warning", confirmButtonColor: "#6085FF" });
                 }
                 else{
                     setPedido(pedido);
                     setAbrirFormTrocaDevolucao(true);
                 }
             }
-            else if (result.isDenied) { // Se o botão "Deletar" for clicado
+            else if (result.isDenied) {
                 abrirPopupCancel(pedido);
             }
         });
     };
 
-    // Função para solicitar confirmação da deleção do pedido
+    // Solicitar confirmação do cancelamento do pedido
     const abrirPopupCancel = (pedido) => {
         Swal.fire({
             title: 'Tem certeza?',
@@ -114,7 +122,7 @@ const TabelaPerfilPedidos = (props) => {
             });
     };
 
-    // Função para deletar um pedido
+    // Função para cancelar um pedido
     const cancelarPedido = async (pedidoId) => {
         try {
             const token = getToken();
@@ -141,7 +149,7 @@ const TabelaPerfilPedidos = (props) => {
         }
         catch (error) {
             // Tratando mensagem de erro
-            console.error("Erro ao deletar pedido:", error);
+            console.error("Erro ao cancelar pedido:", error);
             Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao cancelar o pedido.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
         }
     };
@@ -173,7 +181,7 @@ const TabelaPerfilPedidos = (props) => {
         else if (colunaClassificada === 'Status') {
             return ordemClassificacao === 'asc' ? a.status.localeCompare(b.status) : b.status.localeCompare(a.status);
         }
-        else if (colunaClassificada === 'Data Atualizacao') {
+        else if (colunaClassificada === 'Ultima Atualizacao') {
             return ordemClassificacao === 'asc' ? new Date(a.dataAtualizacao) - new Date(b.dataAtualizacao) : new Date(b.dataAtualizacao) - new Date(a.dataAtualizacao);
         }
         return 0;
@@ -221,9 +229,9 @@ const TabelaPerfilPedidos = (props) => {
                                         <span>{ordemClassificacao === 'asc' ? '▲' : '▼'}</span>
                                     )}
                                 </th>
-                                <th onClick={() => handleSort('Data Atualizacao')}>
-                                    Data Atualização
-                                    {colunaClassificada === 'Data Atualizacao' && (
+                                <th onClick={() => handleSort('Ultima Atualizacao')}>
+                                    Última Atualização
+                                    {colunaClassificada === 'Ultima Atualizacao' && (
                                         <span>{ordemClassificacao === 'asc' ? '▲' : '▼'}</span>
                                     )}
                                 </th>
@@ -253,7 +261,6 @@ const TabelaPerfilPedidos = (props) => {
                 </div>
 
             </div>
-            {console.log(itensTroca)}
             <FormTrocaDevolucao
                 isOpen={abrirFormTrocaDevolucao}
                 onRequestClose={() => setAbrirFormTrocaDevolucao(false)}

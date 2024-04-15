@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "./AdminPedidos.module.css";
 import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 import { getToken } from "../../../utils/storage";
 import { dataHoraMaskBR, valueMaskBR, statusMask, creditCardXXXXMask, dataMaskBR, cpfMask, telefoneMask } from "../../../utils/mask";
 import { useNavigate } from "react-router-dom";
@@ -14,6 +15,7 @@ const AdminPedidos = () => {
     const [colunaClassificada, setColunaClassificada] = useState(null);
     const [ordemClassificacao, setOrdemClassificacao] = useState('asc');
 
+    const SwalJSX = withReactContent(Swal);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -75,7 +77,7 @@ const AdminPedidos = () => {
                 <p><strong>Peso Total:</strong> ${valueMaskBR(pedido.carrinhoCompra.pesoTotal/1000)} kg</p>
                 <hr>
                 <h3>Itens do Carrinho:</h3>
-                ${pedido.carrinhoCompra.itensCarrinho.map(item => {
+                ${pedido.carrinhoCompra.itensCarrinho.sort((a, b) => a.id - b.id).map(item => {
                     return `
                         <p><strong>ID:</strong> ${item.id}</p>
                         <p><strong>Produto (ID ${item.produto.id}):</strong> ${item.produto.titulo}</p>
@@ -114,33 +116,32 @@ const AdminPedidos = () => {
             cancelButtonText: "Fechar",
             showDenyButton: true,
             denyButtonText: "Deletar",
-
             width: '40%',
         }).then((result) => {
             if (result.isConfirmed) { // Se o botão "Editar" for clicado
-                Swal.fire({
+                const FormUpdateStatus = () => (
+                    <div>
+                        <p>Selecione uma opção:</p>
+                        <button onClick={() => despacharPedido(pedido.id)} className="swal2-confirm swal2-styled" style={{ backgroundColor: '#6085FF', fontSize:'1rem' }}>Em Trânsito</button>
+                        <button onClick={() => confirmarEntrega(pedido.id)} className="swal2-deny swal2-styled" style={{ backgroundColor: '#011640', fontSize:'1rem' }}>Entregue</button>
+                        <button onClick={() => abrirPopupUpdateStatus(pedido)} className="swal2-cancel swal2-styled" style={{ backgroundColor: '#2D314D', fontSize:'1rem' }}>Personalizado</button>
+                        <button onClick={() => abrirPopupInfo(pedido)} className="swal2-cancel swal2-styled" style={{ backgroundColor: '#6E7881', fontSize:'1rem' }}>Voltar</button>
+                    </div>
+                );
+                
+                SwalJSX.fire({
                     title: 'Alterar Status',
                     text: 'Selecione uma opção:',
-                    showCancelButton: true,
-                    confirmButtonText: "Em Trânsito",
-                    confirmButtonColor: "#6085FF",
-                    showDenyButton: true,
-                    denyButtonText: "Entregue",
-                    denyButtonColor: "#011640",
-                    cancelButtonText: "Personalizado",
-                    cancelButtonColor: "#2D314D",
+                    html: <FormUpdateStatus />,
+                    showCancelButton: false,
+                    showCloseButton: true,
+                    showDenyButton: false,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    showConfirmButton: false,
                     icon: 'info',
-                    
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        despacharPedido(pedido.id);
-                    } 
-                    else if (result.isDenied) {
-                        confirmarEntrega(pedido.id);
-                    }
-                    else if (result.isDismissed) {
-                        abrirPopupUpdateStatus(pedido);
-                    }
+                    width: '35%'
                 });
             } 
             else if (result.isDenied) { // Se o botão "Deletar" for clicado
@@ -353,6 +354,9 @@ const AdminPedidos = () => {
         else if (colunaClassificada === 'Status') {
             return ordemClassificacao === 'asc' ? a.status.localeCompare(b.status) : b.status.localeCompare(a.status);
         }
+        else if (colunaClassificada === 'Ultima Atualizacao') {
+            return ordemClassificacao === 'asc' ? new Date(a.dataAtualizacao) - new Date(b.dataAtualizacao) : new Date(b.dataAtualizacao) - new Date(a.dataAtualizacao);
+        } 
         return 0;
     });
 
@@ -404,6 +408,12 @@ const AdminPedidos = () => {
                                     <span>{ordemClassificacao === 'asc' ? '▲' : '▼'}</span>
                                 )}
                             </th>
+                            <th onClick={() => handleSort('Ultima Atualizacao')}>
+                                Última Atualização
+                                {colunaClassificada === 'Ultima Atualizacao' && (
+                                    <span>{ordemClassificacao === 'asc' ? '▲' : '▼'}</span>
+                                )}
+                            </th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -415,6 +425,7 @@ const AdminPedidos = () => {
                                 <td>{'R$ ' + valueMaskBR(pedido.valorTotal)}</td>
                                 <td>{pedido.cliente.id}</td>
                                 <td>{statusMask(pedido.status)}</td>
+                                <td>{dataHoraMaskBR(pedido.dataAtualizacao)}</td>
                                 <td>
                                     <button className={styles.buttonAcoes} onClick={() => abrirPopupInfo(pedido)}>. . .</button>
                                 </td>

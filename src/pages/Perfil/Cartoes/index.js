@@ -14,28 +14,28 @@ const Cartoes = () => {
     const navigate = useNavigate(); // Usando useNavigate para navegação
 
     useEffect(() => {
-        const carregarCartoes = async () => {
-            const token = getToken();
-
-            try {
-                const response = await fetch('http://localhost:8080/perfil/cartoes', {
-                    headers: { Authorization: "Bearer " + token }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Token Inválido!');
-                }
-
-                setCartoes(await response.json());
-            } 
-            catch (error) {
-                console.error('Erro ao carregar dados:', error);
-                Swal.fire({ title: "Erro!", html: `Erro ao carregar cartões.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
-            }
-        };
-
         carregarCartoes();
     }, []);
+
+    const carregarCartoes = async () => {
+        const token = getToken();
+
+        try {
+            const response = await fetch('http://localhost:8080/perfil/cartoes', {
+                headers: { Authorization: "Bearer " + token }
+            });
+
+            if (!response.ok) {
+                throw new Error('Token Inválido!');
+            }
+
+            setCartoes(await response.json());
+        } 
+        catch (error) {
+            console.error('Erro ao carregar dados:', error);
+            Swal.fire({ title: "Erro!", html: `Erro ao carregar cartões.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
+        }
+    };
 
     // função para abrir o formulário de adição de cartão
     const abrirPopupAdd = () => {

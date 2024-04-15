@@ -15,11 +15,13 @@ import PerfilConta from "./pages/Perfil/Conta";
 import PerfilEnderecos from "./pages/Perfil/Enderecos";
 import PerfilCartoes from "./pages/Perfil/Cartoes";
 import PerfilPedidos from "./pages/Perfil/Pedidos";
+import PerfilSolicitacoes from "./pages/Perfil/SolicitacoesTrocaDevolucao"
 import AdminProdutos from "./pages/Admin/Produtos"
 import AdminCategorias from "./pages/Admin/Categorias";
 import AdminClientes from "./pages/Admin/Clientes";
 import AdminEnderecos from "./pages/Admin/Enderecos";
 import AdminPedidos from "./pages/Admin/Pedidos";
+import AdminSolicitacoesTrocaDevolucao from "./pages/Admin/SolicitacoesTrocaDevolucao";
 
 export default function App() {
     return (
@@ -33,6 +35,7 @@ export default function App() {
                 <Route path="/perfil/enderecos" element={<Layout><PerfilEnderecos /></Layout>} />
                 <Route path="/perfil/cartoes" element={<Layout><PerfilCartoes /></Layout>} />
                 <Route path="/perfil/pedidos" element={<Layout><PerfilPedidos /></Layout>} />
+                <Route path="/perfil/solicitacoes_troca_devolucao" element={<Layout><PerfilSolicitacoes /></Layout>} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/cadastro/cliente" element={<CadastroCliente />} />
                 <Route path="/cadastro/endereco" element={<CadastroEndereco />} />
@@ -42,6 +45,7 @@ export default function App() {
                 <Route path="/admin/clientes" element={<LayoutAdmin><AdminClientes /></LayoutAdmin>} />
                 <Route path="/admin/enderecos" element={<LayoutAdmin><AdminEnderecos /></LayoutAdmin>} />
                 <Route path="/admin/pedidos" element={<LayoutAdmin><AdminPedidos /></LayoutAdmin>} />
+                <Route path="/admin/solicitacoes_troca_devolucao" element={<LayoutAdmin><AdminSolicitacoesTrocaDevolucao /></LayoutAdmin>} />
             </Routes>
         </BrowserRouter>
     );
