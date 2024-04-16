@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import LinhaDadosCupons from "../../../components/components_perfil/linhaDadosCupons";
 import TabelaActions from "../../../components/components_perfil/tabelaActions";
-import iconAdd from "../../../assets/buttons/add.svg"
 import styles from "./Cupons.module.css";
 import Swal from "sweetalert2";
 import { getToken } from "../../../utils/storage";
 import { useNavigate } from "react-router-dom";
-import { handleCreditCard, handleNumber, removeMask } from "../../../utils/mask";
 
 const Cupons = () => {
     const [cupons, setCupons] = useState({});
@@ -29,8 +27,12 @@ const Cupons = () => {
                 throw new Error('Token Inválido!');
             }
 
-            setCupons(await response.json());
-        } 
+            const cupons = await response.json();
+
+            // Filtrando apenas os cupons disponíveis
+            const cuponsDisponiveis = cupons.filter(cupom => cupom.disponivel === true);
+            setCupons(cuponsDisponiveis);
+        }
         catch (error) {
             console.error('Erro ao carregar dados:', error);
             Swal.fire({ title: "Erro!", html: `Erro ao carregar cupons.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
@@ -43,8 +45,8 @@ const Cupons = () => {
                 <TabelaActions />
             </div>
             <div className={styles.tbInfo}>
-                {Object.entries(cupons).map(([tipo, dado], index) => (
-                    <LinhaDadosCupons key={index} index={index + 1} tipo={tipo} dado={dado} />
+                {Object.entries(cupons).map(([tipo, cupom]) => (
+                    <LinhaDadosCupons cupom={cupom} />
                 ))}
             </div>
         </div>

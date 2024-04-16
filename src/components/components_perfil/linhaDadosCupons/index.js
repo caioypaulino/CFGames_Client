@@ -2,13 +2,11 @@ import React from "react";
 import styles from "./linhaDadosCupons.module.css";
 import Swal from "sweetalert2";
 import iconInfo from "../../../assets/buttons/info.svg";
-import iconDelete from "../../../assets/buttons/delete.svg";
-import { getToken } from "../../../utils/storage";
-import { creditCardMask, creditCardXXXXMask, dataHoraMaskBR, valueMaskBR } from "../../../utils/mask";
+import { dataHoraMaskBR, valueMaskBR } from "../../../utils/mask";
 
 const linhaDadosCupons = (props) => {
     // Utilizando desestruturação
-    const { codigoCupom, valorDesconto, data, validade, disponivel } = props.dado;
+    const { codigoCupom, valorDesconto, data, validade, disponivel } = props.cupom;
 
     // Função para abrir popup de informações
     const abrirPopupInfo = () => {

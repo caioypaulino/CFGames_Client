@@ -31,7 +31,11 @@ const CuponsCheckout = (props) => {
                 throw new Error('Token Inválido!');
             }
 
-            setCuponsCliente(await response.json());
+            const cupons = await response.json();
+            
+            // Filtrando apenas os cupons disponíveis
+            const cuponsDisponiveis = cupons.filter(cupom => cupom.disponivel === true);
+            setCuponsCliente(cuponsDisponiveis);
         }
         catch (error) {
             console.error('Erro ao carregar dados:', error);

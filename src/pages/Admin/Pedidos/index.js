@@ -53,15 +53,35 @@ const AdminPedidos = () => {
 
     // Abre um modal com os detalhes do pedido usando o SweetAlert2
     const abrirPopupInfo = (pedido) => {
+        let descontoTotal = 0;
+        let troco = 0;
+
+        if (pedido.cupons.length > 0) {
+
+            pedido.cupons.forEach(cupom => {
+                descontoTotal += cupom.valorDesconto;
+            });
+
+            if (pedido.valorTotal < descontoTotal) {
+                troco =  descontoTotal - pedido.valorTotal;
+            }
+        }
+
         const detalhesPedido =`
             <div class=${styles.justifyText}>
                 <hr>
                 <h2>Geral</h2>
+                <p><strong>Valor Total:</strong> R$ ${valueMaskBR(pedido.valorTotal || 0)}</p>
+                <p><strong>Frete:</strong> R$ ${valueMaskBR(pedido.frete)}</p>
+                <p><strong>Desconto Total:</strong> R$ ${valueMaskBR(descontoTotal || 0)}</p>
+                <p><strong>Desconto Utilizado:</strong> R$ ${valueMaskBR(descontoTotal - troco || 0)}</p>
+                <p><strong>Troco:</strong> R$ ${valueMaskBR(troco || 0)}</p>
+                <p><strong>Valor Final:</strong> R$ ${valueMaskBR(pedido.valorTotal - (descontoTotal - troco) || 0)}</p>
+                <br>
                 <p><strong>Status:</strong> ${statusMask(pedido.status)}</p>
                 <p><strong>Data:</strong> ${dataHoraMaskBR(pedido.data)}</p>
                 <p><strong>Data da Última Atualização:</strong> ${dataHoraMaskBR(pedido.dataAtualizacao)}</p>
-                <p><strong>Valor Total:</strong> R$ ${valueMaskBR(pedido.valorTotal)}</p>
-                <p><strong>Frete:</strong> R$ ${valueMaskBR(pedido.frete)}</p>
+                <br>
                 <hr>
                 <h2>Cliente</h2>
                 <p><strong>ID:</strong> ${pedido.cliente.id}</p>
@@ -70,11 +90,13 @@ const AdminPedidos = () => {
                 <p><strong>Email:</strong> ${pedido.cliente.email}</p>
                 <p><strong>Data de Nascimento:</strong> ${dataMaskBR(pedido.cliente.dataNascimento)}</p>
                 <p><strong>Telefone:</strong> ${telefoneMask(pedido.cliente.telefone)}</p>
+                <br>
                 <hr>
                 <h2>Carrinho de Compras</h2>
                 <p><strong>ID:</strong> ${pedido.carrinhoCompra.id}</p>
                 <p><strong>Valor Carrinho:</strong> R$ ${valueMaskBR(pedido.carrinhoCompra.valorCarrinho)}</p>
                 <p><strong>Peso Total:</strong> ${valueMaskBR(pedido.carrinhoCompra.pesoTotal/1000)} kg</p>
+                <br>
                 <hr>
                 <h3>Itens do Carrinho:</h3>
                 ${pedido.carrinhoCompra.itensCarrinho.sort((a, b) => a.id - b.id).map(item => {
@@ -89,6 +111,13 @@ const AdminPedidos = () => {
                 }).join("")}
                 <hr>
                 <h2>Pagamento</h2>
+                ${pedido.cupons.map(cupomPedido => {
+                    return `
+                        <p><strong>Cupom:</strong> ${cupomPedido.codigoCupom}</p>
+                        <p><strong>Desconto Cupom:</strong> R$ ${valueMaskBR(cupomPedido.valorDesconto || 0)}</p>
+                        <br>
+                    `;
+                }).join("")}
                 ${pedido.cartoes.map(cartaoPedido => {
                     return `
                         <p><strong>Cartão:</strong> ${cartaoPedido.cartao.bandeira}, ${creditCardXXXXMask(cartaoPedido.cartao.numeroCartao)}, ${cartaoPedido.cartao.nomeCartao} [${cartaoPedido.cartao.mesVencimento}/${cartaoPedido.cartao.anoVencimento}]</p>
@@ -103,6 +132,7 @@ const AdminPedidos = () => {
                 <p><strong>Endereço:</strong> ${pedido.enderecoCliente.tipo}, ${pedido.enderecoCliente.apelido}, ${pedido.enderecoCliente.endereco.cep}, ${pedido.enderecoCliente.endereco.rua}, ${pedido.enderecoCliente.numero}, ${pedido.enderecoCliente.endereco.bairro}, ${pedido.enderecoCliente.endereco.cidade} - ${pedido.enderecoCliente.endereco.estado}</p>
                 <p><strong>Prazo:</strong> ${pedido.prazoDias + ' Dia(s)'}</p>
                 <p><strong>Observação:</strong> ${pedido.enderecoCliente.observacao}</p>
+                <br>
                 <hr>
             </div>
         `;

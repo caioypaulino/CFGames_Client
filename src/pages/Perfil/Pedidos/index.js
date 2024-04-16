@@ -25,7 +25,7 @@ const Pedidos = () => {
 
             if (response.ok) {
                 const json = await response.json()
-                const sortedPedidos = json.sort((a, b) => a.id - b.id); // Ordena os pedidos por ID
+                const sortedPedidos = json.sort((a, b) => b.id - a.id); // Ordena os pedidos por ID
 
                 setPedidos(sortedPedidos);
             }
