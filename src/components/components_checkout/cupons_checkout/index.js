@@ -44,9 +44,6 @@ const CuponsCheckout = (props) => {
     };
 
     const handleSelecionarCupom = (cupomSelecionado) => {
-        console.log(cuponsSelecionados);
-        console.log(cupomSelecionado)
-
         if (cuponsSelecionados.length > cupomSelecionado.length) {
             setCuponsSelecionados(cupomSelecionado);
         }

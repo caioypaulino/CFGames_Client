@@ -60,6 +60,16 @@ const ResumoCheckout = (props) => {
         }
     }, [cuponsSelecionados, cartoesSelecionados, valorTotal]);
 
+    useEffect(() => {
+        // Verificando se algum cupom tem desconto maior que o necessário
+        const cuponsComDescontoMaiorQueTotal = cuponsSelecionados.filter(cupom => cupom.desconto > (valorCarrinho + parseFloat(frete || 0)));
+
+        // Se houver cupons com desconto maior que o necessário e lista diferente, atualize a lista de cupons selecionados
+        if (cuponsComDescontoMaiorQueTotal.length > 0 && JSON.stringify(cuponsComDescontoMaiorQueTotal) !== JSON.stringify(cuponsSelecionados)) {
+            setCuponsSelecionados(cuponsComDescontoMaiorQueTotal);
+        }
+    }, [cuponsSelecionados, valorCarrinho, frete]);
+
     const abrirPopupConfirmarPedido = () => {
         // Verificando se o endereço de entrega foi selecionado
         if (!enderecoEntrega) {
@@ -108,22 +118,22 @@ const ResumoCheckout = (props) => {
                 <hr>
                 <h2>Pagamento</h2>
                 ${cuponsSelecionados && cuponsSelecionados.map(cupom => {
-                return `
+            return `
                     <p><strong>Cupom:</strong> ${cupom.value}</p>
                     <p><strong>Desconto Cupom:</strong> R$ ${valueMaskBR(cupom.desconto || 0)}</p>
                 `;
-                }).join("<br>")}
+        }).join("<br>")}
                 <br>
                 ${cartoesSelecionados && cartoesSelecionados.map(cartao => {
-                const valorParcial = valorParcialPorCartao[cartao.value];
-                const parcelas = parcelasPorCartao[cartao.value];
+            const valorParcial = valorParcialPorCartao[cartao.value];
+            const parcelas = parcelasPorCartao[cartao.value];
 
-                return `
+            return `
                     <p><strong>Cartão:</strong> ${cartao.label}</p>
                     <p><strong>Valor Parcial:</strong> R$ ${valueMaskBR(valorParcial || 0)}</p>
                     <p><strong>Parcelas:</strong> ${parcelas}x R$ ${(valueMaskBR(valorParcial / parcelas) || 0)}</p>
                 `;
-                }).join("<br>")}
+        }).join("<br>")}
                 <hr>
                 <h2>Entrega</h2>
                 <p><strong>Endereço:</strong> ${(enderecoEntrega && enderecoEntrega.label)}</p>
