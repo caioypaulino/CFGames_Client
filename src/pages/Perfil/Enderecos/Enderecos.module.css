@@ -24,7 +24,8 @@
     display: flex; /* Transformar em um flex container */
     width: 15%; /* Definir largura */
     height: 15%; /* Definir altura */
-    margin-left: 24%;
+    margin-top: -1.9%;
+    margin-left: 62.75%;
 }
 
 .btnIcon:hover {
@@ -46,4 +47,56 @@
     cursor: pointer;
     display: inline-block;
     margin-right: 5px;
+}
+
+.custom-select {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px;
+    font-size: 16px;
+    width: 100%;
+}
+
+.pagination {
+    margin-left: 7%;
+    text-align: center;
+}
+
+.pagination button {
+    background-color: #6085FF;
+    border: none;
+    color: black;
+    padding: .25% .9%;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 0 2%;
+    cursor: pointer;
+    border-radius: 20%;
+    color: white;
+    font-weight: bold;
+    font-family: 'Roboto';
+}
+
+.pagination button:hover {
+    background-color: #011640;
+}
+
+.pagination button.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.paginaAtual {
+    color: #6085FF;
+    font-weight: bold;
+    font-family: 'Roboto';
+}
+
+.totalPaginas {
+    color: #000a99;
+    font-weight: bold;
+    font-family: 'Roboto';
 }

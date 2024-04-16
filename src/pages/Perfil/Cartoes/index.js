@@ -9,7 +9,10 @@ import { useNavigate } from "react-router-dom";
 import { handleCreditCard, handleNumber, removeMask } from "../../../utils/mask";
 
 const Cartoes = () => {
-    const [cartoes, setCartoes] = useState({});
+    const [cartoes, setCartoes] = useState([]);
+
+    const [paginaAtual, setPaginaAtual] = useState(1);
+    const [cartoesPorPagina] = useState(5);
 
     const navigate = useNavigate(); // Usando useNavigate para navegação
 
@@ -30,7 +33,7 @@ const Cartoes = () => {
             }
 
             setCartoes(await response.json());
-        } 
+        }
         catch (error) {
             console.error('Erro ao carregar dados:', error);
             Swal.fire({ title: "Erro!", html: `Erro ao carregar cartões.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
@@ -61,7 +64,7 @@ const Cartoes = () => {
                 adicionarCartao(numeroCartao, nomeCartao, mesVencimento, anoVencimento, cvc);
             },
         });
-        
+
         // adicionando um ouvinte de evento ao campo de numeroCartao para chamar a função handleCreditCard que cria uma máscara dinâmica
         const numeroCartaoInput = document.getElementById('numeroCartao');
         const cvcInput = document.getElementById('cvc');
@@ -105,20 +108,43 @@ const Cartoes = () => {
         }
     };
 
+    const indexUltimoCartao = paginaAtual * cartoesPorPagina;
+    const indexPrimeiroCartao = indexUltimoCartao - cartoesPorPagina;
+
+    const cartoesAtuais = cartoes.slice(indexPrimeiroCartao, indexUltimoCartao);
+    const totalPaginas = Math.ceil(cartoes.length / cartoesPorPagina);
+
+    const handlePaginaAnterior = () => {
+        setPaginaAtual(paginaAnterior => Math.max(paginaAnterior - 1, 1));
+    };
+
+    const handleProximaPagina = () => {
+        setPaginaAtual(paginaAnterior => Math.min(paginaAnterior + 1, totalPaginas));
+    };
+
+
     return (
-        <div className={styles.container}>
-            <div className={styles.tbActions}>
-                <TabelaActions />
-            </div>
-            <div className={styles.tbInfo}>
-                {Object.entries(cartoes).map(([tipo, dado], index) => (
-                    <LinhaDadosCartoes key={index} index={index + 1} tipo={tipo} dado={dado} />
-                ))}
-                <div className={styles.btnIconAdd}>
-                    <button className={styles.btnIcon} onClick={abrirPopupAdd}>
-                        <img className={styles.iconAdd} src={iconAdd} alt="Adicionar" />
-                    </button>
+        <div>
+            <div className={styles.container}>
+                <div className={styles.tbActions}>
+                    <TabelaActions />
                 </div>
+                <div className={styles.tbInfo}>
+                    {Object.entries(cartoesAtuais).map(([tipo, dado], index) => (
+                        <LinhaDadosCartoes key={index} index={index + 1} tipo={tipo} dado={dado} />
+                    ))}
+
+                </div>
+            </div>
+            <div className={styles.pagination}>
+                <button onClick={handlePaginaAnterior} disabled={paginaAtual === 1}>&lt;</button>
+                <span className={styles.paginaAtual}>{paginaAtual}</span><span className={styles.totalPaginas}>/{totalPaginas}</span>
+                <button onClick={handleProximaPagina} disabled={paginaAtual === totalPaginas}>&gt;</button>
+            </div>
+            <div className={styles.btnIconAdd}>
+                <button className={styles.btnIcon} onClick={abrirPopupAdd}>
+                    <img className={styles.iconAdd} src={iconAdd} alt="Adicionar" />
+                </button>
             </div>
         </div>
     );

@@ -5,54 +5,56 @@
 .tbActions {
     flex: 1;
     box-sizing: border-box;
-    padding: 20px;
+    padding: 1%;
 }
 
 .tbInfo {
     flex: 2;
     box-sizing: border-box;
-    padding: 20px;
-    margin-left: 100px;
+    padding: 1%;
+    margin-left: 3%;
     align-items: center;
 }
 
-.btnIconAdd {
-    background: none;
+.pagination {
+    margin-left: 7%;
+    text-align: center;
+}
+
+.pagination button {
+    background-color: #6085FF;
     border: none;
-    padding: 0;
-    cursor: pointer;
-    display: flex; /* Transformar em um flex container */
-    width: 15%; /* Definir largura */
-    height: 15%; /* Definir altura */
-    margin-left: 24%;
-}
-
-.btnIcon:hover {
-    background-color: #f0f0f0; /* Adicionar cor de fundo ao passar o mouse */
-    border-radius: 50%; /* Fazer o botão parecer um círculo */
-}
-
-.iconAdd {
-    width: 90%;
-    height: 90%;
-    flex: 3;
-}
-
-.btnIcon {
-    justify-content: flex-end;
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
+    color: black;
+    padding: .25% .9%;
+    text-align: center;
+    text-decoration: none;
     display: inline-block;
-    margin-right: 5px;
+    font-size: 16px;
+    margin: 0 2%;
+    cursor: pointer;
+    border-radius: 20%;
+    color: white;
+    font-weight: bold;
+    font-family: 'Roboto';
 }
 
-.custom-select {
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 8px;
-    font-size: 16px;
-    width: 100%;
+.pagination button:hover {
+    background-color: #011640;
+}
+
+.pagination button.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.paginaAtual {
+    color: #6085FF;
+    font-weight: bold;
+    font-family: 'Roboto';
+}
+
+.totalPaginas {
+    color: #000a99;
+    font-weight: bold;
+    font-family: 'Roboto';
 }

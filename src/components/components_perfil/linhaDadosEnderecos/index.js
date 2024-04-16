@@ -12,7 +12,7 @@ const linhaDadosEnderecos = (props) => {
     const { cep, rua, bairro, cidade, estado, pais } = endereco;
 
     // formatando endereço utilizando Template Literals
-    const enderecoFormatado = `${apelido}, ${cep}, ${rua}, ${numero}, ${bairro}, ${cidade}, ${estado}`;
+    const enderecoFormatado = `${apelido}, ${cep}, ${rua}, ${numero}, ${bairro}, ${cidade} - ${estado}`;
 
     // utilizando sweet alert 2 como popup para informações e edição
     const abrirPopupInfo = () => {
@@ -177,8 +177,7 @@ const linhaDadosEnderecos = (props) => {
 
     return (
         <div className={styles.container}>
-            <p className="text">Endereço {props.index}:</p>
-            <p className={styles.data}>{enderecoFormatado}</p>
+            <p className={styles.data}>{tipo}: {enderecoFormatado}</p>
             <div className={styles.icons}>
                 <button className={styles.btnIcon} onClick={abrirPopupInfo}>
                     <img className={styles.iconEdite} src={iconEdit} alt="Editar" />

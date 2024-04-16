@@ -104,9 +104,18 @@ export const dataMaskBR2 = (value) => {
 
 // Função para aplicar máscara de data (dd/MM/yyyy HH:mm)
 export const dataHoraMaskBR = (value) => {
-    const [date, hora] = value.split(" ");
-    const [dia, mes, ano] = date.split("-");
+    const [data, hora] = value.split(" ");
+    const [dia, mes, ano] = data.split("-");
     return `${dia}/${mes}/${ano} (${hora})`;
+}
+
+// Função para aplicar máscara de data (dd/MM/yyyy HH:mm)
+export const DateMask = (value) => {
+    const [data, hora] = value.split(" ");
+    const [dia, mes, ano] = data.split("-");
+    const [horas, minutos] = hora.split(":");
+
+    return new Date(ano, mes - 1, dia, horas, minutos);
 }
 
 // Função para aplicar máscara de datas (dd-MM-yyyy)

@@ -84,9 +84,10 @@ const linhaDadosCartoes = (props) => {
     return (
         <div className={styles.container}>
             <div className={styles.infoContainer}>
-                <p className={styles.infoLabel}>Nome do titular: {nomeCartao}</p>
+                <p className={styles.infoLabel}>{nomeCartao}</p>
                 <hr className={styles.infoDivider}></hr>
-                <p className={styles.infoLabel}>Número do cartão: {creditCardXXXXMask(numeroCartao)}</p>
+                <p className={styles.infoLabel}>{bandeira} ({dataVencimento}) {creditCardXXXXMask(numeroCartao)}</p>
+                <p className={styles.infoLabel}></p>
             </div>
 
             <div className={styles.icons}>

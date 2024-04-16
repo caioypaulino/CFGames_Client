@@ -9,33 +9,53 @@ import { handleCep, cepMask, handleNumber } from '../../../utils/mask';
 import { useNavigate } from "react-router-dom";
 
 const Enderecos = () => {
-    const [enderecos, setEnderecos] = useState({});
+    const [enderecos, setEnderecos] = useState([]);
+
+    const [paginaAtual, setPaginaAtual] = useState(1);
+    const [enderecosPorPagina] = useState(5);
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        const carregarEnderecos = async () => {
-            const token = getToken();
-
-            try {
-                const response = await fetch('http://localhost:8080/perfil/enderecos', {
-                    headers: { Authorization: "Bearer " + token }
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Token Inválido!');
-                }
-
-                setEnderecos(await response.json());
-            } 
-            catch (error) {
-                console.error('Erro ao carregar dados:', error);
-                Swal.fire({ title: "Erro!", html: `Erro ao carregar endereços.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => {  navigate("/login"); });
-            }
-        };
-
         carregarEnderecos();
     }, []);
+
+    const carregarEnderecos = async () => {
+        const token = getToken();
+
+        try {
+            const response = await fetch('http://localhost:8080/perfil/enderecos', {
+                headers: { Authorization: "Bearer " + token }
+            });
+
+            if (!response.ok) {
+                throw new Error('Token Inválido!');
+            }
+
+            const enderecos = await response.json();
+
+            // Função para ordenar os endereços por tipo na ordem específica
+            const ordenarPorTipo = (endereco1, endereco2) => {
+                const ordemTipo = {
+                    GERAL: 1,
+                    RESIDENCIAL: 2,
+                    ENTREGA: 3,
+                    COBRANCA: 4
+                };
+    
+                return ordemTipo[endereco1.tipo] - ordemTipo[endereco2.tipo];
+            };
+    
+            // Ordenando os endereços pela ordem especificada
+            enderecos.sort(ordenarPorTipo);
+    
+            setEnderecos(enderecos);
+        }
+        catch (error) {
+            console.error('Erro ao carregar dados:', error);
+            Swal.fire({ title: "Erro!", html: `Erro ao carregar endereços.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
+        }
+    };
 
     // função para abrir o formulário de adição de endereço
     const abrirPopupAdd = () => {
@@ -116,22 +136,45 @@ const Enderecos = () => {
         }
     };
 
+    const indexUltimoEndereco = paginaAtual * enderecosPorPagina;
+    const indexPrimeiroEndereco = indexUltimoEndereco - enderecosPorPagina;
+
+    const enderecosAtuais = enderecos.slice(indexPrimeiroEndereco, indexUltimoEndereco);
+    const totalPaginas = Math.ceil(enderecos.length / enderecosPorPagina);
+
+    const handlePaginaAnterior = () => {
+        setPaginaAtual(paginaAnterior => Math.max(paginaAnterior - 1, 1));
+    };
+
+    const handleProximaPagina = () => {
+        setPaginaAtual(paginaAnterior => Math.min(paginaAnterior + 1, totalPaginas));
+    };
+
     return (
-        <div className={styles.container}>
-            <div className={styles.tbActions}>
-                <TabelaActions />
-            </div>
-            <div className={styles.tbInfo}>
-                {Object.entries(enderecos).map(([tipo, dado], index) => (
-                    <LinhaDadosEnderecos key={index} index={index + 1} tipo={tipo} dado={dado} />
-                ))}
-                <div className={styles.btnIconAdd}>
-                    <button className={styles.btnIcon} onClick={abrirPopupAdd}>
-                        <img className={styles.iconAdd} src={iconAdd} alt="Adicionar" />
-                    </button>
+        <div>
+            <div className={styles.container}>
+                <div className={styles.tbActions}>
+                    <TabelaActions />
+                </div>
+                <div className={styles.tbInfo}>
+                    {Object.entries(enderecosAtuais).map(([tipo, dado], index) => (
+                        <LinhaDadosEnderecos key={index} index={index + 1} tipo={tipo} dado={dado} />
+                    ))}
+
                 </div>
             </div>
+            <div className={styles.pagination}>
+                <button onClick={handlePaginaAnterior} disabled={paginaAtual === 1}>&lt;</button>
+                <span className={styles.paginaAtual}>{paginaAtual}</span><span className={styles.totalPaginas}>/{totalPaginas}</span>
+                <button onClick={handleProximaPagina} disabled={paginaAtual === totalPaginas}>&gt;</button>
+            </div>
+            <div className={styles.btnIconAdd}>
+                <button className={styles.btnIcon} onClick={abrirPopupAdd}>
+                    <img className={styles.iconAdd} src={iconAdd} alt="Adicionar" />
+                </button>
+            </div>
         </div>
+
     );
 };
 
