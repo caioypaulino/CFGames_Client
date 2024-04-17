@@ -30,7 +30,6 @@ export default function login() {
                 salvarToken(data.token);
 
                 Swal.fire({ title: "Login realizado com sucesso!", text: "Seja Bem-vindo(a)", icon: "success", confirmButtonColor: "#6085FF" }).then(() => { navigate("/perfil/pessoal") });
-
             }
             else {
                 // Lidar com um erro de autenticação
