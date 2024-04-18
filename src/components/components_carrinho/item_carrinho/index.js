@@ -5,17 +5,17 @@ import polygon_icon from "../../../assets/buttons/Polygon 14.svg";
 
 const ItemCarrinho = (props) => {
     const { itemId, produtoId, titulo, preco, publisher, image, quantidade, atualizarQuantidade } = props;
-    const [valor, setValor] = useState(quantidade); // Inicializa a variável valor com a quantidade inicial
+    const [quantidadeAtual, setQuantidadeAtual] = useState(quantidade); // Inicializa a variável valor com a quantidade inicial
 
-    const incrementar = () => {
-        setValor((prevValor) => prevValor + 1);
-        atualizarQuantidade(itemId, produtoId, valor + 1); // Chama a função atualizarQuantidade para atualizar a quantidade
+    const incrementarQuantidade = () => {
+        setQuantidadeAtual((prevValor) => prevValor + 1);
+        atualizarQuantidade(itemId, produtoId, quantidadeAtual + 1); // Chama a função atualizarQuantidade para atualizar a quantidade
     };
 
-    const decrementar = () => {
-        if (valor > 1) {
-            setValor((prevValor) => prevValor - 1);
-            atualizarQuantidade(itemId, produtoId, valor - 1); // Chama a função atualizarQuantidade para atualizar a quantidade
+    const decrementarQuantidade = () => {
+        if (quantidadeAtual > 1) {
+            setQuantidadeAtual((prevValor) => prevValor - 1);
+            atualizarQuantidade(itemId, produtoId, quantidadeAtual - 1); // Chama a função atualizarQuantidade para atualizar a quantidade
         }
     };
 
@@ -32,15 +32,11 @@ const ItemCarrinho = (props) => {
             </div>
             <div className={style.qtdChange}>
                 <p>Quantidade</p>
-                <button
-                    className={style.btnMinus}
-                    onClick={decrementar}
-                    disabled={valor === 1}
-                >
+                <button testid="btnMinus" className={style.btnMinus} onClick={decrementarQuantidade} disabled={quantidadeAtual === 1}>
                     <img className={style.polygon} src={polygon_icon} alt="minus" />
                 </button>
-                <p>{valor}</p>
-                <button className={style.btnPlus} onClick={incrementar}>
+                <p>{quantidadeAtual}</p>
+                <button testid="btnPlus" className={style.btnPlus} onClick={incrementarQuantidade}>
                     <img className={style.polygon} src={polygon_icon} alt="plus" />
                 </button>
             </div>

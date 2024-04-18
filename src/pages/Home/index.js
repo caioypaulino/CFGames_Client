@@ -59,9 +59,9 @@ const Home = () => {
                 ))}
             </div>
             <div className={styles.pagination}>
-                <button onClick={handlePaginaAnterior} disabled={paginaAtual === 1}>&lt;</button>
-                <span className={styles.paginaAtual}>{paginaAtual}</span><span className={styles.totalPaginas}>/{totalPaginas}</span>
-                <button onClick={handleProximaPagina} disabled={paginaAtual === totalPaginas}>&gt;</button>
+                <button className={styles.btnPaginaAnterior} onClick={handlePaginaAnterior} disabled={paginaAtual === 1}>&lt;</button>
+                <span testId='paginaAtual' className={styles.paginaAtual}>{paginaAtual}</span><span className={styles.totalPaginas}>/{totalPaginas}</span>
+                <button className={styles.btnPaginaProxima} onClick={handleProximaPagina} disabled={paginaAtual === totalPaginas}>&gt;</button>
             </div>
         </div>
     );

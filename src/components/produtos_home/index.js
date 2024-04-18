@@ -169,7 +169,7 @@ function ProdutoHome(props) {
             <p className={style.paragraph}>{produto.titulo}</p>
             <p className={style.paragraph}>{produto.plataforma}</p>
             <p className={style.price}>R$ {produto.preco}</p>
-            <input className={style.btnComprar} value="Comprar" type="submit" onClick={() => abrirPopupInfo(produto)} />
+            <input testid={`btnComprar`} className={style.btnComprar} value="Comprar" type="submit" onClick={() => abrirPopupInfo(produto)} />
         </div>
     );
 }

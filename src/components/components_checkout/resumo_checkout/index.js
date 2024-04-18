@@ -6,7 +6,6 @@ import CartoesCheckout from "../cartoes_checkout";
 import CuponsCheckout from "../cupons_checkout";
 import { getToken } from "../../../utils/storage";
 import { useNavigate } from "react-router-dom";
-import { dataHoraMaskBR } from "../../../utils/mask";
 
 const ResumoCheckout = (props) => {
     const { valorCarrinho, frete, prazo, enderecoEntrega, enderecoAdicionado, excluirEndereco } = props;

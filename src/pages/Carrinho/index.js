@@ -15,38 +15,38 @@ const Carrinho = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const carregarCarrinhoCompras = async () => {
-            const token = getToken();
-
-            try {
-                const response = await fetch('http://localhost:8080/carrinhodecompra/read', {
-                    headers: { Authorization: "Bearer " + token }
-                });
-
-                if (response.ok) {
-                    setCarrinhoCompras(await response.json());
-                }
-                else {
-                    if (response.status === 500) {
-                        throw new Error('Token Inválido!');
-                    }
-                    else if (response.status === 400) {
-                        setCarrinhoCompras([]);
-                    }
-                }
-            }
-            catch (error) {
-                console.error('Erro ao carregar dados:', error);
-                Swal.fire({ title: "Erro!", html: `Erro ao carregar carrinho de compras.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
-            }
-        };
-
         carregarCarrinhoCompras();
     }, []);
 
+    const carregarCarrinhoCompras = async () => {
+        const token = getToken();
+
+        try {
+            const response = await fetch('http://localhost:8080/carrinhodecompra/read', {
+                headers: { Authorization: "Bearer " + token }
+            });
+
+            if (response.ok) {
+                setCarrinhoCompras(await response.json());
+            }
+            else {
+                if (response.status === 500) {
+                    throw new Error('Token Inválido!');
+                }
+                else if (response.status === 400) {
+                    setCarrinhoCompras([]);
+                }
+            }
+        }
+        catch (error) {
+            console.error('Erro ao carregar dados:', error);
+            Swal.fire({ title: "Erro!", html: `Erro ao carregar carrinho de compras.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
+        }
+    };
+
     const removerItemCarrinho = async (id) => {
         const token = getToken();
-    
+
         try {
             const response = await fetch(`http://localhost:8080/carrinhodecompra/remove/itemcarrinho/${id}`, {
                 method: 'DELETE',
@@ -54,16 +54,16 @@ const Carrinho = () => {
                     'Authorization': "Bearer " + token
                 }
             });
-    
+
             if (response.ok) {
                 Swal.fire({ title: "Removido!", text: "Item removido com sucesso do carrinho.", icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-            } 
+            }
             else {
                 const errorMessage = await response.text();
 
                 throw new Error(errorMessage);
             }
-        } 
+        }
         catch (error) {
             console.error("Erro ao remover item:", error);
             Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao remover item do carrinho.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
@@ -90,11 +90,11 @@ const Carrinho = () => {
             if (response.ok) {
                 window.location.reload();
             }
-            else { 
+            else {
                 console.error('Erro ao atualizar quantidade:', response.status);
                 Swal.fire({ title: "Erro!", html: `Erro ao atualizar quantidade.<br><br>Quantidade Indisponível em Estoque`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
             }
-        } 
+        }
         catch (error) {
             console.error('Erro ao atualizar quantidade:', error);
         }

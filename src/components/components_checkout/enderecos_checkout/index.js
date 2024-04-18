@@ -9,6 +9,7 @@ import { cepMask, handleCep, handleNumber } from "../../../utils/mask";
 
 const EnderecosCheckout = (props) => {
     const { valorCarrinho } = props;
+    
     const [enderecosCliente, setEnderecosCliente] = useState([]);
     const [enderecoSelecionado, setEnderecoSelecionado] = useState("");
     const [frete, setFrete] = useState({});
@@ -248,7 +249,7 @@ const EnderecosCheckout = (props) => {
             <h1>Selecione o Endereço para Entrega</h1>
             <form className={style.enderecoList}>
                 <Select
-                    id="enderecos"
+                    id="enderecosSelect"
                     class="swal2-select"
                     styles={{
                         control: (provided) => ({

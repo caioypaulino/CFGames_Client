@@ -226,7 +226,7 @@ const CartoesCheckout = (props) => {
             <h1>Selecione o(s) Método(s) de Pagamento</h1>
             <form className={styles.cartaoList}>
                 <Select
-                    id="cartoes"
+                    id="cartoesSelect"
                     class="swal2-select"
                     styles={{
                         control: (provided) => ({
