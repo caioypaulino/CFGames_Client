@@ -40,7 +40,6 @@ export default function CadastroCliente() {
             if (response.ok) {
                 Swal.fire({ title: "Cadastro realizado com sucesso!", text: "Cliente cadastrado.", icon: "success", confirmButtonColor: "#6085FF" }).then(() => {
                     loginAutomatico(email, senha);
-                    navigate("/cadastro/endereco");
                 });
 
             }
@@ -70,6 +69,8 @@ export default function CadastroCliente() {
                 const data = await response.json();
 
                 salvarToken(data.token);
+
+                navigate("/cadastro/endereco");
             }
             else {
                 // buscando mensagem de erro que não é JSON

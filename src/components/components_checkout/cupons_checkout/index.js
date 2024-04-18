@@ -65,7 +65,7 @@ return (
         <h1>Selecione o(s) Cupom(ns) de Desconto</h1>
         <form className={styles.cupomList}>
             <Select
-                id="cupons"
+                id="cuponsSelect"
                 class="swal2-select"
                 styles={{
                     control: (provided) => ({

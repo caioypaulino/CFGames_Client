@@ -89,6 +89,7 @@ export default function FormularioEndereco({ title, onChange }) {
                         <label>
                             <p>Estado</p>
                             <select
+                                id="estadoSelect"
                                 className={styles.select}
                                 value={estado}
                                 onChange={(e) => setEstado(e.target.value)}
@@ -191,6 +192,7 @@ export default function FormularioEndereco({ title, onChange }) {
                         <label>
                             <p>Apelido</p>
                             <input
+                                id="apelidoInput"
                                 className={styles.inputNum}
                                 type="text"
                                 value={apelido}

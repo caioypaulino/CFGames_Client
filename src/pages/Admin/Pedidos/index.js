@@ -242,12 +242,6 @@ const AdminPedidos = () => {
             <option value="PAGAMENTO_REPROVADO">Pagamento Reprovado</option>
             <option value="EM_TRANSITO">Em Trânsito</option>
             <option value="ENTREGUE">Entregue</option>
-            <option value="TROCA_SOLICITADA">Troca Solicitada</option>
-            <option value="TROCA_APROVADA">Troca Aprovada</option>
-            <option value="TROCA_REPROVADA">Troca Reprovada</option>
-            <option value="PRODUTOS_TROCA_RECEBIDOS">Produtos Troca Recebidos</option>
-            <option value="TROCA_FINALIZADA">Troca Finalizada</option>
-            <option value="TROCA_CANCELADA">Troca Cancelada</option>
             <option value="CANCELADO">Cancelado</option>
         `;
     

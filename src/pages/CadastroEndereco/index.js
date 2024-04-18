@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import logoCF from "../../assets/navbar/Logo 2.svg";
 import bannerCadastro from "../../assets/cadastro/cadastroEndereco.svg"
 import styles from "./CadastroEndereco.module.css";
@@ -13,37 +13,45 @@ export default function CadastroEndereco() {
     const [enderecosDiferentes, setEnderecosDiferentes] = useState(false);
 
     const [enderecoEntrega, setEnderecoEntrega] = useState({
+        apelido: "",
         numero: "",
         complemento: "",
         tipo: "",
         endereco: {
             cep: ""
         },
-        observacao: "",
-        apelido: ""
+        observacao: ""
     });
 
     const [enderecoCobranca, setEnderecoCobranca] = useState({
+        apelido: "",
         numero: "",
         complemento: "",
         tipo: "",
         endereco: {
             cep: ""
         },
-        observacao: "",
-        apelido: ""
+        observacao: ""
     });
 
     const [enderecoResidencial, setEnderecoResidencial] = useState({
+        apelido: "",
         numero: "",
         complemento: "",
         tipo: "",
         endereco: {
             cep: ""
         },
-        observacao: "",
-        apelido: ""
+        observacao: ""
     });
+
+    useEffect(() => {
+        const token = getToken();
+        
+        if (!token) {
+            Swal.fire({title: "Erro!", html: `Ocorreu um erro ao adicionar o(s) endereço(s).<br><br>É necessário Cadastro Cliente primeiro`, icon: "error", confirmButtonColor: "#6085FF"}).then(navigate("/cadastro/cliente"));
+        }
+    }, []);
 
     const handleCheckboxChange = () => {
         setEnderecosDiferentes(!enderecosDiferentes);
@@ -90,7 +98,7 @@ export default function CadastroEndereco() {
         }
         catch (error) {
             console.error("Erro ao adicionar endereço:", error);
-            Swal.fire({title: "Erro!", html: `Ocorreu um erro ao adicionar os endereço(s).<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF"});
+            Swal.fire({title: "Erro!", html: `Ocorreu um erro ao adicionar o(s) endereço(s).<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF"});
         }
     };
 
