@@ -12,28 +12,28 @@ const conta = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const carregarConta = async () => {
-            const token = getToken();
-
-            try {
-                const response = await fetch('http://localhost:8080/perfil/conta', {
-                    headers: { Authorization: "Bearer " + token }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Token Inválido!');
-                }
-
-                setConta(await response.json());  
-            } 
-            catch (error) {
-                console.error('Erro ao carregar dados:', error);
-                Swal.fire({ title: "Erro!", html: `Erro ao carregar dados da conta.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
-            }
-        };
-
         carregarConta();
-    }, []); 
+    }, []);
+
+    const carregarConta = async () => {
+        const token = getToken();
+
+        try {
+            const response = await fetch('http://localhost:8080/perfil/conta', {
+                headers: { Authorization: "Bearer " + token }
+            });
+
+            if (!response.ok) {
+                throw new Error('Token Inválido!');
+            }
+
+            setConta(await response.json());
+        }
+        catch (error) {
+            console.error('Erro ao carregar dados:', error);
+            Swal.fire({ title: "Erro!", html: `Erro ao carregar dados da conta.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
+        }
+    };
 
     // utilizando desestruturação
     const { email, senha } = conta;

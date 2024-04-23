@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 function ProdutoHome(props) {
 
-    const { key, imagem, produto } = props;
+    const { imagem, produto } = props;
 
     const navigate = useNavigate();
     const SwalJSX = withReactContent(Swal)

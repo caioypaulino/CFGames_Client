@@ -47,7 +47,7 @@ describe('Cadastro de Cliente', () => {
         const cadastrarCartao = (numeroCartao) => {
             cy.get('[href="/perfil/cartoes"] > button').click(); // Visitando a página de cadastro
 
-            cy.get('.Cartoes_iconAdd__2PdnS').click(); // Adicionando cartão
+            cy.get('[testid="iconAdd"]').click(); // Adicionando cartão
 
             cy.get('#numeroCartao').type(numeroCartao) // Digitando informações
             cy.get('#nomeCartao').type("Caio H Paulino")

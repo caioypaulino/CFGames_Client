@@ -59,8 +59,12 @@ const AdminProdutos = () => {
                 else if (responseProdutos.status === 400 || responseCategorias.status === 400) {
                     Swal.fire({ title: "Erro!", html: `Erro ao carregar produtos ou categorias!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
                 }
+                else if (responseProdutos.status === 403 || responseCategorias.status === 403) {
+                    Swal.fire({ title: "Erro!", html: `Você não possui permissão para acessar o painel de administrador.<br><br> Por favor, entre em contato com o administrador do sistema para mais informações.`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/perfil/pessoal"); });
+                }
             }
-        } catch (error) {
+        } 
+        catch (error) {
             console.error('Erro ao carregar dados:', error);
             Swal.fire({ title: "Erro!", html: `Erro ao carregar painel de administrador.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
         }

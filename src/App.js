@@ -1,14 +1,15 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import React from 'react';
+import React, {useState} from 'react';
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import CadastroCliente from "./pages/CadastroCliente";
 import CadastroEndereco from "./pages/CadastroEndereco";
 import Carrinho from "./pages/Carrinho";
 import Checkout from "./pages/Checkout"
-import Layout from "./components/layout/index.js";
-import LayoutAdmin from "./components/layout_admin/index.js";
+import Layout from "./components/layout";
+import LayoutPerfil from "./components/layout_perfil"
+import LayoutAdmin from "./components/layout_admin";
 import LayoutCarrinhoCheckout from "./components/layout_carrinho_checkout";
 import PerfilPessoais from "./pages/Perfil/Pessoais";
 import PerfilConta from "./pages/Perfil/Conta";
@@ -25,19 +26,21 @@ import AdminPedidos from "./pages/Admin/Pedidos";
 import AdminSolicitacoesTrocaDevolucao from "./pages/Admin/SolicitacoesTrocaDevolucao";
 
 export default function App() {
+    const [termoBusca, setTermoBusca] = useState('');
+
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<Layout><Home /></Layout>} />
+                <Route path="/" element={<Layout termoBusca={termoBusca} setTermoBusca={setTermoBusca}><Home termoBusca={termoBusca} /></Layout>} />
                 <Route path="/carrinho" element={<LayoutCarrinhoCheckout><Carrinho /></LayoutCarrinhoCheckout>} />
                 <Route path="/checkout" element={<LayoutCarrinhoCheckout><Checkout /></LayoutCarrinhoCheckout>} />
-                <Route path="/perfil/conta" element={<Layout><PerfilConta /></Layout>} />
-                <Route path="/perfil/pessoal" element={<Layout><PerfilPessoais /></Layout>} />
-                <Route path="/perfil/enderecos" element={<Layout><PerfilEnderecos /></Layout>} />
-                <Route path="/perfil/cartoes" element={<Layout><PerfilCartoes /></Layout>} />
-                <Route path="/perfil/pedidos" element={<Layout><PerfilPedidos /></Layout>} />
-                <Route path="/perfil/solicitacoes_troca_devolucao" element={<Layout><PerfilSolicitacoes /></Layout>} />
-                <Route path="/perfil/cupons" element={<Layout><PerfilCupons /></Layout>} />
+                <Route path="/perfil/conta" element={<LayoutPerfil><PerfilConta /></LayoutPerfil>} />
+                <Route path="/perfil/pessoal" element={<LayoutPerfil><PerfilPessoais /></LayoutPerfil>} />
+                <Route path="/perfil/enderecos" element={<LayoutPerfil><PerfilEnderecos /></LayoutPerfil>} />
+                <Route path="/perfil/cartoes" element={<LayoutPerfil><PerfilCartoes /></LayoutPerfil>} />
+                <Route path="/perfil/pedidos" element={<LayoutPerfil><PerfilPedidos /></LayoutPerfil>} />
+                <Route path="/perfil/solicitacoes_troca_devolucao" element={<LayoutPerfil><PerfilSolicitacoes /></LayoutPerfil>} />
+                <Route path="/perfil/cupons" element={<LayoutPerfil><PerfilCupons /></LayoutPerfil>} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/cadastro/cliente" element={<CadastroCliente />} />
                 <Route path="/cadastro/endereco" element={<CadastroEndereco />} />

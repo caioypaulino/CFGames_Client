@@ -4,7 +4,7 @@ describe('Fluxos de Troca/Devolução', () => {
     
         cy.visit('http://localhost:3000/perfil/pedidos').wait(1000);
     
-        cy.get('.tabelaPerfilPedidos_buttonAcoes__2Oc77').first().click().wait(1000);  // Acessando último pedido
+        cy.contains('. . .').first().click().wait(1000);  // Acessando último pedido
     
         cy.get('.swal2-container').scrollTo('bottom').wait(500);
         cy.get('.swal2-confirm').click().wait(500); // Abrindo popup troca/devolução
@@ -15,10 +15,10 @@ describe('Fluxos de Troca/Devolução', () => {
         cy.get('#react-select-3-option-0').click().wait(500);
         cy.get('#react-select-3-option-2').click().wait(500);
     
-        cy.get(':nth-child(1) > .FormTrocaDevolucao_quantidadeSelect__3UltU > #quantidadeItens > .css-13cymwt-control > .css-1hb7zxy-IndicatorsContainer > .css-1xc3v61-indicatorContainer').click().wait(500);
+        cy.get('[id="quantidadeItens"]').first().click().wait(500);
         cy.get('#react-select-5-option-1').click(); // Alterando Quantidade
     
-        cy.get('.FormTrocaDevolucao_confirmButton__1emkk').click(); // Submit solicitação de troca/devolução
+        cy.contains('Confirmar').click(); // Submit solicitação de troca/devolução
         cy.contains('OK').click();
     });
 
@@ -27,7 +27,7 @@ describe('Fluxos de Troca/Devolução', () => {
             cy.get('thead > tr > :nth-child(1)').click().wait(500); // Selecionando pedido mais recente
             cy.get('thead > tr > :nth-child(1)').click().wait(500);
     
-            cy.get(':nth-child(1) > :nth-child(7) > .AdminSolicitacoesTrocaDevolucao_buttonAcoes__2BwCK').first().click().wait(500); // Acessando pedido
+            cy.contains('. . .').first().click().wait(500); // Acessando pedido
     
             cy.get('.swal2-container').scrollTo('bottom');
     

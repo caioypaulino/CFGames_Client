@@ -1,4 +1,3 @@
-// Carrinho.js
 import React, { useEffect, useState } from "react";
 import styles from "./Checkout.module.css";
 import EnderecosCheckout from "../../components/components_checkout/enderecos_checkout";
@@ -8,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 
 const Checkout = () => {
     const [carrinhoCompras, setCarrinhoCompras] = useState({});
-    const { itensCarrinho } = carrinhoCompras;
 
     const navigate = useNavigate();
 
@@ -26,8 +24,6 @@ const Checkout = () => {
 
             if (response.ok) {
                 const carrinho = await response.json();
-
-                console.log(carrinho);
 
                 if (carrinho.itensCarrinho.length === 0) {
                     Swal.fire({ title: "Erro!", html: `Erro ao carregar carrinho de compras.<br><br>Carrinho de Compras Vazio!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/carrinho"); });

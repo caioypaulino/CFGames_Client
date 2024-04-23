@@ -5,13 +5,13 @@
 }
 
 .table {
-    width: 70%;
+    width: 82%;
     /* Aumenta a largura da tabela */
     border-collapse: collapse;
     border-radius: 10px;
     overflow: hidden;
     table-layout: fixed;
-    margin-left: 15%;
+
     /* Centraliza a tabela */
 }
 
@@ -70,6 +70,7 @@ td {
 
 .pagination {
     margin-top: 1.5%;
+    margin-left: -20%;
     text-align: center;
 }
 

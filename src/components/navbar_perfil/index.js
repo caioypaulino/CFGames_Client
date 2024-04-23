@@ -1,19 +1,44 @@
-import React, { useState } from "react";
-import Dropdown from 'react-dropdown';
-import 'react-dropdown/style.css';
+import React, { useState, useEffect } from "react";
 import logo from "../../assets/navbar/Logo 2.svg";
 import accountIcon from "../../assets/navbar/_2350081091120.svg";
-import hamburguerIcon from "../../assets/navbar/hamburguer.svg";
-import styles from "./NavbarAdmin.module.css";
+import buyIcon from "../../assets/navbar/Camada_x0020_1 (1).svg";
+import styles from "./NavbarPerfil.module.css";
 import Swal from "sweetalert2";
 import { getToken, limparToken } from "../../utils/storage";
 import { useNavigate } from "react-router-dom";
 
-function NavbarAdmin() {
-    const [dropdownOpen, setDropdownOpen] = useState(false);
+function NavbarPerfil() {
     const token = getToken();
+    const [perfisConta, setPerfisConta] = useState({});
+
+    const [dropdownOpen, setDropdownOpen] = useState(false);
 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (token) {
+            carregarConta(token);
+        }
+    }, []);
+
+    const carregarConta = async (token) => {
+        try {
+            const response = await fetch('http://localhost:8080/perfil/conta', {
+                headers: { Authorization: "Bearer " + token }
+            });
+
+            if (!response.ok) {
+                throw new Error('Token Inválido!');
+            }
+
+            const conta = await response.json();
+
+            setPerfisConta(conta.perfis);
+        }
+        catch (error) {
+            console.error('Erro ao carregar dados:', error);
+        }
+    };
 
     const toggleDropdown = () => {
         setDropdownOpen(!dropdownOpen);
@@ -24,42 +49,20 @@ function NavbarAdmin() {
         Swal.fire({ title: "Sucesso!", html: `Você foi desconectado com sucesso.`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
     };
 
-    const options = [
-        { value: 'produtos', label: 'Produtos' },
-        { value: 'categorias', label: 'Categorias' },
-        { value: 'clientes', label: 'Clientes' },
-        { value: 'enderecos', label: 'Endereços' },
-        { value: 'enderecos_clientes', label: 'Endereços Clientes' },
-        { value: 'pedidos', label: 'Pedidos' },
-        { value: 'carrinhos_compra', label: 'Carrinhos de Compra' },
-        { value: 'solicitacoes_troca_devolucao', label: 'Solicitações de Troca/Devolução' }
-    ];
-
-    const handleDropdownChange = (option) => {
-        // Redirecionar para a página correspondente à opção selecionada
-        window.location.href = `/admin/${option.value}`;
-    };
-
     return (
         <header>
             <div className={styles.navbar}>
                 <ul>
-                    <li>
-                        <a href="/"><img className="logoCF" src={logo} alt="Logo" /></a>
-                    </li>
-                    <li>
-                        <a className={styles.navbarA}>Painel Administrador</a>
-                    </li>
-                    <li>
-                        <Dropdown
-                            options={options}
-                            onChange={handleDropdownChange}
-                            placeholder="Opções"
-                            className={styles['dropdown-control']}
-                            controlClassName={styles['dropdown-control']}
-                            menuClassName={styles['dropdown-menu']}
-                        />
-                    </li>
+                    <div className={styles.itensEsquerda}>
+                        <li>
+                            <a href="/">
+                                <img className="logoCF" src={logo} alt="Logo" />
+                            </a>
+                        </li>
+                    </div>
+                    <div className={styles.itensDireita}>
+
+                    </div>
                     <li>
                         <div className={styles.dropdown}>
                             <img src={accountIcon} alt="Account" onClick={toggleDropdown} />
@@ -73,6 +76,9 @@ function NavbarAdmin() {
                                     ) : (
                                         <>
                                             <li><a href="/perfil/pessoal">Meu Perfil</a></li>
+                                            {perfisConta.length > 0 && perfisConta.some(perfil => perfil.id === 3 && perfil.authority === "ROLE_ADMIN") && (
+                                                <li><a href="/admin/produtos">Painel Administrador</a></li>
+                                            )}
                                             <li><a onClick={handleLogout}>Sair</a></li>
                                         </>
                                     )}
@@ -80,10 +86,15 @@ function NavbarAdmin() {
                             )}
                         </div>
                     </li>
+                    <li>
+                        <a href="/carrinho">
+                            <img src={buyIcon} alt="Carrinho" />
+                        </a>
+                    </li>
                 </ul>
             </div>
         </header>
     );
 }
 
-export default NavbarAdmin;
+export default NavbarPerfil;

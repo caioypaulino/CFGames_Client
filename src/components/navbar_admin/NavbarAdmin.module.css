@@ -23,7 +23,7 @@
     margin-right: 10rem;
 }
 
-.navbar a {
+.navbarA {
     font-family: 'Roboto';
     font-size: 1.5rem;
     font-weight: bold;
@@ -102,4 +102,49 @@
 
 .dropdown-menu .option:hover {
     background-color: #f0f0f0;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown img {
+    cursor: pointer;
+}
+
+.dropdownContent {
+    position: absolute;
+    flex-direction: column;
+    top: calc(100% + 5px);
+    /* Posicionamento abaixo do ícone de conta com um pequeno espaço */
+    right: 0;
+    background-color: #f9f9f9;
+    min-width: 10rem;
+    width: 10rem;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    padding: 5px 0;
+    border-radius: 5px;
+}
+
+.dropdownContent li {
+    padding: 10px;
+    margin-left: 10rem;
+}
+
+.dropdownContent li a {
+    text-decoration: none;
+    color: #000;
+    display: block;
+    cursor: pointer;
+}
+
+.dropdownContent li a:hover {
+    text-decoration: none;
+    /* Adiciona sublinhado ao passar o mouse */
+    color: #6085FF;
+    /* Altera a cor do texto ao passar o mouse */
+    background-color: transparent;
+    /* Remove a cor de fundo ao passar o mouse */
 }

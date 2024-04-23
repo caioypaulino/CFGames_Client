@@ -43,6 +43,9 @@ const AdminPedidos = () => {
                 else if (response.status === 400) {
                     Swal.fire({ title: "Erro!", html: `Erro ao carregar pedidos!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
                 }
+                else if (response.status === 403) {
+                    Swal.fire({ title: "Erro!", html: `Você não possui permissão para acessar o painel de administrador.<br><br> Por favor, entre em contato com o administrador do sistema para mais informações.`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/perfil/pessoal"); });
+                }
             }
         }
         catch (error) {

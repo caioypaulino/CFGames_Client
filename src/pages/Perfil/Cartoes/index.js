@@ -143,7 +143,7 @@ const Cartoes = () => {
             </div>
             <div className={styles.btnIconAdd}>
                 <button className={styles.btnIcon} onClick={abrirPopupAdd}>
-                    <img className={styles.iconAdd} src={iconAdd} alt="Adicionar" />
+                    <img testid="iconAdd" className={styles.iconAdd} src={iconAdd} alt="Adicionar" />
                 </button>
             </div>
         </div>

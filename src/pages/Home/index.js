@@ -3,7 +3,7 @@ import banner from "../../assets/home/Banner.svg";
 import styles from "./Home.module.css";
 import ProdutoHome from "../../components/produtos_home";
 
-const Home = () => {
+const Home = ({ termoBusca }) => {
     const [produtos, setProdutos] = useState([]);
 
     // Paginação
@@ -17,23 +17,47 @@ const Home = () => {
     const totalPaginas = Math.ceil(produtos.length / produtosPorPagina);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch('http://localhost:8080/home/');
-                
+        carregarProdutos();
+    }, []);
+
+    useEffect(() => {
+        buscarTitulo(termoBusca);
+    }, [termoBusca]);
+
+    const carregarProdutos = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/home/');
+
+            if (!response.ok) {
+                throw new Error('Response error!');
+            }
+
+            setProdutos(await response.json());
+        }
+        catch (error) {
+            console.error('Erro ao carregar dados:', error);
+        }
+    };
+
+    const buscarTitulo = async (termoBusca) => {
+        try {
+            if (termoBusca === "") {
+                carregarProdutos();
+            }
+            else {
+                const response = await fetch(`http://localhost:8080/home/buscar/titulo=${termoBusca}`);
+    
                 if (!response.ok) {
                     throw new Error('Response error!');
                 }
-
+    
                 setProdutos(await response.json());
-            } 
-            catch (error) {
-                console.error('Erro ao carregar dados:', error);
             }
-        };
-
-        fetchData();
-    }, []);
+        }
+        catch (error) {
+            console.error('Erro ao carregar dados:', error);
+        }
+    };
 
     const handlePaginaAnterior = () => {
         setPaginaAtual(paginaAnterior => Math.max(paginaAnterior - 1, 1));
@@ -51,7 +75,6 @@ const Home = () => {
                 {produtosAtuais.map((produto, index) => (
                     <div key={index}>
                         <ProdutoHome
-                            key={produto.id}
                             imagem={"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"100\" height=\"100\"><circle cx=\"50\" cy=\"50\" r=\"40\" fill=\"red\" /></svg>"}
                             produto={produto}
                         />

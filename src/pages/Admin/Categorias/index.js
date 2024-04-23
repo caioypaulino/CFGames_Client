@@ -19,28 +19,33 @@ const AdminCategorias = () => {
     useEffect(() => {
         carregarCategorias();
     }, []);
-    
+
     const carregarCategorias = async () => {
         const token = getToken();
-    
+
         try {
             const response = await fetch('http://localhost:8080/admin/categorias', {
                 headers: { Authorization: "Bearer " + token }
             });
-    
+
             if (response.ok) {
                 const json = await response.json();
                 const sortedCategorias = json.sort((a, b) => a.id - b.id);
-    
+
                 setCategorias(sortedCategorias); // Definindo categorias
             } else {
                 if (response.status === 500) {
                     throw new Error('Token Inválido!');
-                } else if (response.status === 400) {
+                }
+                else if (response.status === 400) {
                     Swal.fire({ title: "Erro!", html: `Erro ao carregar categorias!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
                 }
+                else if (response.status === 403) {
+                    Swal.fire({ title: "Erro!", html: `Você não possui permissão para acessar o painel de administrador.<br><br> Por favor, entre em contato com o administrador do sistema para mais informações.`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/perfil/pessoal"); });
+                }
             }
-        } catch (error) {
+        } 
+        catch (error) {
             console.error('Erro ao carregar dados:', error);
             Swal.fire({ title: "Erro!", html: `Erro ao carregar painel de administrador.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
         }
@@ -62,14 +67,14 @@ const AdminCategorias = () => {
             icon: 'info',
         }).then((result) => {
             if (result.isConfirmed) { // Se o botão "Editar" for clicado
-                abrirPopupUpdate(categoria);      
-            } 
+                abrirPopupUpdate(categoria);
+            }
             else if (result.isDenied) { // Se o botão "Deletar" for clicado
                 abrirPopupDelete(categoria);
             }
         });
     };
-    
+
     // Função para abrir o modal de atualização da categoria
     const abrirPopupUpdate = (categoria) => {
         Swal.fire({
@@ -85,17 +90,17 @@ const AdminCategorias = () => {
             preConfirm: () => {
                 // Obtendo valores dos campos atualizados
                 const nome = Swal.getPopup().querySelector('#nome').value;
-                
+
                 // Chamando a função para atualizar o categoria
                 atualizarCategoria(categoria.id, nome);
             }
         }).then((result) => {
             if (result.isDismissed) { // Se o usuário clicar em cancelar, volte para abrirPopupInfo
-                abrirPopupInfo(categoria); 
+                abrirPopupInfo(categoria);
             }
         });
     };
-    
+
     // Função para atualizar a categoria
     const atualizarCategoria = async (categoriaId, nome) => {
         try {
@@ -110,16 +115,16 @@ const AdminCategorias = () => {
                     nome
                 }),
             });
-    
+
             if (response.ok) {
                 const successMessage = await response.text();
                 Swal.fire({ title: "Sucesso!", html: `${successMessage}`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-            } 
+            }
             else {
                 const errorMessage = await response.text();
                 throw new Error(errorMessage);
             }
-        } 
+        }
         catch (error) {
             console.error("Erro ao atualizar categoria:", error);
             Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao atualizar a categoria.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" });
@@ -138,14 +143,14 @@ const AdminCategorias = () => {
             confirmButtonText: 'Sim, deletar!',
             cancelButtonText: 'Cancelar'
         })
-        .then((result) => {
-            if (result.isConfirmed) {
-                deletarCategoria(categoria.id);
-            }
-            else if (result.isDismissed) {
-                abrirPopupInfo(categoria);
-            }
-        });
+            .then((result) => {
+                if (result.isConfirmed) {
+                    deletarCategoria(categoria.id);
+                }
+                else if (result.isDismissed) {
+                    abrirPopupInfo(categoria);
+                }
+            });
     };
 
     // Função para deletar uma categoria
@@ -183,7 +188,7 @@ const AdminCategorias = () => {
     const abrirPopupAdd = () => {
         Swal.fire({
             title: 'Adicionar Categoria',
-            html:`
+            html: `
                 <input id="nome" type="text" class="swal2-input" placeholder="Nome">
             `,
             showCancelButton: true,
@@ -193,7 +198,7 @@ const AdminCategorias = () => {
             icon: "info",
             preConfirm: () => {
                 const nome = Swal.getPopup().querySelector('#nome').value;
-                
+
                 adicionarCategoria(nome)
             },
         });

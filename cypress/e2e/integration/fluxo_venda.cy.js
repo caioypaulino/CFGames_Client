@@ -67,7 +67,7 @@ describe('Fluxos de Venda', () => {
                     cy.get('#react-select-5-option-1').click();
                 }
                 else {
-                    cy.get('.CartoesCheckout_btnNovoCartao__1S-6N').click(); // Adicionando cartão
+                    cy.contains('Novo Cartão').click(); // Adicionando cartão
     
                     cy.get('#numeroCartao').type("5495 4147 8885 2345").wait(500);
                     cy.get('#nomeCartao').type("CAIO H PAULINO").wait(500);
@@ -79,7 +79,7 @@ describe('Fluxos de Venda', () => {
                     cy.get('.swal2-confirm').click().wait(500);
     
                     cy.get('#cartoesSelect').click().wait(500);
-                    cy.get('#react-select-5-option-0').click();
+                    cy.get('#react-select-5-option-1').click();
                 }
             });
         }
@@ -126,7 +126,7 @@ describe('Fluxos de Venda', () => {
     
         selecionarCartoes(); // Seleciona dois cartões de crédito como forma de pagamento
     
-        cy.get('.ResumoCheckout_btn__3h8yg').click().wait(500); // Confirmando pedido
+        cy.contains('Confirmar Pedido').click().wait(500); // Confirmando pedido
         cy.get('.swal2-confirm').click().wait(1000); // Submit pedido
         cy.get('.swal2-confirm').click().wait(1000); // OK
     });
@@ -136,7 +136,7 @@ describe('Fluxos de Venda', () => {
             cy.get('thead > tr > :nth-child(1)').click().wait(500); // Selecionando pedido mais recente
             cy.get('thead > tr > :nth-child(1)').click().wait(500);
     
-            cy.get('.AdminPedidos_buttonAcoes__2yT5s').first().click().wait(500); // Acessando pedido
+            cy.contains('. . .').first().click().wait(500); // Acessando pedido
     
             cy.get('.swal2-container').scrollTo('bottom');
     

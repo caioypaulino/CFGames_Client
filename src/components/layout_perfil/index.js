@@ -1,13 +1,13 @@
 import React from "react";
-import Navbar from "../navbar/index";
+import NavbarPerfil from "../navbar_perfil";
 import Footer from "../footer/index";
-import styles from "./Layout.module.css";
+import styles from "./LayoutPerfil.module.css";
 
-function Layout({ children, termoBusca, setTermoBusca }) {
+function Layout({ children }) {
   return (
     <div className={styles.layoutContainer}>
       <div className={styles.contentContainer}>
-        <Navbar termoBusca={termoBusca} setTermoBusca={setTermoBusca}/>
+        <NavbarPerfil/>
         <main>{children}</main>
       </div>
       <Footer />
