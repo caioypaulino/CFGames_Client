@@ -24,6 +24,7 @@ import AdminClientes from "./pages/Admin/Clientes";
 import AdminEnderecos from "./pages/Admin/Enderecos";
 import AdminPedidos from "./pages/Admin/Pedidos";
 import AdminSolicitacoesTrocaDevolucao from "./pages/Admin/SolicitacoesTrocaDevolucao";
+import AdminCupons from "./pages/Admin/Cupons";
 
 export default function App() {
     const [termoBusca, setTermoBusca] = useState('');
@@ -51,6 +52,7 @@ export default function App() {
                 <Route path="/admin/enderecos" element={<LayoutAdmin><AdminEnderecos /></LayoutAdmin>} />
                 <Route path="/admin/pedidos" element={<LayoutAdmin><AdminPedidos /></LayoutAdmin>} />
                 <Route path="/admin/solicitacoes_troca_devolucao" element={<LayoutAdmin><AdminSolicitacoesTrocaDevolucao /></LayoutAdmin>} />
+                <Route path="/admin/cupons" element={<LayoutAdmin><AdminCupons /></LayoutAdmin>} />
             </Routes>
         </BrowserRouter>
     );

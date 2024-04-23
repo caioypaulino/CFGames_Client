@@ -32,7 +32,8 @@ function NavbarAdmin() {
         { value: 'enderecos_clientes', label: 'Endereços Clientes' },
         { value: 'pedidos', label: 'Pedidos' },
         { value: 'carrinhos_compra', label: 'Carrinhos de Compra' },
-        { value: 'solicitacoes_troca_devolucao', label: 'Solicitações de Troca/Devolução' }
+        { value: 'solicitacoes_troca_devolucao', label: 'Solicitações de Troca/Devolução' },
+        { value: 'cupons', label: 'Cupons' }
     ];
 
     const handleDropdownChange = (option) => {

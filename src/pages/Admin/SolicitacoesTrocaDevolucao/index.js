@@ -528,7 +528,6 @@ const AdminSolicitacoesTrocaDevolucao = () => {
 
     return (
         <div className={styles.container}>
-            {console.log(itensReposicao)}
             <div className={styles.tbInfo}>
                 <table className={styles.table}>
                     <thead>

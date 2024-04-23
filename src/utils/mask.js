@@ -130,6 +130,25 @@ export const dataMaskEN2 = (value) => {
     return `${ano}-${mes}-${dia}`;
 }
 
+// Função para formatar data e hora (dd-MM-yyyy hh:mm)
+export const dateTimeMask = (dateTimeString) => {
+
+    const dateTime = new Date(dateTimeString);
+
+    // Verificar se a data/hora é válida
+    if (isNaN(dateTime.getTime())) {
+        throw new Error('Por favor, insira uma data e hora válidas.');
+    }
+
+    const day = String(dateTime.getDate()).padStart(2, '0');
+    const month = String(dateTime.getMonth() + 1).padStart(2, ' 0');
+    const year = dateTime.getFullYear();
+    const hours = String(dateTime.getHours()).padStart(2, '0');
+    const minutes = String(dateTime.getMinutes()).padStart(2, '0');
+
+    return `${day}-${month}-${year} ${hours}:${minutes}`;
+};
+
 // Função para aplicar máscara de valores (ex: 13950,00 para 13950.00)
 export const valueMaskEN = (value) => {
     return value.replace(",", ".");
