@@ -157,7 +157,7 @@ const AdminPedidos = () => {
                         <p>Selecione uma opção:</p>
                         <button onClick={() => despacharPedido(pedido.id)} className="swal2-confirm swal2-styled" style={{ backgroundColor: '#6085FF', fontSize:'1rem' }}>Em Trânsito</button>
                         <button onClick={() => confirmarEntrega(pedido.id)} className="swal2-deny swal2-styled" style={{ backgroundColor: '#011640', fontSize:'1rem' }}>Entregue</button>
-                        <button onClick={() => abrirPopupUpdateStatus(pedido)} className="swal2-cancel swal2-styled" style={{ backgroundColor: '#2D314D', fontSize:'1rem' }}>Personalizado</button>
+                        <button onClick={() => abrirPopupUpdateStatus(pedido)} testid="personalizado" className="swal2-cancel swal2-styled" style={{ backgroundColor: '#2D314D', fontSize:'1rem' }}>Personalizado</button>
                         <button onClick={() => abrirPopupInfo(pedido)} className="swal2-cancel swal2-styled" style={{ backgroundColor: '#6E7881', fontSize:'1rem' }}>Voltar</button>
                     </div>
                 );
