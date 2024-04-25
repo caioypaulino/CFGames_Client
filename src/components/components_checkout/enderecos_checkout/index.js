@@ -254,7 +254,6 @@ const EnderecosCheckout = (props) => {
 
     return (
         <div className={style.selectAdress}>
-        {console.log(enderecoAdicionado)}
             <h1>Selecione o Endereço para Entrega</h1>
             <form className={style.enderecoList}>
                 <Select
