@@ -23,20 +23,29 @@ const EnderecosCheckout = (props) => {
         carregarEnderecosCliente();
     }, []);
 
-    // Verifica se está saindo da página
+    // Verifica se a página está sendo fechada ou recarregada
     useEffect(() => {
+        const handleUnload = async () => {
+            if (enderecoAdicionado.id) {
+                await excluirEndereco(enderecoAdicionado.id);
+            }
+        };
+    
         const handleBeforeUnload = async () => {
             if (enderecoAdicionado.id) {
                 await excluirEndereco(enderecoAdicionado.id);
             }
         };
     
+        window.addEventListener('unload', handleUnload);
         window.addEventListener('beforeunload', handleBeforeUnload);
     
         return () => {
+            window.removeEventListener('unload', handleUnload);
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };
     }, [enderecoAdicionado]);
+    
 
     useEffect(() => {
         const novoEndereco = enderecosCliente.find(endereco => endereco.id === enderecoAdicionado.id);

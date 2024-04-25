@@ -29,17 +29,25 @@ const CartoesCheckout = (props) => {
         carregarCartoesCliente();
     }, []);
 
-    // Verifica se a página está sendo recarregada
+    // Verifica se a página está sendo fechada ou recarregada
     useEffect(() => {
+        const handleUnload = async () => {
+            if (cartoesAdicionados.length > 0) {
+                excluirCartoes(cartoesAdicionados);
+            }
+        };
+    
         const handleBeforeUnload = () => {
             if (cartoesAdicionados.length > 0) {
                 excluirCartoes(cartoesAdicionados);
             }
         };
-
+    
+        window.addEventListener('unload', handleUnload);
         window.addEventListener('beforeunload', handleBeforeUnload);
-
+    
         return () => {
+            window.removeEventListener('unload', handleUnload);
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };
     }, [cartoesAdicionados]);
