@@ -65,7 +65,7 @@ function Navbar({ termoBusca, setTermoBusca }) {
                     </li>
                     <li>
                         <div className={styles.searchContainer}>
-                            <input type="text" className={styles.inputText} value={termoBusca} onChange={handleChangeBusca} />
+                            <input testid="barrabusca" type="text" className={styles.inputText} value={termoBusca} onChange={handleChangeBusca} />
                             <img src={searchIcon} alt="Search" className={styles.searchIcon} />
                         </div>
                     </li>

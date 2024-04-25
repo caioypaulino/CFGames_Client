@@ -34,7 +34,7 @@ describe('Fluxos de Troca/Devolução', () => {
             cy.get('.swal2-confirm').click().wait(500); // Alterar Status
         }
         
-        cy.login_success(); // Realizando login com sucesso!
+        cy.login_admin_success(); // Realizando login com sucesso!
 
         cy.visit('http://localhost:3000/admin/solicitacoes_troca_devolucao').wait(1000);
 
