@@ -26,13 +26,13 @@ const EnderecosCheckout = (props) => {
     // Verifica se a página está sendo fechada ou recarregada
     useEffect(() => {
         const handleUnload = async () => {
-            if (enderecoAdicionado.id) {
+            if (enderecoAdicionado.id && !enderecoAdicionado.salvar) {
                 await excluirEndereco(enderecoAdicionado.id);
             }
         };
     
         const handleBeforeUnload = async () => {
-            if (enderecoAdicionado.id) {
+            if (enderecoAdicionado.id && !enderecoAdicionado.salvar) {
                 await excluirEndereco(enderecoAdicionado.id);
             }
         };
@@ -45,7 +45,6 @@ const EnderecosCheckout = (props) => {
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };
     }, [enderecoAdicionado]);
-    
 
     useEffect(() => {
         const novoEndereco = enderecosCliente.find(endereco => endereco.id === enderecoAdicionado.id);
@@ -255,6 +254,7 @@ const EnderecosCheckout = (props) => {
 
     return (
         <div className={style.selectAdress}>
+        {console.log(enderecoAdicionado)}
             <h1>Selecione o Endereço para Entrega</h1>
             <form className={style.enderecoList}>
                 <Select

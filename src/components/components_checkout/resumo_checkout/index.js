@@ -200,7 +200,7 @@ const ResumoCheckout = (props) => {
             });
 
             if (response.ok) {
-                if (!enderecoAdicionado.adicionar && enderecoAdicionado.id) {
+                if (!enderecoAdicionado.salvar && enderecoAdicionado.id) {
                     excluirEndereco(enderecoAdicionado.id);
                 }
 
