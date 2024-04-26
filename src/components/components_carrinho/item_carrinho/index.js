@@ -1,21 +1,21 @@
-// qtd_product.js
 import React, { useState } from "react";
 import style from "./ItemCarrinho.module.css";
 import polygon_icon from "../../../assets/buttons/Polygon 14.svg";
+import { atualizarQuantidade } from "../../../services/carrinhoService";
 
 const ItemCarrinho = (props) => {
-    const { itemId, produtoId, titulo, preco, publisher, image, quantidade, atualizarQuantidade } = props;
+    const { itemId, produtoId, titulo, preco, publisher, image, quantidade } = props;
     const [quantidadeAtual, setQuantidadeAtual] = useState(quantidade); // Inicializa a variável valor com a quantidade inicial
 
     const incrementarQuantidade = () => {
         setQuantidadeAtual((prevValor) => prevValor + 1);
-        atualizarQuantidade(itemId, produtoId, quantidadeAtual + 1); // Chama a função atualizarQuantidade para atualizar a quantidade
+        atualizarQuantidade(itemId, produtoId, quantidadeAtual + 1); // Chama a função service atualizarQuantidade para atualizar a quantidade
     };
 
     const decrementarQuantidade = () => {
         if (quantidadeAtual > 1) {
             setQuantidadeAtual((prevValor) => prevValor - 1);
-            atualizarQuantidade(itemId, produtoId, quantidadeAtual - 1); // Chama a função atualizarQuantidade para atualizar a quantidade
+            atualizarQuantidade(itemId, produtoId, quantidadeAtual - 1); // Chama a função service atualizarQuantidade para atualizar a quantidade
         }
     };
 

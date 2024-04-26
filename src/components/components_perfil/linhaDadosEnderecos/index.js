@@ -3,8 +3,8 @@ import styles from "./linhaDadosEnderecos.module.css";
 import Swal from "sweetalert2";
 import iconEdit from "../../../assets/buttons/Frame (6).svg";
 import iconDelete from "../../../assets/buttons/delete.svg"
-import { getToken } from "../../../utils/storage";
 import { handleNumber, handleCep, cepMask } from '../../../utils/mask';
+import EnderecoService from "../../../services/enderecoService";
 
 const linhaDadosEnderecos = (props) => {
     // utilizando desestruturação
@@ -70,7 +70,9 @@ const linhaDadosEnderecos = (props) => {
                 const tipo = Swal.getPopup().querySelector("#tipo").value;
                 const cep = cepMask(Swal.getPopup().querySelector("#cep").value);
                 const observacao = Swal.getPopup().querySelector("#observacao").value;
-                return editarEndereco(id, apelido, numero, complemento, tipo, cep, observacao);
+
+                // Chamar função para editar o endereço
+                return EnderecoService.editarEndereco(id, apelido, numero, complemento, tipo, cep, observacao);
             }
         });
         
@@ -79,46 +81,6 @@ const linhaDadosEnderecos = (props) => {
         const numberInput = document.getElementById('numero');
         cepInput.addEventListener('input', handleCep);
         numberInput.addEventListener('input', handleNumber);
-    };
-
-    // função request update endereço
-    const editarEndereco = async (id, apelido, numero, complemento, tipo, cep, observacao) => {
-        try {
-            const token = getToken();
-            
-            const response = await fetch(`http://localhost:8080/perfil/update/endereco/${id}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization : "Bearer " + token
-                },
-                body: JSON.stringify({
-                    apelido,
-                    numero,
-                    complemento,
-                    tipo,
-                    endereco: {
-                        cep
-                    },
-                    observacao
-                })
-            });
-
-            if (response.ok) {
-                Swal.fire({title:"Sucesso!", text:"Endereço atualizado com sucesso.", icon:"success", confirmButtonColor:"#6085FF"}).then(() => { window.location.reload(); }); // Recarregar a página após o update
-            } 
-            else {
-                // buscando mensagem de erro que não é JSON
-                const errorMessage = await response.text();
-                
-                throw new Error(errorMessage);
-            }
-        } 
-        catch (error) {
-            // tratando mensagem de erro
-            console.error("Erro ao atualizar endereço:", error);
-            Swal.fire({title:"Erro!", html: `Ocorreu um erro ao atualizar o endereço.<br><br>${error.message}`, icon:"error", confirmButtonColor:"#6085FF"})
-        }
     };
 
     // utilizando sweet alert 2 como popup para Delete Endereço
@@ -135,44 +97,9 @@ const linhaDadosEnderecos = (props) => {
         }).then((result) => {
             if (result.isConfirmed) {
                 // Chamar função para excluir o endereço
-                excluirEndereco(id);
+                EnderecoService.excluirEndereco(id);
             }
         });
-    };
-
-    // função request delete endereço
-    const excluirEndereco = async (enderecoId) => {
-        try {
-            const token = getToken();
-
-            const response = await fetch("http://localhost:8080/perfil/remove/endereco", {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                },
-                body: JSON.stringify({
-                    id: enderecoId,
-                }),
-            });
-
-            if (response.ok) {
-                // Exibindo mensagem de sucesso
-                Swal.fire({title:"Removido!", text:"Endereço foi removido com sucesso.", icon:"success", confirmButtonColor:"#6085FF"}).then(() => { window.location.reload(); });
-                // Recarregar a página ou atualizar os dados, conforme necessário
-            } 
-            else {
-                // buscando mensagem de erro que não é JSON
-                const errorMessage = await response.text();
-                
-                throw new Error(errorMessage);
-            }
-        } 
-        catch (error) {
-            // tratando mensagem de erro
-            console.error("Erro ao excluir endereço:", error);
-            Swal.fire({title:"Erro!", html: `Ocorreu um erro ao excluir o endereço.<br><br>${error.message}`, icon:"error", confirmButtonColor:"#6085FF"})
-        }
     };
 
     return (

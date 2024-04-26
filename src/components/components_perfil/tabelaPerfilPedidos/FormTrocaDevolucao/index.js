@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import Select from "react-select";
 import styles from "./FormTrocaDevolucao.module.css"; // Certifique-se de ajustar o caminho do arquivo CSS
 import { getToken } from "../../../../utils/storage";
+import { confirmarSolicitacao } from "../../../../services/solicitacoesService";
 
 // Abrir o modal de troca/devolução do pedido
 const FormTrocaDevolucao = ({
@@ -33,44 +34,7 @@ const FormTrocaDevolucao = ({
 
     // Função para consumir a API quando o botão "Confirmar" for clicado
     const handleConfirmar = async () => {
-        try {
-            const token = getToken(); // Supondo que você tenha uma função getToken() para obter o token de autenticação
-
-            const response = await fetch("http://localhost:8080/perfil/add/solicitacaotroca", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                },
-                body: JSON.stringify({
-                    pedido: {
-                        id: pedido.id
-                    },
-                    itensTroca: itensTroca.map(item => ({
-                        itemCarrinho: {
-                            id: item.value
-                        },
-                        quantidadeTroca: item.quantidadeTroca
-                    })),
-                    observacao: document.getElementById("motivo").value
-                }),
-            });
-
-            if (response.ok) {
-                Swal.fire({ title: "Sucesso!", text: "Solicitação de troca/devolução realizada com sucesso.", icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-            }
-            else {
-                // Buscando mensagem de erro que não é JSON
-                const errorMessage = await response.text();
-
-                throw new Error(errorMessage);
-            }
-        }
-        catch (error) {
-            // Tratando mensagem de erro
-            console.error("Erro ao solicitar troca/devolução:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao solicitar troca/devolução.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
-        }
+        confirmarSolicitacao(pedido, itensTroca)
     };
 
     return (

@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { getToken } from "../../utils/storage";
 import FormularioEndereco from "../../components/components_cadastro/formularioEndereco";
+import { cadastrarEndereco } from "../../services/cadastroService";
 
 export default function CadastroEndereco() {
     const navigate = useNavigate();
@@ -47,9 +48,9 @@ export default function CadastroEndereco() {
 
     useEffect(() => {
         const token = getToken();
-        
+
         if (!token) {
-            Swal.fire({title: "Erro!", html: `Ocorreu um erro ao adicionar o(s) endereço(s).<br><br>É necessário Cadastro Cliente primeiro`, icon: "error", confirmButtonColor: "#6085FF"}).then(navigate("/cadastro/cliente"));
+            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao adicionar o(s) endereço(s).<br><br>É necessário Cadastro Cliente primeiro`, icon: "error", confirmButtonColor: "#6085FF" }).then(navigate("/cadastro/cliente"));
         }
     }, []);
 
@@ -58,48 +59,20 @@ export default function CadastroEndereco() {
     };
 
     const handleSubmit = async () => {
-        try {
-            const token = getToken();
+        let enderecosRequest = [];
 
-            let enderecosRequest = [];
+        if (enderecosDiferentes) {
+            enderecoEntrega.tipo = "ENTREGA";
+            enderecoCobranca.tipo = "COBRANCA";
+            enderecoResidencial.tipo = "RESIDENCIAL";
 
-            if (enderecosDiferentes) {
-                enderecoEntrega.tipo = "ENTREGA";
-                enderecoCobranca.tipo = "COBRANCA";
-                enderecoResidencial.tipo = "RESIDENCIAL";
-
-                enderecosRequest = [enderecoEntrega, enderecoCobranca, enderecoResidencial];
-            }
-            else {
-                enderecosRequest = [enderecoEntrega];
-            }
-
-            // Submissão do endereço de entrega
-            const response = await fetch("http://localhost:8080/cadastro/endereco", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                },
-                body: JSON.stringify(enderecosRequest),
-            });
-
-            // Verificação e tratamento da resposta para o endereço de entrega
-            if (response.ok) {
-                // Exibição de mensagem de sucesso
-                Swal.fire({title: "Sucesso!", text: "Endereço(s) adicionado(s) com sucesso.", icon: "success", confirmButtonColor: "#6085FF"}).then(() => { navigate("/perfil/pessoal") });
-                
-            }
-            else {
-                const errorMessage = await response.text();
-                throw new Error(errorMessage);
-            }
-        
+            enderecosRequest = [enderecoEntrega, enderecoCobranca, enderecoResidencial];
         }
-        catch (error) {
-            console.error("Erro ao adicionar endereço:", error);
-            Swal.fire({title: "Erro!", html: `Ocorreu um erro ao adicionar o(s) endereço(s).<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF"});
+        else {
+            enderecosRequest = [enderecoEntrega];
         }
+
+        cadastrarEndereco({enderecosRequest, navigate});
     };
 
     return (
@@ -150,7 +123,7 @@ export default function CadastroEndereco() {
                         />
                     </div>
                 )}
-                
+
             </div>
 
             {!enderecosDiferentes && (

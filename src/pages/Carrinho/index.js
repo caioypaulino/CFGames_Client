@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import { getToken } from "../../utils/storage";
 import { useNavigate } from "react-router-dom";
 import { valueMaskBR } from "../../utils/mask";
+import { buscarCarrinhoCompras, removerItemCarrinho } from "../../services/carrinhoService";
 
 const Carrinho = () => {
     const [carrinhoCompras, setCarrinhoCompras] = useState({});
@@ -15,90 +16,14 @@ const Carrinho = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        const carregarCarrinhoCompras = async () => {
+            const result = await buscarCarrinhoCompras(navigate);
+
+            setCarrinhoCompras(result);
+        }
+
         carregarCarrinhoCompras();
     }, []);
-
-    const carregarCarrinhoCompras = async () => {
-        const token = getToken();
-
-        try {
-            const response = await fetch('http://localhost:8080/carrinhodecompra/read', {
-                headers: { Authorization: "Bearer " + token }
-            });
-
-            if (response.ok) {
-                setCarrinhoCompras(await response.json());
-            }
-            else {
-                if (response.status === 500) {
-                    throw new Error('Token Inválido!');
-                }
-                else if (response.status === 400) {
-                    setCarrinhoCompras([]);
-                }
-            }
-        }
-        catch (error) {
-            console.error('Erro ao carregar dados:', error);
-            Swal.fire({ title: "Erro!", html: `Erro ao carregar carrinho de compras.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
-        }
-    };
-
-    const removerItemCarrinho = async (id) => {
-        const token = getToken();
-
-        try {
-            const response = await fetch(`http://localhost:8080/carrinhodecompra/remove/itemcarrinho/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': "Bearer " + token
-                }
-            });
-
-            if (response.ok) {
-                Swal.fire({ title: "Removido!", text: "Item removido com sucesso do carrinho.", icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-            }
-            else {
-                const errorMessage = await response.text();
-
-                throw new Error(errorMessage);
-            }
-        }
-        catch (error) {
-            console.error("Erro ao remover item:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao remover item do carrinho.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-        }
-    }
-
-    const atualizarQuantidade = async (itemId, produtoId, quantidade) => {
-        const token = getToken();
-
-        try {
-            const response = await fetch('http://localhost:8080/carrinhodecompra/update', {
-                method: 'PUT',
-                headers: {
-                    'Authorization': "Bearer " + token,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    itemCarrinhoId: itemId,
-                    produtoId,
-                    quantidade
-                })
-            });
-
-            if (response.ok) {
-                window.location.reload();
-            }
-            else {
-                console.error('Erro ao atualizar quantidade:', response.status);
-                Swal.fire({ title: "Erro!", html: `Erro ao atualizar quantidade.<br><br>Quantidade Indisponível em Estoque`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-            }
-        }
-        catch (error) {
-            console.error('Erro ao atualizar quantidade:', error);
-        }
-    }
 
     return (
         <div className={styles.container}>
@@ -118,7 +43,6 @@ const Carrinho = () => {
                             preco={valueMaskBR(item.valorItem)}
                             publisher={item.produto.publisher}
                             quantidade={item.quantidade}
-                            atualizarQuantidade={atualizarQuantidade} // Passando a função atualizarQuantidade como prop
                         />
                         <input className={styles.btnRemove} type="submit" value="Remover" onClick={() => removerItemCarrinho(item.id)} />
                     </div>

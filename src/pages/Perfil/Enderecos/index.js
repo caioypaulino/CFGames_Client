@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import { getToken } from "../../../utils/storage";
 import { handleCep, cepMask, handleNumber } from '../../../utils/mask';
 import { useNavigate } from "react-router-dom";
+import EnderecoService from "../../../services/enderecoService";
 
 const Enderecos = () => {
     const [enderecos, setEnderecos] = useState([]);
@@ -17,45 +18,14 @@ const Enderecos = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        const carregarEnderecos = async () => {
+            const result = await EnderecoService.buscarEnderecos(navigate);
+
+            setEnderecos(result);
+        }
+        
         carregarEnderecos();
     }, []);
-
-    const carregarEnderecos = async () => {
-        const token = getToken();
-
-        try {
-            const response = await fetch('http://localhost:8080/perfil/enderecos', {
-                headers: { Authorization: "Bearer " + token }
-            });
-
-            if (!response.ok) {
-                throw new Error('Token Inválido!');
-            }
-
-            const enderecos = await response.json();
-
-            // Função para ordenar os endereços por tipo na ordem específica
-            const ordenarPorTipo = (endereco1, endereco2) => {
-                const ordemTipo = {
-                    GERAL: 1,
-                    RESIDENCIAL: 2,
-                    ENTREGA: 3,
-                    COBRANCA: 4
-                };
-    
-                return ordemTipo[endereco1.tipo] - ordemTipo[endereco2.tipo];
-            };
-    
-            // Ordenando os endereços pela ordem especificada
-            enderecos.sort(ordenarPorTipo);
-    
-            setEnderecos(enderecos);
-        }
-        catch (error) {
-            console.error('Erro ao carregar dados:', error);
-            Swal.fire({ title: "Erro!", html: `Erro ao carregar endereços.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
-        }
-    };
 
     // função para abrir o formulário de adição de endereço
     const abrirPopupAdd = () => {
@@ -86,7 +56,8 @@ const Enderecos = () => {
                 const tipo = Swal.getPopup().querySelector("#tipo").value;
                 const cep = cepMask(Swal.getPopup().querySelector("#cep").value);
                 const observacao = Swal.getPopup().querySelector("#observacao").value;
-                adicionarEndereco(apelido, numero, complemento, tipo, cep, observacao);
+
+                EnderecoService.adicionarEndereco(apelido, numero, complemento, tipo, cep, observacao);
             },
         });
 
@@ -95,45 +66,6 @@ const Enderecos = () => {
         const numberInput = document.getElementById('numero');
         cepInput.addEventListener('input', handleCep);
         numberInput.addEventListener('input', handleNumber);
-    };
-
-    // função para adicionar um novo endereço
-    const adicionarEndereco = async (apelido, numero, complemento, tipo, cep, observacao) => {
-        try {
-            const token = getToken();
-            const response = await fetch("http://localhost:8080/perfil/add/endereco", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                },
-                body: JSON.stringify({
-                    apelido,
-                    numero,
-                    complemento,
-                    tipo,
-                    endereco: {
-                        cep,
-                    },
-                    observacao,
-                }),
-            });
-
-            if (response.ok) {
-                Swal.fire({ title: "Sucesso!", text: "Endereço adicionado com sucesso.", icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-            }
-            else {
-                // buscando mensagem de erro que não é JSON
-                const errorMessage = await response.text();
-
-                throw new Error(errorMessage);
-            }
-        }
-        catch (error) {
-            // tratando mensagem de erro
-            console.error("Erro ao adicionar endereço:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao adicionar o endereço.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
-        }
     };
 
     const indexUltimoEndereco = paginaAtual * enderecosPorPagina;

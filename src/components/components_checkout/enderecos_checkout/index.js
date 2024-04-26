@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { getToken } from "../../../utils/storage";
 import ResumoCheckout from "../resumo_checkout";
 import { cepMask, handleCep, handleNumber } from "../../../utils/mask";
+import EnderecoService from "../../../services/enderecoService";
 
 const EnderecosCheckout = (props) => {
     const { valorCarrinho } = props;
@@ -61,24 +62,10 @@ const EnderecosCheckout = (props) => {
     }, [enderecoAdicionado, enderecosCliente]);
 
     const carregarEnderecosCliente = async () => {
-        const token = getToken();
+        const result = await EnderecoService.buscarEnderecos(navigate);
 
-        try {
-            const response = await fetch('http://localhost:8080/perfil/enderecos', {
-                headers: { Authorization: "Bearer " + token }
-            });
-
-            if (!response.ok) {
-                throw new Error('Token Inválido!');
-            }
-
-            setEnderecosCliente(await response.json());
-        }
-        catch (error) {
-            console.error('Erro ao carregar dados:', error);
-            Swal.fire({ title: "Erro!", html: `Erro ao carregar endereços.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
-        }
-    };
+        setEnderecosCliente(result);
+    }
 
     // função para abrir o formulário de adição de endereço
     const abrirPopupEndereco = () => {

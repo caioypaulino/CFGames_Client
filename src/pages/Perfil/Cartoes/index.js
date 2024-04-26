@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import { getToken } from "../../../utils/storage";
 import { useNavigate } from "react-router-dom";
 import { handleCreditCard, handleNumber, removeMask } from "../../../utils/mask";
+import { adicionarCartao, buscarCartoes } from "../../../services/cartaoService";
 
 const Cartoes = () => {
     const [cartoes, setCartoes] = useState([]);
@@ -14,31 +15,17 @@ const Cartoes = () => {
     const [paginaAtual, setPaginaAtual] = useState(1);
     const [cartoesPorPagina] = useState(5);
 
-    const navigate = useNavigate(); // Usando useNavigate para navegação
+    const navigate = useNavigate();
 
     useEffect(() => {
+        const carregarCartoes = async () => {
+            const result = await buscarCartoes(navigate);
+
+            setCartoes(result);
+        }
+
         carregarCartoes();
     }, []);
-
-    const carregarCartoes = async () => {
-        const token = getToken();
-
-        try {
-            const response = await fetch('http://localhost:8080/perfil/cartoes', {
-                headers: { Authorization: "Bearer " + token }
-            });
-
-            if (!response.ok) {
-                throw new Error('Token Inválido!');
-            }
-
-            setCartoes(await response.json());
-        }
-        catch (error) {
-            console.error('Erro ao carregar dados:', error);
-            Swal.fire({ title: "Erro!", html: `Erro ao carregar cartões.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
-        }
-    };
 
     // função para abrir o formulário de adição de cartão
     const abrirPopupAdd = () => {
@@ -61,6 +48,7 @@ const Cartoes = () => {
                 const mesVencimento = Swal.getPopup().querySelector("#mesVencimento").value;
                 const anoVencimento = Swal.getPopup().querySelector("#anoVencimento").value;
                 const cvc = Swal.getPopup().querySelector("#cvc").value;
+
                 adicionarCartao(numeroCartao, nomeCartao, mesVencimento, anoVencimento, cvc);
             },
         });
@@ -70,42 +58,6 @@ const Cartoes = () => {
         const cvcInput = document.getElementById('cvc');
         numeroCartaoInput.addEventListener('input', handleCreditCard);
         cvcInput.addEventListener('input', handleNumber);
-    };
-
-    // função para adicionar um novo cartão
-    const adicionarCartao = async (numeroCartao, nomeCartao, mesVencimento, anoVencimento, cvc) => {
-        try {
-            const token = getToken();
-            const response = await fetch("http://localhost:8080/perfil/add/cartao", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                },
-                body: JSON.stringify({
-                    numeroCartao,
-                    nomeCartao,
-                    mesVencimento,
-                    anoVencimento,
-                    cvc,
-                }),
-            });
-
-            if (response.ok) {
-                Swal.fire({ title: "Sucesso!", text: "Cartão adicionado com sucesso.", icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-            }
-            else {
-                // buscando mensagem de erro que não é JSON
-                const errorMessage = await response.text();
-
-                throw new Error(errorMessage);
-            }
-        }
-        catch (error) {
-            // tratando mensagem de erro
-            console.error("Erro ao adicionar cartão:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao adicionar o cartão.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
-        }
     };
 
     const indexUltimoCartao = paginaAtual * cartoesPorPagina;
@@ -121,7 +73,6 @@ const Cartoes = () => {
     const handleProximaPagina = () => {
         setPaginaAtual(paginaAnterior => Math.min(paginaAnterior + 1, totalPaginas));
     };
-
 
     return (
         <div>

@@ -8,7 +8,7 @@ describe('Cadastro de Cliente', () => {
             cy.get('input[type="text"]').eq(1).type('51915047803');
             cy.get('input[type="date"]').type('2002-12-20');
             cy.get('input[type="text"]').eq(2).type('11995852216');
-            cy.get('input[type="text"]').eq(3).type('caio@gmail.com');
+            cy.get('input[type="text"]').eq(3).type('caio2@gmail.com');
             cy.get('input[type="password"]').eq(0).type('123456aC@');
             cy.get('input[type="password"]').eq(1).type('123456aC@');
 

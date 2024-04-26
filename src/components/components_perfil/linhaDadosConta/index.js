@@ -4,6 +4,7 @@ import iconEdit from "../../../assets/buttons/Frame (6).svg";
 import Swal from "sweetalert2";
 import { getToken } from "../../../utils/storage";
 import { useNavigate } from "react-router-dom";
+import { editarEmail, editarSenha } from "../../../services/clienteService";
 
 const linhaDadosConta = (props) => {
     const navigate = useNavigate();
@@ -23,12 +24,12 @@ const linhaDadosConta = (props) => {
                     const novaSenha = Swal.getPopup().querySelector("#novaSenha").value;
                     const confirmaSenha = Swal.getPopup().querySelector("#confirmaSenha").value;
                     
-                    return editarSenha(senhaAtual, novaSenha, confirmaSenha);
+                    return editarSenha(senhaAtual, novaSenha, confirmaSenha, navigate);
                 }   
                 else { 
                     const email  = Swal.getPopup().querySelector("#email").value;
                     
-                    return editarEmail(email);
+                    return editarEmail(email, navigate);
                 }
             }
         });
@@ -44,70 +45,6 @@ const linhaDadosConta = (props) => {
             <input id="novaSenha" type="password" placeholder="Nova Senha" class="swal2-input"><br>
             <input id="confirmaSenha" type="password" placeholder="Confirmação da Nova Senha" class="swal2-input"><br>
         `;
-    };
-
-    const editarEmail = async (email) => {
-        try {
-            const token = getToken();
-            let url = "http://localhost:8080/perfil/update/email";     
-
-            const response = await fetch(url, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token
-                },
-                body: JSON.stringify({
-                    email: email
-                })
-            });
-
-            if (response.ok) {
-                Swal.fire({ title: "Sucesso!", text: `E-mail atualizado com sucesso.`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login") });
-            } 
-            else {
-                const errorMessage = await response.text();
-
-                throw new Error(errorMessage);
-            }
-        } 
-        catch (error) {
-            console.error(`Erro ao atualizar ${props.tipo.toLowerCase()}:`, error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao atualizar E-mail.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" });
-        }
-    };
-    
-    const editarSenha = async (senhaAtual, novaSenha, confirmaSenha) => {
-        try {
-            const token = getToken();
-            const url = "http://localhost:8080/perfil/update/senha";
-
-            const response = await fetch(url, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token
-                },
-                body: JSON.stringify({
-                    senhaAtual,
-                    senha: novaSenha,
-                    confirmaSenha: confirmaSenha
-                })
-            });
-
-            if (response.ok) {
-                Swal.fire({ title: "Sucesso!", text: "Senha atualizada com sucesso.", icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.href = "/login" });
-            } 
-            else {
-                const errorMessage = await response.text();
-
-                throw new Error(errorMessage);
-            }
-        } 
-        catch (error) {
-            console.error("Erro ao atualizar senha:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao atualizar a senha.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" });
-        }
     };
 
     return (

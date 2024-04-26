@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import LinhaDadosPessoais from "../../../components/components_perfil/linhaDadosPessoais";
 import TabelaActions from "../../../components/components_perfil/tabelaActions";
 import styles from "./Pessoais.module.css";
-import { getToken } from "../../../utils/storage";
 import { useNavigate } from "react-router-dom";
 import iconEdit from "../../../assets/buttons/Frame (6).svg";
 import Swal from "sweetalert2";
 import { handleCPF, cpfMask, handleTelefone, telefoneMask, dataMaskEN, removeMask } from '../../../utils/mask'; // Importando a função de máscara de CPF e telefone
+import { buscarPessoais, editarDadosPessoais } from "../../../services/clienteService";
 
 const pessoais = () => {
     const [cliente, setCliente] = useState({});
@@ -15,24 +15,10 @@ const pessoais = () => {
 
     useEffect(() => {
         const carregarPessoais = async () => {
-            const token = getToken();
+            const result = await buscarPessoais(navigate);
 
-            try {
-                const response = await fetch('http://localhost:8080/perfil/pessoal', {
-                    headers: { Authorization: "Bearer " + token }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Token Inválido!');
-                }
-
-                setCliente(await response.json());  
-            } 
-            catch (error) {
-                console.error('Erro ao carregar dados:', error);
-                Swal.fire({ title: "Erro!", html: `Erro ao carregar dados pessoais.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
-            }
-        };
+            setCliente(result);
+        }
 
         carregarPessoais();
     }, []); 
@@ -66,6 +52,7 @@ const pessoais = () => {
                 const genero = Swal.getPopup().querySelector("#genero").value;
                 const dataNascimento = dataMaskEN(Swal.getPopup().querySelector("#dataNascimento").value);
                 const telefone = removeMask(Swal.getPopup().querySelector("#telefone").value); // Removendo a máscara antes de enviar
+
                 return editarDadosPessoais(nome, cpf, genero, dataNascimento, telefone);
             }
         });
@@ -77,40 +64,6 @@ const pessoais = () => {
         // Adicionando a máscara ao telefone
         const telefoneInput = document.getElementById('telefone');
         telefoneInput.addEventListener('input', handleTelefone);
-    };
-
-    const editarDadosPessoais = async (nome, cpf, genero, dataNascimento, telefone) => {
-        try {
-            const token = getToken();
-            
-            const response = await fetch("http://localhost:8080/perfil/update/pessoal", {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization : "Bearer " + token
-                },
-                body: JSON.stringify({
-                    nome,
-                    cpf: cpf,
-                    genero,
-                    dataNascimento,
-                    telefone
-                })
-            });
-
-            if (response.ok) {
-                Swal.fire({ title: "Sucesso!", text: "Dados pessoais atualizados com sucesso.", icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); }); // Recarregar a página após o update
-            } else {
-                // buscando mensagem de erro que não é JSON
-                const errorMessage = await response.text();
-                
-                throw new Error(errorMessage);
-            }
-        } catch (error) {
-            // tratando mensagem de erro
-            console.error("Erro ao atualizar dados pessoais:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao atualizar os dados pessoais.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
-        }
     };
 
     return (

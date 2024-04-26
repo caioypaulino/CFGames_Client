@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import styles from "./tabelaPerfilPedidos.module.css";
 import Swal from "sweetalert2";
-import { getToken } from "../../../utils/storage";
 import { dataHoraMaskBR, valueMaskBR, statusMask, creditCardXXXXMask} from "../../../utils/mask";
 import FormTrocaDevolucao from "./FormTrocaDevolucao";
+import { cancelarPedido } from "../../../services/pedidoService";
 
 const TabelaPerfilPedidos = (props) => {
     const { pedidos } = props;
@@ -152,38 +152,6 @@ const TabelaPerfilPedidos = (props) => {
                     abrirPopupInfo(pedido);
                 }
             });
-    };
-
-    // Função para cancelar um pedido
-    const cancelarPedido = async (pedidoId) => {
-        try {
-            const token = getToken();
-
-            const response = await fetch(`http://localhost:8080/perfil/cancel/pedido/${pedidoId}`, {
-                method: "DELETE",
-                headers: {
-                    Authorization: "Bearer " + token,
-                    'Content-Type': 'application/json'
-                },
-            });
-
-            if (response.ok) {
-                const successMessage = await response.text();
-
-                Swal.fire({ title: "Sucesso!", html: `${successMessage}`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-            }
-            else {
-                // Buscando mensagem de erro que não é JSON
-                const errorMessage = await response.text();
-
-                throw new Error(errorMessage);
-            }
-        }
-        catch (error) {
-            // Tratando mensagem de erro
-            console.error("Erro ao cancelar pedido:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao cancelar o pedido.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
-        }
     };
 
     const handleSort = (coluna) => {

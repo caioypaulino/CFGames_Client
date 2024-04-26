@@ -3,10 +3,9 @@ import logoCF from "../../assets/navbar/Logo 2.svg";
 import bannerLogin from "../../assets/login/undraw_login_re_4vu2 1.svg";
 import styles from './Login.module.css';
 import { Link, useNavigate } from 'react-router-dom';
-import { salvarToken } from "../../utils/storage";
-import Swal from 'sweetalert2';
+import { loginUsuario } from "../../services/loginService";
 
-export default function login() {
+export default function Login() {
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
 
@@ -15,32 +14,7 @@ export default function login() {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        try {
-            const response = await fetch("http://localhost:8080/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, senha }),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-
-                console.log(data);
-
-                salvarToken(data.token);
-
-                Swal.fire({ title: "Login realizado com sucesso!", text: "Seja Bem-vindo(a)", icon: "success", confirmButtonColor: "#6085FF" }).then(() => { navigate("/perfil/pessoal") });
-            }
-            else {
-                // Lidar com um erro de autenticação
-                Swal.fire({ title: "Email ou Senha inválidos!", text: "Digite novamente.", icon: "error", confirmButtonColor: "#6085FF" })
-            }
-        }
-        catch (error) {
-            console.error(error);
-            Swal.fire(error, '', "error");
-            // Lidar com um erro de rede
-        }
+        loginUsuario(email, senha, navigate)
     };
 
     return (

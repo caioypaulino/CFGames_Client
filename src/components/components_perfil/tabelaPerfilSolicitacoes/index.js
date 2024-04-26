@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import styles from "./tabelaPerfilSolicitacoes.module.css";
 import Swal from "sweetalert2";
 import { getToken } from "../../../utils/storage";
-import { dataHoraMaskBR, valueMaskBR, statusMask} from "../../../utils/mask";
+import { dataHoraMaskBR, valueMaskBR, statusMask } from "../../../utils/mask";
+import { cancelarSolicitacao } from "../../../services/solicitacoesService";
 
 
 const TabelaPerfilSolicitacoes = (props) => {
@@ -81,38 +82,6 @@ const TabelaPerfilSolicitacoes = (props) => {
                     abrirPopupInfo(solicitacao);
                 }
             });
-    };
-
-    // Função para cancelar uma solicitação
-    const cancelarSolicitacao = async (solicitacaoId) => {
-        try {
-            const token = getToken();
-
-            const response = await fetch(`http://localhost:8080/perfil/cancel/solicitacaotroca/${solicitacaoId}`, {
-                method: "DELETE",
-                headers: {
-                    Authorization: "Bearer " + token,
-                    'Content-Type': 'application/json'
-                },
-            });
-
-            if (response.ok) {
-                const successMessage = await response.text();
-
-                Swal.fire({ title: "Sucesso!", html: `${successMessage}`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-            }
-            else {
-                // Buscando mensagem de erro que não é JSON
-                const errorMessage = await response.text();
-
-                throw new Error(errorMessage);
-            }
-        }
-        catch (error) {
-            // Tratando mensagem de erro
-            console.error("Erro ao cancelar solicitação de troca/devolução:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao cancelar a solicitação de troca/devolução.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
-        }
     };
 
     const handleSort = (coluna) => {

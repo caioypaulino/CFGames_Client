@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { cepMask } from "../../../utils/mask";
 
 export default function FormularioEndereco({ title, onChange }) {
-
     // Importando estilos condicionalmente
     let styles;
 
