@@ -194,3 +194,15 @@ td {
     color: white;
     cursor: pointer;
 }
+
+.justifyText {
+    text-align: justify;
+}
+
+.justifyText h2 {
+    text-align: center;
+}
+
+.justifyText hr {
+    border-color: #011640;
+}

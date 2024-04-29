@@ -1,10 +1,9 @@
 import React, { useEffect } from "react";
 import Modal from "react-modal";
-import Swal from "sweetalert2";
 import Select from "react-select";
 import styles from "./FormTrocaDevolucao.module.css"; // Certifique-se de ajustar o caminho do arquivo CSS
-import { getToken } from "../../../../utils/storage";
-import { confirmarSolicitacao } from "../../../../services/solicitacoesService";
+import SolicitacaoService from "../../../../services/solicitacaoService";
+import { plataformaMask } from "../../../../utils/mask";
 
 // Abrir o modal de troca/devolução do pedido
 const FormTrocaDevolucao = ({
@@ -34,7 +33,7 @@ const FormTrocaDevolucao = ({
 
     // Função para consumir a API quando o botão "Confirmar" for clicado
     const handleConfirmar = async () => {
-        confirmarSolicitacao(pedido, itensTroca)
+        SolicitacaoService.confirmarSolicitacao(pedido, itensTroca)
     };
 
     return (
@@ -75,7 +74,7 @@ const FormTrocaDevolucao = ({
                         }),
                     }}
                     placeholder="Selecione o(s) Item(ns)."
-                    options={pedido.carrinhoCompra && pedido.carrinhoCompra.itensCarrinho.map((itemPedido) => ({ value: itemPedido.id, label: `${itemPedido.produto.titulo}, ${itemPedido.produto.plataforma}, ${itemPedido.produto.publisher}`, quantidade: itemPedido.quantidade, quantidadeTroca: 1 }))}
+                    options={pedido.carrinhoCompra && pedido.carrinhoCompra.itensCarrinho.map((itemPedido) => ({ value: itemPedido.id, label: `${itemPedido.produto.titulo}, ${plataformaMask(itemPedido.produto.plataforma)}, ${itemPedido.produto.publisher}`, quantidade: itemPedido.quantidade, quantidadeTroca: 1 }))}
                     isMulti
                     isClearable
                     isSearchable

@@ -7,6 +7,7 @@ import styles from "./Navbar.module.css";
 import Swal from "sweetalert2";
 import { getToken, limparToken } from "../../utils/storage";
 import { useNavigate } from "react-router-dom";
+import ClienteService from "../../services/clienteService";
 
 function Navbar({ termoBusca, setTermoBusca }) {
     const token = getToken();
@@ -18,28 +19,15 @@ function Navbar({ termoBusca, setTermoBusca }) {
 
     useEffect(() => {
         if (token) {
+            const carregarConta = async () => {
+                const response = await ClienteService.buscarPerfisConta(token);
+    
+                setPerfisConta(response);
+            }
+    
             carregarConta(token);
         }
     }, []);
-
-    const carregarConta = async (token) => {
-        try {
-            const response = await fetch('http://localhost:8080/perfil/conta', {
-                headers: { Authorization: "Bearer " + token }
-            });
-
-            if (!response.ok) {
-                throw new Error('Token Inválido!');
-            }
-
-            const conta = await response.json();
-
-            setPerfisConta(conta.perfis);
-        }
-        catch (error) {
-            console.error('Erro ao carregar dados:', error);
-        }
-    };
 
     const toggleDropdown = () => {
         setDropdownOpen(!dropdownOpen);
@@ -82,7 +70,7 @@ function Navbar({ termoBusca, setTermoBusca }) {
                                     ) : (
                                         <>
                                             <li><a href="/perfil/pessoal">Meu Perfil</a></li>
-                                            {perfisConta.length > 0 && perfisConta.some(perfil => perfil.id === 3 && perfil.authority === "ROLE_ADMIN") && (
+                                            {perfisConta && perfisConta.length > 0 && perfisConta.some(perfil => perfil.id === 3 && perfil.authority === "ROLE_ADMIN") && (
                                                 <li><a href="/admin/produtos">Painel Administrador</a></li>
                                             )}
                                             <li><a onClick={handleLogout}>Sair</a></li>

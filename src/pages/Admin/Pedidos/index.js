@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import styles from "./AdminPedidos.module.css";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { getToken } from "../../../utils/storage";
 import { dataHoraMaskBR, valueMaskBR, statusMask, creditCardXXXXMask, dataMaskBR, cpfMask, telefoneMask } from "../../../utils/mask";
 import { useNavigate } from "react-router-dom";
+import AdminPedidoService from "../../../services/Admin/adminPedidoService";
 
 const AdminPedidos = () => {
     const [pedidos, setPedidos] = useState([]);
@@ -19,40 +19,14 @@ const AdminPedidos = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        const carregarPedidos = async () => {
+            const response = await AdminPedidoService.buscarPedidos(navigate);
+
+            setPedidos(response);
+        }
+
         carregarPedidos();
     }, []);
-
-    const carregarPedidos = async () => {
-        const token = getToken();
-
-        try {
-            const response = await fetch('http://localhost:8080/admin/pedidos', {
-                headers: { Authorization: "Bearer " + token }
-            });
-
-            if (response.ok) {
-                const json = await response.json()
-                const sortedPedidos = json.sort((a, b) => a.id - b.id); // Ordena os pedidos por ID
-
-                setPedidos(sortedPedidos);
-            }
-            else {
-                if (response.status === 500) {
-                    throw new Error('Token Inválido!');
-                }
-                else if (response.status === 400) {
-                    Swal.fire({ title: "Erro!", html: `Erro ao carregar pedidos!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-                }
-                else if (response.status === 403) {
-                    Swal.fire({ title: "Erro!", html: `Você não possui permissão para acessar o painel de administrador.<br><br> Por favor, entre em contato com o administrador do sistema para mais informações.`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/perfil/pessoal"); });
-                }
-            }
-        }
-        catch (error) {
-            console.error('Erro ao carregar dados:', error);
-            Swal.fire({ title: "Erro!", html: `Erro ao carregar painel de administrador.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
-        }
-    };
 
     // Abre um modal com os detalhes do pedido usando o SweetAlert2
     const abrirPopupInfo = (pedido) => {
@@ -66,11 +40,11 @@ const AdminPedidos = () => {
             });
 
             if (pedido.valorTotal < descontoTotal) {
-                troco =  descontoTotal - pedido.valorTotal;
+                troco = descontoTotal - pedido.valorTotal;
             }
         }
 
-        const detalhesPedido =`
+        const detalhesPedido = `
             <div class=${styles.justifyText}>
                 <hr>
                 <h2>Geral</h2>
@@ -98,12 +72,12 @@ const AdminPedidos = () => {
                 <h2>Carrinho de Compras</h2>
                 <p><strong>ID:</strong> ${pedido.carrinhoCompra.id}</p>
                 <p><strong>Valor Carrinho:</strong> R$ ${valueMaskBR(pedido.carrinhoCompra.valorCarrinho)}</p>
-                <p><strong>Peso Total:</strong> ${valueMaskBR(pedido.carrinhoCompra.pesoTotal/1000)} kg</p>
+                <p><strong>Peso Total:</strong> ${valueMaskBR(pedido.carrinhoCompra.pesoTotal / 1000)} kg</p>
                 <br>
                 <hr>
                 <h3>Itens do Carrinho:</h3>
                 ${pedido.carrinhoCompra.itensCarrinho.sort((a, b) => a.id - b.id).map(item => {
-                    return `
+            return `
                         <p><strong>ID:</strong> ${item.id}</p>
                         <p><strong>Produto (ID ${item.produto.id}):</strong> ${item.produto.titulo}</p>
                         <p><strong>Quantidade:</strong> ${item.quantidade}</p>
@@ -111,24 +85,24 @@ const AdminPedidos = () => {
                         <p><strong>Valor Total do Item:</strong> R$ ${valueMaskBR(item.valorItem)}</p>
                         <br>
                     `;
-                }).join("")}
+        }).join("")}
                 <hr>
                 <h2>Pagamento</h2>
                 ${pedido.cupons.map(cupomPedido => {
-                    return `
+            return `
                         <p><strong>Cupom:</strong> ${cupomPedido.codigoCupom}</p>
                         <p><strong>Desconto Cupom:</strong> R$ ${valueMaskBR(cupomPedido.valorDesconto || 0)}</p>
                         <br>
                     `;
-                }).join("")}
+        }).join("")}
                 ${pedido.cartoes.map(cartaoPedido => {
-                    return `
+            return `
                         <p><strong>Cartão:</strong> ${cartaoPedido.cartao.bandeira}, ${creditCardXXXXMask(cartaoPedido.cartao.numeroCartao)}, ${cartaoPedido.cartao.nomeCartao} [${cartaoPedido.cartao.mesVencimento}/${cartaoPedido.cartao.anoVencimento}]</p>
                         <p><strong>Valor Parcial:</strong> R$ ${valueMaskBR(cartaoPedido.valorParcial || 0)}</p>
                         <p><strong>Parcelas:</strong> ${cartaoPedido.parcelas}x R$ ${(valueMaskBR(cartaoPedido.valorParcial / cartaoPedido.parcelas) || 0)}</p>
                         <br>
                     `;
-                }).join("")}
+        }).join("")}
                 <hr>
                 <h2>Entrega</h2>
                 <p><strong>ID:</strong> ${pedido.enderecoCliente.id}</p>
@@ -155,13 +129,13 @@ const AdminPedidos = () => {
                 const FormUpdateStatus = () => (
                     <div>
                         <p>Selecione uma opção:</p>
-                        <button onClick={() => despacharPedido(pedido.id)} className="swal2-confirm swal2-styled" style={{ backgroundColor: '#6085FF', fontSize:'1rem' }}>Em Trânsito</button>
-                        <button onClick={() => confirmarEntrega(pedido.id)} className="swal2-deny swal2-styled" style={{ backgroundColor: '#011640', fontSize:'1rem' }}>Entregue</button>
-                        <button onClick={() => abrirPopupUpdateStatus(pedido)} testid="personalizado" className="swal2-cancel swal2-styled" style={{ backgroundColor: '#2D314D', fontSize:'1rem' }}>Personalizado</button>
-                        <button onClick={() => abrirPopupInfo(pedido)} className="swal2-cancel swal2-styled" style={{ backgroundColor: '#6E7881', fontSize:'1rem' }}>Voltar</button>
+                        <button onClick={() => AdminPedidoService.despacharPedido(pedido.id)} className="swal2-confirm swal2-styled" style={{ backgroundColor: '#6085FF', fontSize: '1rem' }}>Em Trânsito</button>
+                        <button onClick={() => AdminPedidoService.confirmarEntrega(pedido.id)} className="swal2-deny swal2-styled" style={{ backgroundColor: '#011640', fontSize: '1rem' }}>Entregue</button>
+                        <button onClick={() => abrirPopupUpdateStatus(pedido)} testid="personalizado" className="swal2-cancel swal2-styled" style={{ backgroundColor: '#2D314D', fontSize: '1rem' }}>Personalizado</button>
+                        <button onClick={() => abrirPopupInfo(pedido)} className="swal2-cancel swal2-styled" style={{ backgroundColor: '#6E7881', fontSize: '1rem' }}>Voltar</button>
                     </div>
                 );
-                
+
                 SwalJSX.fire({
                     title: 'Alterar Status',
                     text: 'Selecione uma opção:',
@@ -176,65 +150,11 @@ const AdminPedidos = () => {
                     icon: 'info',
                     width: '35%'
                 });
-            } 
+            }
             else if (result.isDenied) { // Se o botão "Deletar" for clicado
                 abrirPopupDelete(pedido);
             }
         });
-    };
-
-    // Função para atualizar o status pedido para EM_TRANSITO
-    const despacharPedido = async (pedidoId) => {
-        try {
-            const token = getToken();
-            const response = await fetch(`http://localhost:8080/admin/pedidos/despachar/${pedidoId}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                }
-            });
-
-            if (response.ok) {
-                const successMessage = await response.text();
-                Swal.fire({ title: "Sucesso!", html: `${successMessage}`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-            }
-            else {
-                const errorMessage = await response.text();
-                throw new Error(errorMessage);
-            }
-        }
-        catch (error) {
-            console.error("Erro ao atualizar status pedido:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao despachar o pedido.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" });
-        }
-    };
-
-    // Função para atualizar o status pedido para ENTREGUE
-    const confirmarEntrega = async (pedidoId) => {
-        try {
-            const token = getToken();
-            const response = await fetch(`http://localhost:8080/admin/pedidos/confirmarentrega/${pedidoId}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                }
-            });
-
-            if (response.ok) {
-                const successMessage = await response.text();
-                Swal.fire({ title: "Sucesso!", html: `${successMessage}`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-            }
-            else {
-                const errorMessage = await response.text();
-                throw new Error(errorMessage);
-            }
-        }
-        catch (error) {
-            console.error("Erro ao atualizar status pedido:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao confirmar entrega do pedido.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" });
-        }
     };
 
     // Função para atualizar status pedido
@@ -247,7 +167,7 @@ const AdminPedidos = () => {
             <option value="ENTREGUE">Entregue</option>
             <option value="CANCELADO">Cancelado</option>
         `;
-    
+
         Swal.fire({
             title: 'Atualizar Status do Pedido',
             html: `Selecione o novo status do pedido:<br>
@@ -259,42 +179,15 @@ const AdminPedidos = () => {
             icon: "info",
             preConfirm: () => {
                 const novoStatus = Swal.getPopup().querySelector('#novoStatus').value;
-    
+
                 // Chamando a função para atualizar o status do pedido
-                atualizarStatusPedido(pedido.id, novoStatus);
+                AdminPedidoService.atualizarStatusPedido(pedido.id, novoStatus);
             }
         }).then((result) => {
             if (result.isDismissed) { // Se o usuário clicar em cancelar, volte para abrirPopupInfo
                 abrirPopupInfo(pedido);
             }
         });
-    };
-
-    const atualizarStatusPedido = async (pedidoId, novoStatus) => {
-        try {
-            const token = getToken();
-            const response = await fetch(`http://localhost:8080/admin/pedidos/update/${pedidoId}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                },
-                body: JSON.stringify({
-                    statusPedido: novoStatus
-                }),
-            });
-    
-            if (response.ok) {
-                const successMessage = await response.text();
-                Swal.fire({ title: "Sucesso!", html: `${successMessage}`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-            } else {
-                const errorMessage = await response.text();
-                throw new Error(errorMessage);
-            }
-        } catch (error) {
-            console.error("Erro ao atualizar status do pedido:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao atualizar o status do pedido.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" });
-        }
     };
 
     // Função para solicitar confirmação da deleção do pedido
@@ -311,44 +204,12 @@ const AdminPedidos = () => {
         })
             .then((result) => {
                 if (result.isConfirmed) {
-                    deletarPedido(pedido.id);
+                    AdminPedidoService.deletarPedido(pedido.id);
                 }
                 else if (result.isDismissed) {
                     abrirPopupInfo(pedido);
                 }
             });
-    };
-
-    // Função para deletar um pedido
-    const deletarPedido = async (pedidoId) => {
-        try {
-            const token = getToken();
-
-            const response = await fetch(`http://localhost:8080/admin/pedidos/delete/${pedidoId}`, {
-                method: "DELETE",
-                headers: {
-                    Authorization: "Bearer " + token,
-                    'Content-Type': 'application/json'
-                },
-            });
-
-            if (response.ok) {
-                const successMessage = await response.text();
-
-                Swal.fire({ title: "Sucesso!", html: `${successMessage}`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-            }
-            else {
-                // Buscando mensagem de erro que não é JSON
-                const errorMessage = await response.text();
-
-                throw new Error(errorMessage);
-            }
-        }
-        catch (error) {
-            // Tratando mensagem de erro
-            console.error("Erro ao deletar pedido:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao deletar o pedido.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
-        }
     };
 
     const handleSort = (coluna) => {
@@ -368,22 +229,22 @@ const AdminPedidos = () => {
     const sortedPedidos = [...pedidos].sort((a, b) => {
         if (colunaClassificada === 'ID') {
             return ordemClassificacao === 'asc' ? a.id - b.id : b.id - a.id;
-        } 
+        }
         else if (colunaClassificada === 'Data') {
             return ordemClassificacao === 'asc' ? new Date(a.data) - new Date(b.data) : new Date(b.data) - new Date(a.data);
-        } 
+        }
         else if (colunaClassificada === 'Valor Total') {
             return ordemClassificacao === 'asc' ? a.valorTotal - b.valorTotal : b.valorTotal - a.valorTotal;
-        } 
+        }
         else if (colunaClassificada === 'Cliente ID') {
             return ordemClassificacao === 'asc' ? a.cliente.id - b.cliente.id : b.cliente.id - a.cliente.id;
-        } 
+        }
         else if (colunaClassificada === 'Status') {
             return ordemClassificacao === 'asc' ? a.status.localeCompare(b.status) : b.status.localeCompare(a.status);
         }
         else if (colunaClassificada === 'Ultima Atualizacao') {
             return ordemClassificacao === 'asc' ? new Date(a.dataAtualizacao) - new Date(b.dataAtualizacao) : new Date(b.dataAtualizacao) - new Date(a.dataAtualizacao);
-        } 
+        }
         return 0;
     });
 

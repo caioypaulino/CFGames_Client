@@ -3,7 +3,7 @@ import TabelaActions from "../../../components/components_perfil/tabelaActions";
 import LinhaDadosConta from "../../../components/components_perfil/linhaDadosConta";
 import styles from "./Conta.module.css";
 import { useNavigate } from "react-router-dom";
-import { buscarConta } from "../../../services/clienteService";
+import ClienteService from "../../../services/clienteService";
 
 const Conta = () => {
     const [conta, setConta] = useState({});
@@ -12,9 +12,9 @@ const Conta = () => {
 
     useEffect(() => {
         const carregarConta = async () => {
-            const result = await buscarConta(navigate);
+            const response = await ClienteService.buscarConta(navigate);
 
-            setConta(result);
+            setConta(response);
         }
 
         carregarConta();

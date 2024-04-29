@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import { getToken } from "../../../utils/storage";
 import { dataHoraMaskBR, valueMaskBR, valueMaskEN, dataMaskBR, dateTimeMask, cpfMask, telefoneMask } from "../../../utils/mask";
 import { useNavigate } from "react-router-dom";
+import AdminCupomService from "../../../services/Admin/adminCupomService";
 
 const AdminCupons = () => {
     const [cupons, setCupons] = useState([]);
@@ -18,40 +19,14 @@ const AdminCupons = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        const carregarCupons = async () => {
+            const response = await AdminCupomService.buscarCupons(navigate);
+
+            setCupons(response);
+        }
+
         carregarCupons();
     }, []);
-
-    const carregarCupons = async () => {
-        const token = getToken();
-
-        try {
-            const response = await fetch('http://localhost:8080/admin/cupons', {
-                headers: { Authorization: "Bearer " + token }
-            });
-
-            if (response.ok) {
-                const json = await response.json()
-                const sortedCupons = json.sort((a, b) => new Date(a.data) - new Date(b.data)); // Ordena os cupons por Data
-
-                setCupons(sortedCupons);
-            }
-            else {
-                if (response.status === 500) {
-                    throw new Error('Token Inválido!');
-                }
-                else if (response.status === 400) {
-                    Swal.fire({ title: "Erro!", html: `Erro ao carregar cupons!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-                }
-                else if (response.status === 403) {
-                    Swal.fire({ title: "Erro!", html: `Você não possui permissão para acessar o painel de administrador.<br><br> Por favor, entre em contato com o administrador do sistema para mais informações.`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/perfil/pessoal"); });
-                }
-            }
-        }
-        catch (error) {
-            console.error('Erro ao carregar dados:', error);
-            Swal.fire({ title: "Erro!", html: `Erro ao carregar painel de administrador.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
-        }
-    };
 
     // Abre um modal com os detalhes do cupom usando o SweetAlert2
     const abrirPopupInfo = (cupom) => {
@@ -106,7 +81,7 @@ const AdminCupons = () => {
                         abrirPopupUpdate(cupom);
                     }
                     else if (result.isDenied) {
-                        desativarCupom(cupom.codigoCupom);
+                        AdminCupomService.desativarCupom(cupom.codigoCupom);
                     }
                 });
             }
@@ -136,11 +111,11 @@ const AdminCupons = () => {
 
                 try {
                     if (validade) {
-                        atualizarCupom(cupom.codigoCupom, valorDesconto, dateTimeMask(validade));
+                        AdminCupomService.atualizarCupom(cupom.codigoCupom, valorDesconto, dateTimeMask(validade));
                     }
                     else {
                         // Chamando a função para atualizar o cupom
-                        atualizarCupom(cupom.codigoCupom, valorDesconto, validade);
+                        AdminCupomService.atualizarCupom(cupom.codigoCupom, valorDesconto, validade);
                     }
                 }
                 catch (error) {
@@ -153,63 +128,6 @@ const AdminCupons = () => {
                 abrirPopupInfo(cupom);
             }
         });
-    };
-
-    const atualizarCupom = async (codigoCupom, valorDesconto, validade) => {
-        try {
-            const token = getToken();
-            const response = await fetch(`http://localhost:8080/admin/cupons/update/${codigoCupom}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                },
-                body: JSON.stringify({
-                    valorDesconto,
-                    validade
-                }),
-            });
-
-            if (response.ok) {
-                const successMessage = await response.text();
-                Swal.fire({ title: "Sucesso!", html: `${successMessage}`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-            }
-            else {
-                const errorMessage = await response.text();
-                throw new Error(errorMessage);
-            }
-        }
-        catch (error) {
-            console.error("Erro ao atualizar cupom:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao atualizar o cupom.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" });
-        }
-    };
-
-    // Função para desativar cupom
-    const desativarCupom = async (codigoCupom) => {
-        try {
-            const token = getToken();
-            const response = await fetch(`http://localhost:8080/admin/cupons/desativar/${codigoCupom}`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                }
-            });
-
-            if (response.ok) {
-                const successMessage = await response.text();
-                Swal.fire({ title: "Sucesso!", html: `${successMessage}`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-            }
-            else {
-                const errorMessage = await response.text();
-                throw new Error(errorMessage);
-            }
-        }
-        catch (error) {
-            console.error("Erro ao desativar cupom:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao desativar cupom.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" });
-        }
     };
 
     // Função para solicitar confirmação da deleção do cupom
@@ -226,43 +144,12 @@ const AdminCupons = () => {
         })
             .then((result) => {
                 if (result.isConfirmed) {
-                    deletarCupom(cupom.codigoCupom);
+                    AdminCupomService.deletarCupom(cupom.codigoCupom);
                 }
                 else if (result.isDismissed) {
                     abrirPopupInfo(cupom);
                 }
             });
-    };
-
-    // Função para deletar um cupom
-    const deletarCupom = async (codigoCupom) => {
-        try {
-            const token = getToken();
-
-            const response = await fetch(`http://localhost:8080/admin/cupons/delete/${codigoCupom}`, {
-                method: "DELETE",
-                headers: {
-                    Authorization: "Bearer " + token
-                },
-            });
-
-            if (response.ok) {
-                const successMessage = await response.text();
-
-                Swal.fire({ title: "Sucesso!", html: `${successMessage}`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-            }
-            else {
-                // Buscando mensagem de erro que não é JSON
-                const errorMessage = await response.text();
-
-                throw new Error(errorMessage);
-            }
-        }
-        catch (error) {
-            // Tratando mensagem de erro
-            console.error("Erro ao deletar cupom:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao deletar o cupom.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
-        }
     };
 
     const handleSort = (coluna) => {
@@ -291,42 +178,9 @@ const AdminCupons = () => {
                 const valorDesconto = parseFloat(valueMaskEN(Swal.getPopup().querySelector('#valorDesconto').value));
                 const clienteId = parseInt(Swal.getPopup().querySelector('#clienteId').value);
 
-                adicionarCupom(valorDesconto, clienteId);
+                AdminCupomService.adicionarCupom(valorDesconto, clienteId);
             },
         });
-    };
-
-    // Função para adicionar o produto
-    const adicionarCupom = async (valorDesconto, clienteId) => {
-        try {
-            const token = getToken();
-            const response = await fetch("http://localhost:8080/admin/cupons/add", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                },
-                body: JSON.stringify({
-                    valorDesconto,
-                    clienteId
-                }),
-            });
-
-            if (response.ok) {
-                Swal.fire({ title: "Sucesso!", text: "Cupom adicionado com sucesso.", icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-            }
-            else {
-                // Buscando mensagem de erro que não é JSON
-                const errorMessage = await response.text();
-
-                throw new Error(errorMessage);
-            }
-        }
-        catch (error) {
-            // Tratando mensagem de erro
-            console.error("Erro ao adicionar cupom:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao adicionar o cupom.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
-        }
     };
 
     const indexUltimoCupom = paginaAtual * cuponsPorPagina;

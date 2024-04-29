@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import iconEdit from "../../../assets/buttons/Frame (6).svg";
 import Swal from "sweetalert2";
 import { handleCPF, cpfMask, handleTelefone, telefoneMask, dataMaskEN, removeMask } from '../../../utils/mask'; // Importando a função de máscara de CPF e telefone
-import { buscarPessoais, editarDadosPessoais } from "../../../services/clienteService";
+import ClienteService from "../../../services/clienteService";
 
 const pessoais = () => {
     const [cliente, setCliente] = useState({});
@@ -15,9 +15,9 @@ const pessoais = () => {
 
     useEffect(() => {
         const carregarPessoais = async () => {
-            const result = await buscarPessoais(navigate);
+            const response = await ClienteService.buscarPessoais(navigate);
 
-            setCliente(result);
+            setCliente(response);
         }
 
         carregarPessoais();
@@ -53,7 +53,7 @@ const pessoais = () => {
                 const dataNascimento = dataMaskEN(Swal.getPopup().querySelector("#dataNascimento").value);
                 const telefone = removeMask(Swal.getPopup().querySelector("#telefone").value); // Removendo a máscara antes de enviar
 
-                return editarDadosPessoais(nome, cpf, genero, dataNascimento, telefone);
+                return ClienteService.editarDadosPessoais(nome, cpf, genero, dataNascimento, telefone);
             }
         });
         

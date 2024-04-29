@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import { getToken } from "../../../utils/storage";
 import { dataMaskBR, telefoneMask, cpfMask } from "../../../utils/mask";
 import { useNavigate } from "react-router-dom";
+import AdminClienteService from "../../../services/Admin/adminClienteService";
 
 const AdminClientes = () => {
     const [clientes, setClientes] = useState([]);
@@ -15,40 +16,14 @@ const AdminClientes = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        const carregarClientes = async () => {
+            const response = await AdminClienteService.buscarClientes(navigate);
+
+            setClientes(response);
+        }
+
         carregarClientes();
     }, []);
-    
-    const carregarClientes = async () => {
-        const token = getToken();
-    
-        try {
-            const response = await fetch('http://localhost:8080/admin/clientes', {
-                headers: { Authorization: "Bearer " + token }
-            });
-    
-            if (response.ok) {
-                const json = await response.json();
-                const sortedClientes = json.sort((a, b) => a.id - b.id); // Ordena os clientes por ID
-    
-                setClientes(sortedClientes);
-            } 
-            else {
-                if (response.status === 500) {
-                    throw new Error('Token Inválido!');
-                } 
-                else if (response.status === 400) {
-                    Swal.fire({ title: "Erro!", html: `Erro ao carregar endereços!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-                }
-                else if (response.status === 403) {
-                    Swal.fire({ title: "Erro!", html: `Você não possui permissão para acessar o painel de administrador.<br><br> Por favor, entre em contato com o administrador do sistema para mais informações.`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/perfil/pessoal"); });
-                }
-            }
-        } 
-        catch (error) {
-            console.error('Erro ao carregar dados:', error);
-            Swal.fire({ title: "Erro!", html: `Erro ao carregar painel de administrador.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
-        }
-    };
 
     // Abre os detalhes do cliente usando o SweetAlert2
     const abrirPopupInfo = (cliente) => {
@@ -127,45 +102,12 @@ const AdminClientes = () => {
         })
         .then((result) => {
             if (result.isConfirmed) { // Se o botão "Confirmar" for clicado
-                deletarCliente(cliente.id);
+                AdminClienteService.deletarCliente(cliente.id);
             }
             else if (result.isDenied) { // Se o botão "Cancelar" for clicado
                 abrirPopupInfo(cliente);
             }
         });
-    };
-
-    // Função para deletar um cliente
-    const deletarCliente = async(clienteId) => {
-        try {
-            const token = getToken();
-
-            const response = await fetch(`http://localhost:8080/admin/clientes/delete/${clienteId}`, {
-                method: "DELETE",
-                headers: {
-                    Authorization: "Bearer " + token,
-                    'Content-Type': 'application/json'
-                },
-            });
-
-
-            if (response.ok) {
-                const successMessage = await response.text();
-
-                Swal.fire({ title: "Sucesso!", html: `${successMessage}`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-            }
-            else {
-                // buscando mensagem de erro que não é JSON
-                const errorMessage = await response.text();
-
-                throw new Error(errorMessage);
-            }
-        }
-        catch (error) {
-            // tratando mensagem de erro
-            console.error("Erro ao deletar cliente:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao deletar o cliente.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
-        }
     };
 
     const handleSort = (coluna) => {

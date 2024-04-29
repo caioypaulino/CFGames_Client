@@ -7,7 +7,7 @@ import Swal from "sweetalert2";
 import { getToken } from "../../utils/storage";
 import { useNavigate } from "react-router-dom";
 import { valueMaskBR } from "../../utils/mask";
-import { buscarCarrinhoCompras, removerItemCarrinho } from "../../services/carrinhoService";
+import CarrinhoService from "../../services/carrinhoService";
 
 const Carrinho = () => {
     const [carrinhoCompras, setCarrinhoCompras] = useState({});
@@ -17,9 +17,9 @@ const Carrinho = () => {
 
     useEffect(() => {
         const carregarCarrinhoCompras = async () => {
-            const result = await buscarCarrinhoCompras(navigate);
+            const response = await CarrinhoService.buscarCarrinhoCompras(navigate);
 
-            setCarrinhoCompras(result);
+            setCarrinhoCompras(response);
         }
 
         carregarCarrinhoCompras();
@@ -44,7 +44,7 @@ const Carrinho = () => {
                             publisher={item.produto.publisher}
                             quantidade={item.quantidade}
                         />
-                        <input className={styles.btnRemove} type="submit" value="Remover" onClick={() => removerItemCarrinho(item.id)} />
+                        <input className={styles.btnRemove} type="submit" value="Remover" onClick={() => CarrinhoService.removerItemCarrinho(item.id)} />
                     </div>
                 ))}
             </div>

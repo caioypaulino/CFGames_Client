@@ -1,7 +1,7 @@
 import Swal from "sweetalert2";
 import { getToken } from "../utils/storage";
 
-export async function buscarSolicitacoes (navigate) {
+async function buscarSolicitacoes (navigate) {
     const token = getToken();
 
     try {
@@ -30,7 +30,7 @@ export async function buscarSolicitacoes (navigate) {
     }
 };
 
-export async function confirmarSolicitacao( pedido, itensTroca ) {
+async function confirmarSolicitacao( pedido, itensTroca ) {
     try {
         const token = getToken();
 
@@ -69,7 +69,7 @@ export async function confirmarSolicitacao( pedido, itensTroca ) {
 }
 
 // Função para cancelar uma solicitação
-export async function cancelarSolicitacao (solicitacaoId) {
+async function cancelarSolicitacao (solicitacaoId) {
     try {
         const token = getToken();
 
@@ -99,3 +99,11 @@ export async function cancelarSolicitacao (solicitacaoId) {
         Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao cancelar a solicitação de troca/devolução.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
     }
 };
+
+const SolicitacaoService = {
+    buscarSolicitacoes,
+    confirmarSolicitacao,
+    cancelarSolicitacao
+}
+
+export default SolicitacaoService;

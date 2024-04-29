@@ -6,6 +6,7 @@ import styles from "./NavbarPerfil.module.css";
 import Swal from "sweetalert2";
 import { getToken, limparToken } from "../../utils/storage";
 import { useNavigate } from "react-router-dom";
+import ClienteService from "../../services/clienteService";
 
 function NavbarPerfil() {
     const token = getToken();
@@ -17,28 +18,15 @@ function NavbarPerfil() {
 
     useEffect(() => {
         if (token) {
+            const carregarConta = async () => {
+                const response = await ClienteService.buscarPerfisConta(token);
+    
+                setPerfisConta(response);
+            }
+    
             carregarConta(token);
         }
     }, []);
-
-    const carregarConta = async (token) => {
-        try {
-            const response = await fetch('http://localhost:8080/perfil/conta', {
-                headers: { Authorization: "Bearer " + token }
-            });
-
-            if (!response.ok) {
-                throw new Error('Token Inválido!');
-            }
-
-            const conta = await response.json();
-
-            setPerfisConta(conta.perfis);
-        }
-        catch (error) {
-            console.error('Erro ao carregar dados:', error);
-        }
-    };
 
     const toggleDropdown = () => {
         setDropdownOpen(!dropdownOpen);

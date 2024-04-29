@@ -1,42 +1,45 @@
 import Swal from "sweetalert2";
 import { getToken } from "../utils/storage";
 
-
-async function buscarCarrinhoCompras(navigate) {
-    const token = getToken();
+async function calcularFrete (enderecoSelecionado, setFrete, navigate) {
+    if (enderecoSelecionado === "") {
+        return Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao calcular o frete.<br><br>Nenhum endereço selecionado!`, icon: "error", confirmButtonColor: "#6085FF" })
+    }
 
     try {
-        const response = await fetch('http://localhost:8080/carrinhodecompra/read', {
-            headers: { Authorization: "Bearer " + token }
+        const token = getToken();
+
+        const response = await fetch("http://localhost:8080/pedido/calcular/frete", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + token,
+            },
+            body: JSON.stringify({
+                id: enderecoSelecionado.value
+            }),
         });
 
         if (response.ok) {
-            const carrinho = await response.json();
-
-            if (carrinho.itensCarrinho.length === 0) {
-                Swal.fire({ title: "Erro!", html: `Erro ao carregar carrinho de compras.<br><br>Carrinho de Compras Vazio!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/carrinho"); });
-            }
-            else {
-                return carrinho;
-            }
+            Swal.fire({ title: "Sucesso!", text: "Frete calculado com sucesso.", icon: "success", confirmButtonColor: "#6085FF" });
+            setFrete(await response.json());
         }
         else {
-            if (response.status === 500) {
-                throw new Error('Token Inválido!');
-            }
-            else if (response.status === 400) {
-                Swal.fire({ title: "Erro!", html: `Erro ao carregar carrinho de compras.<br><br>Carrinho de Compras Vazio!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/carrinho"); });
-            }
+            // buscando mensagem de erro que não é JSON
+            const errorMessage = await response.text();
+
+            throw new Error(errorMessage);
         }
     }
     catch (error) {
-        console.error('Erro ao carregar dados:', error);
-        Swal.fire({ title: "Erro!", html: `Erro ao carregar carrinho de compras.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
+        // tratando mensagem de erro
+        console.error("Erro ao calcular frete:", error);
+        Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao calcular o frete.<br><br>Carrinho de compras vazio!`, icon: "error", confirmButtonColor: "#6085FF" }).then(navigate("/carrinho"));
     }
 };
 
 const CheckoutService = {
-    buscarCarrinhoCompras
+    calcularFrete
 };
 
 export default CheckoutService;

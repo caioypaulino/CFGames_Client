@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { getToken } from "../../utils/storage";
 import FormularioEndereco from "../../components/components_cadastro/formularioEndereco";
-import { cadastrarEndereco } from "../../services/cadastroService";
+import CadastroService, { cadastrarEndereco } from "../../services/cadastroService";
 
 export default function CadastroEndereco() {
     const navigate = useNavigate();
@@ -72,7 +72,7 @@ export default function CadastroEndereco() {
             enderecosRequest = [enderecoEntrega];
         }
 
-        cadastrarEndereco({enderecosRequest, navigate});
+        CadastroService.cadastrarEndereco({enderecosRequest, navigate});
     };
 
     return (

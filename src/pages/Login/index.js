@@ -3,7 +3,7 @@ import logoCF from "../../assets/navbar/Logo 2.svg";
 import bannerLogin from "../../assets/login/undraw_login_re_4vu2 1.svg";
 import styles from './Login.module.css';
 import { Link, useNavigate } from 'react-router-dom';
-import { loginUsuario } from "../../services/loginService";
+import LoginService from "../../services/loginService";
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -14,7 +14,7 @@ export default function Login() {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        loginUsuario(email, senha, navigate)
+        LoginService.login(email, senha, navigate)
     };
 
     return (

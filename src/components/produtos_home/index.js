@@ -2,10 +2,10 @@ import React from "react";
 import style from "./ProdutosHome.module.css";
 import Swal from 'sweetalert2';
 import withReactContent from "sweetalert2-react-content";
-import { dataMaskBR2 } from "../../utils/mask";
+import { dataMaskBR2, plataformaMask } from "../../utils/mask";
 import imagemExemplo from "../../assets/products/image 3.svg";
-import { getToken } from "../../utils/storage";
 import { useNavigate } from "react-router-dom";
+import CarrinhoService from "../../services/carrinhoService";
 
 function ProdutoHome(props) {
 
@@ -34,7 +34,7 @@ function ProdutoHome(props) {
                 <div className={style.productInfo}>
                     <p className={style.precoProduto}>R$ {produto.preco}</p>
                     <p>Quantidade Disponível: {produto.quantidade}</p>
-                    <p>Plataforma: {produto.plataforma}</p>
+                    <p>Plataforma: {plataformaMask(produto.plataforma)}</p>
                     <p>Descrição: {produto.descricao}</p>
                     <p>Categoria(s): {produto.categorias.length > 0 ? nomesCategorias : ''}</p>
                     <p>Marca: {produto.marca}</p>
@@ -61,7 +61,7 @@ function ProdutoHome(props) {
             width: '80rem'
         }).then((result) => {
             if (result.isConfirmed) {
-                adicionarCarrinho(produto, 1);
+                CarrinhoService.adicionarCarrinho(produto, 1, navigate);
                 navigate("/carrinho");
             }
             else if (result.isDenied) { // Se o botão "Adicionar ao Carrinho" for clicado
@@ -80,7 +80,7 @@ function ProdutoHome(props) {
                     preConfirm: () => {
                         const quantidadeSelecionada = Swal.getPopup().querySelector("#quantidadeSelect").value;
 
-                        adicionarCarrinho(produto, quantidadeSelecionada);
+                        CarrinhoService.adicionarCarrinho(produto, quantidadeSelecionada, navigate);
                     },
                 }).then((result) => {
                     if (result.isDismissed) {
@@ -91,83 +91,11 @@ function ProdutoHome(props) {
         });
     };
 
-    // função para adicionar um carrinho de compras
-    const adicionarCarrinho = async (produto, quantidadeSelecionada) => {
-        try {
-            const token = getToken();
-
-            const response = await fetch("http://localhost:8080/carrinhodecompra/add", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                },
-                body: JSON.stringify({
-                    itensCarrinho: [
-                        {
-                            produto: {
-                                id: produto.id
-                            },
-                            quantidade: quantidadeSelecionada
-                        }
-                    ]
-                }),
-            });
-
-            if (response.ok) {
-                Swal.fire({ title: "Sucesso!", text: "Item(ns) adicionado(s) com sucesso ao carrinho de compras.", icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-            }
-            else {
-                adicionarItemCarrinho(produto, quantidadeSelecionada);
-            }
-        }
-        catch (error) {
-            // tratando mensagem de erro
-            console.error("Erro ao adicionar item:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao adicionar item(ns) ao carrinho de compras.<br><br>Faça login novamente!<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
-        }
-    };
-
-    const adicionarItemCarrinho = async (produto, quantidadeSelecionada) => {
-        try {
-            const token = getToken();
-
-            const response = await fetch("http://localhost:8080/carrinhodecompra/add/itemcarrinho", {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                },
-                body: JSON.stringify({
-                    produto: {
-                        id: produto.id
-                    },
-                    quantidade: quantidadeSelecionada
-                }),
-            });
-
-            if (response.ok) {
-                Swal.fire({ title: "Sucesso!", text: "Item(ns) adicionado(s) com sucesso ao carrinho de compras.", icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-            }
-            else {
-                // buscando mensagem de erro que não é JSON
-                const errorMessage = await response.text();
-
-                throw new Error(errorMessage);
-            }
-        }
-        catch (error) {
-            // tratando mensagem de erro
-            console.error("Erro ao adicionar item:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao adicionar item(ns) ao carrinho de compras.<br><br>Faça login novamente!<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
-        }
-    };
-
     return (
         <div className={style.productGame}>
             <div dangerouslySetInnerHTML={{ __html: imagem }} />
             <p className={style.paragraph}>{produto.titulo}</p>
-            <p className={style.paragraph}>{produto.plataforma}</p>
+            <p className={style.paragraph}>{plataformaMask(produto.plataforma)}</p>
             <p className={style.price}>R$ {produto.preco}</p>
             <input testid={`btnComprar`} className={style.btnComprar} value="Comprar" type="submit" onClick={() => abrirPopupInfo(produto)} />
         </div>

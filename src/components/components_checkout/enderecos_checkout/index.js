@@ -7,6 +7,7 @@ import { getToken } from "../../../utils/storage";
 import ResumoCheckout from "../resumo_checkout";
 import { cepMask, handleCep, handleNumber } from "../../../utils/mask";
 import EnderecoService from "../../../services/enderecoService";
+import CheckoutService from "../../../services/checkoutService";
 
 const EnderecosCheckout = (props) => {
     const { valorCarrinho } = props;
@@ -28,13 +29,13 @@ const EnderecosCheckout = (props) => {
     useEffect(() => {
         const handleUnload = async () => {
             if (enderecoAdicionado.id && !enderecoAdicionado.salvar) {
-                await excluirEndereco(enderecoAdicionado.id);
+                await EnderecoService.excluirEnderecoCheckout(enderecoAdicionado.id, carregarEnderecosCliente);
             }
         };
     
         const handleBeforeUnload = async () => {
             if (enderecoAdicionado.id && !enderecoAdicionado.salvar) {
-                await excluirEndereco(enderecoAdicionado.id);
+                await EnderecoService.excluirEnderecoCheckout(enderecoAdicionado.id, carregarEnderecosCliente);
             }
         };
     
@@ -57,14 +58,15 @@ const EnderecosCheckout = (props) => {
             };
 
             setEnderecoSelecionado(enderecoSelecionadoObj);
-            calcularFrete(enderecoSelecionadoObj);
+
+            CheckoutService.calcularFrete(enderecoSelecionadoObj, setFrete, navigate);
         }
     }, [enderecoAdicionado, enderecosCliente]);
 
     const carregarEnderecosCliente = async () => {
-        const result = await EnderecoService.buscarEnderecos(navigate);
+        const response = await EnderecoService.buscarEnderecos(navigate);
 
-        setEnderecosCliente(result);
+        setEnderecosCliente(response);
     }
 
     // função para abrir o formulário de adição de endereço
@@ -103,7 +105,20 @@ const EnderecosCheckout = (props) => {
                 const observacao = Swal.getPopup().querySelector("#observacao").value;
                 const salvarNoPerfil = document.getElementById('salvarNoPerfil').checked;
 
-                adicionarEndereco(apelido, numero, complemento, tipo, cep, observacao, salvarNoPerfil);
+                const adicionarEndereco = async () => {
+                    if (!enderecoAdicionado.salvar && enderecoAdicionado.id) {
+                        EnderecoService.excluirEnderecoCheckout(enderecoAdicionado.id, carregarEnderecosCliente);
+                    }
+
+                    const novoEnderecoId = await EnderecoService.adicionarEnderecoCheckout(apelido, numero, complemento, tipo, cep, observacao);
+                    
+                    if (novoEnderecoId) {
+                        setEnderecoAdicionado({ id: novoEnderecoId, salvar: salvarNoPerfil });
+                        carregarEnderecosCliente();
+                    }
+                }
+
+                adicionarEndereco();
             },
         });
 
@@ -114,130 +129,13 @@ const EnderecosCheckout = (props) => {
         numberInput.addEventListener('input', handleNumber);
     };
 
-    // função para adicionar um novo endereço
-    const adicionarEndereco = async (apelido, numero, complemento, tipo, cep, observacao, salvarNoPerfil) => {
-        try {
-            if (!enderecoAdicionado.salvar && enderecoAdicionado.id) {
-                excluirEndereco(enderecoAdicionado.id);
-            }
-
-            const token = getToken();
-
-            const response = await fetch("http://localhost:8080/perfil/add/endereco", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                },
-                body: JSON.stringify({
-                    apelido,
-                    numero,
-                    complemento,
-                    tipo,
-                    endereco: {
-                        cep,
-                    },
-                    observacao,
-                }),
-            });
-
-            if (response.ok) {
-                const novoEnderecoId = await response.json();
-
-                Swal.fire({ title: "Sucesso!", text: "Endereço adicionado com sucesso.", icon: "success", confirmButtonColor: "#6085FF" }).then(() => {
-                    setEnderecoAdicionado({ id: novoEnderecoId, salvar: salvarNoPerfil });
-                    carregarEnderecosCliente();
-                });
-            }
-            else {
-                // buscando mensagem de erro que não é JSON
-                const errorMessage = await response.text();
-
-                throw new Error(errorMessage);
-            }
-
-        }
-        catch (error) {
-            // tratando mensagem de erro
-            console.error("Erro ao adicionar endereço:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao adicionar o endereço.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
-        }
-    };
-
     const handleChangeEndereco = (enderecoCliente) => {
         setEnderecoSelecionado(enderecoCliente);
-        calcularFrete(enderecoCliente);
+
+        CheckoutService.calcularFrete(enderecoCliente, setFrete, navigate);
     };
 
-    const calcularFrete = async (enderecoSelecionado) => {
-        if (enderecoSelecionado === "") {
-            return Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao calcular o frete.<br><br>Nenhum endereço selecionado!`, icon: "error", confirmButtonColor: "#6085FF" })
-        }
-
-        try {
-            const token = getToken();
-
-            const response = await fetch("http://localhost:8080/pedido/calcular/frete", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                },
-                body: JSON.stringify({
-                    id: enderecoSelecionado.value
-                }),
-            });
-
-            if (response.ok) {
-                setFrete(await response.json());
-                Swal.fire({ title: "Sucesso!", text: "Frete calculado com sucesso.", icon: "success", confirmButtonColor: "#6085FF" });
-            }
-            else {
-                // buscando mensagem de erro que não é JSON
-                const errorMessage = await response.text();
-
-                throw new Error(errorMessage);
-            }
-        }
-        catch (error) {
-            // tratando mensagem de erro
-            console.error("Erro ao calcular frete:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao calcular o frete.<br><br>Carrinho de compras vazio!`, icon: "error", confirmButtonColor: "#6085FF" }).then(navigate("/carrinho"));
-        }
-    };
-
-    // função request delete endereço
-    const excluirEndereco = async (enderecoId) => {
-        try {
-            const token = getToken();
-
-            const response = await fetch("http://localhost:8080/perfil/remove/endereco", {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                },
-                body: JSON.stringify({
-                    id: enderecoId,
-                }),
-            });
-
-            if (response.ok) {
-                carregarEnderecosCliente();
-            }
-            else {
-                // buscando mensagem de erro que não é JSON
-                const errorMessage = await response.text();
-
-                throw new Error(errorMessage);
-            }
-        }
-        catch (error) {
-            // tratando mensagem de erro
-            console.error("Erro ao excluir endereço:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao excluir o endereço.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
-        }
-    };
+    
 
     return (
         <div className={style.selectAdress}>
@@ -273,7 +171,7 @@ const EnderecosCheckout = (props) => {
             </form>
             <div className={style.functionsEndereco}>
                 <button type="submit" className={style.btnNewAddress} onClick={abrirPopupEndereco}>Novo Endereço</button>
-                <button className={style.btnCalcFrete} onClick={() => calcularFrete(enderecoSelecionado)}>Calcular Frete</button>
+                <button className={style.btnCalcFrete} onClick={() => CheckoutService.calcularFrete(enderecoSelecionado, setFrete, navigate)}>Calcular Frete</button>
             </div>
             <div className="resumo">
                 <ResumoCheckout
@@ -282,7 +180,7 @@ const EnderecosCheckout = (props) => {
                     prazo={frete.delivery_time}
                     enderecoEntrega={enderecoSelecionado}
                     enderecoAdicionado={enderecoAdicionado}
-                    excluirEndereco={excluirEndereco}
+                    carregarEnderecosCliente={carregarEnderecosCliente}
                 />
             </div>
         </div>

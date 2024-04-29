@@ -4,7 +4,7 @@ import bannerCadastro from "../../assets/cadastro/undraw_old_day_-6-x25 1.svg";
 import styles from "./CadastroCliente.module.css";
 import { Link, useNavigate } from 'react-router-dom';
 import { removeMask, cpfMask, telefoneMask, dataMaskEN } from '../../utils/mask';
-import { cadastrarCliente } from "../../services/cadastroService";
+import CadastroService from "../../services/cadastroService";
 
 export default function CadastroCliente() {
     const [nome, setNome] = useState("");
@@ -21,7 +21,7 @@ export default function CadastroCliente() {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        cadastrarCliente({
+        CadastroService.cadastrarCliente({
             nome,
             cpf: removeMask(cpf),
             dataNascimento: dataMaskEN(dataNascimento),

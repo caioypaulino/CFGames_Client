@@ -3,7 +3,6 @@ import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import logo from "../../assets/navbar/Logo 2.svg";
 import accountIcon from "../../assets/navbar/_2350081091120.svg";
-import hamburguerIcon from "../../assets/navbar/hamburguer.svg";
 import styles from "./NavbarAdmin.module.css";
 import Swal from "sweetalert2";
 import { getToken, limparToken } from "../../utils/storage";

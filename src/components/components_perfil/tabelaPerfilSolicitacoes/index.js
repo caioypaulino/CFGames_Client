@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styles from "./tabelaPerfilSolicitacoes.module.css";
 import Swal from "sweetalert2";
-import { getToken } from "../../../utils/storage";
 import { dataHoraMaskBR, valueMaskBR, statusMask } from "../../../utils/mask";
-import { cancelarSolicitacao } from "../../../services/solicitacoesService";
+import SolicitacaoService from "../../../services/solicitacaoService";
 
 
 const TabelaPerfilSolicitacoes = (props) => {
@@ -76,7 +75,7 @@ const TabelaPerfilSolicitacoes = (props) => {
         })
             .then((result) => {
                 if (result.isConfirmed) {
-                    cancelarSolicitacao(solicitacao.id);
+                    SolicitacaoService.cancelarSolicitacao(solicitacao.id);
                 }
                 else if (result.isDismissed) {
                     abrirPopupInfo(solicitacao);

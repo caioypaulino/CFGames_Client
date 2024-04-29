@@ -2,9 +2,8 @@ import React from "react";
 import styles from "./linhaDadosConta.module.css";
 import iconEdit from "../../../assets/buttons/Frame (6).svg";
 import Swal from "sweetalert2";
-import { getToken } from "../../../utils/storage";
 import { useNavigate } from "react-router-dom";
-import { editarEmail, editarSenha } from "../../../services/clienteService";
+import ClienteService from "../../../services/clienteService";
 
 const linhaDadosConta = (props) => {
     const navigate = useNavigate();
@@ -24,12 +23,12 @@ const linhaDadosConta = (props) => {
                     const novaSenha = Swal.getPopup().querySelector("#novaSenha").value;
                     const confirmaSenha = Swal.getPopup().querySelector("#confirmaSenha").value;
                     
-                    return editarSenha(senhaAtual, novaSenha, confirmaSenha, navigate);
+                    return ClienteService.editarSenha(senhaAtual, novaSenha, confirmaSenha, navigate);
                 }   
                 else { 
                     const email  = Swal.getPopup().querySelector("#email").value;
                     
-                    return editarEmail(email, navigate);
+                    return ClienteService.editarEmail(email, navigate);
                 }
             }
         });

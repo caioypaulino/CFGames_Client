@@ -4,11 +4,11 @@ import Swal from "sweetalert2";
 import { valueMaskBR } from "../../../utils/mask";
 import CartoesCheckout from "../cartoes_checkout";
 import CuponsCheckout from "../cupons_checkout";
-import { getToken } from "../../../utils/storage";
 import { useNavigate } from "react-router-dom";
+import PedidoService from "../../../services/pedidoService";
 
 const ResumoCheckout = (props) => {
-    const { valorCarrinho, frete, prazo, enderecoEntrega, enderecoAdicionado, excluirEndereco } = props;
+    const { valorCarrinho, frete, prazo, enderecoEntrega, enderecoAdicionado, carregarEnderecosCliente } = props;
 
     const [desconto, setDesconto] = useState(0);
     const [troco, setTroco] = useState(0);
@@ -154,112 +154,20 @@ const ResumoCheckout = (props) => {
             icon: 'warning',
             width: '40%',
             preConfirm: () => {
-                adicionarPedido(enderecoEntrega, cartoesSelecionados, valorParcialPorCartao, parcelasPorCartao);
+                PedidoService.adicionarPedido({
+                    enderecoEntrega,
+                    cartoesSelecionados,
+                    cuponsSelecionados,
+                    valorParcialEditado,
+                    valorParcialPorCartao,
+                    parcelasPorCartao,
+                    carregarEnderecosCliente,
+                    enderecoAdicionado,
+                    cartoesAdicionados,
+                    navigate
+                });
             },
         });
-    };
-
-    // função para adicionar um novo cartão
-    const adicionarPedido = async (enderecoEntrega, cartoesSelecionados, valorParcialPorCartao, parcelasPorCartao) => {
-        try {
-            const token = getToken();
-
-            const response = await fetch("http://localhost:8080/pedido/add", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                },
-                body: JSON.stringify({
-                    enderecoCliente: {
-                        id: enderecoEntrega.value
-                    },
-                    cupons: cuponsSelecionados.map(cupomSelecionado => {
-                        const cupomObj = {
-                            codigoCupom: cupomSelecionado ? cupomSelecionado.value : ''
-                        };
-
-                        return cupomObj;
-                    }),
-                    cartoes: cartoesSelecionados.map(cartaoSelecionado => {
-                        const cartaoObj = {
-                            cartao: {
-                                numeroCartao: cartaoSelecionado ? cartaoSelecionado.value : ''
-                            },
-                            parcelas: parcelasPorCartao[cartaoSelecionado.value] || 1
-                        };
-
-                        // Adiciona valorParcial somente se valorParcialEditado for verdadeiro
-                        if (valorParcialEditado) {
-                            cartaoObj.valorParcial = valorParcialPorCartao[cartaoSelecionado.value] || 0;
-                        }
-
-                        return cartaoObj;
-                    })
-                }),
-            });
-
-            if (response.ok) {
-                if (!enderecoAdicionado.salvar && enderecoAdicionado.id) {
-                    excluirEndereco(enderecoAdicionado.id);
-                }
-
-                if (cartoesAdicionados.length > 0) {
-                    excluirCartoes(cartoesAdicionados);
-                }
-
-                const successMessage = await response.text();
-
-                Swal.fire({ title: "Sucesso!", html: `${successMessage}`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { navigate('/perfil/pedidos'); });
-            }
-            else {
-                // buscando mensagem de erro que não é JSON
-                const errorMessage = await response.text();
-
-                throw new Error(errorMessage);
-            }
-        }
-        catch (error) {
-            // tratando mensagem de erro
-            console.error("Erro ao adicionar pedido:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao adicionar o pedido.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
-        }
-    };
-
-    // função request delete cartao
-    const excluirCartoes = async (cartoesAdicionados) => {
-        // fazer um foreach para cartoes adicionados
-        try {
-            const token = getToken();
-
-            const cartoesParaExcluir = cartoesAdicionados
-                .filter(cartao => !cartao.salvar && cartao.numeroCartao)
-                .map(cartao => ({ numeroCartao: cartao.numeroCartao }));
-
-            const response = await fetch("http://localhost:8080/perfil/remove/cartoes", {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                },
-                body: JSON.stringify(cartoesParaExcluir),
-            });
-
-            if (response.ok) {
-
-            }
-            else {
-                // Buscando mensagem de erro que não é JSON
-                const errorMessage = await response.text();
-
-                throw new Error(errorMessage);
-            }
-        }
-        catch (error) {
-            // Tratando mensagem de erro
-            console.error("Erro ao excluir cartão:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao excluir o cartão.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" });
-        }
     };
 
     return (
@@ -283,7 +191,6 @@ const ResumoCheckout = (props) => {
                     valorParcialEdit={[valorParcialEditado, setValorParcialEditado]}
                     parcelasPedido={[parcelasPorCartao, setParcelasPorCartao]}
                     cartoesAdded={[cartoesAdicionados, setCartoesAdicionados]}
-                    excluirCartoes={excluirCartoes}
                 />
             </div>
             <div className={styles.pagamento}>

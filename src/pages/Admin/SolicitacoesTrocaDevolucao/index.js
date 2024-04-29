@@ -6,6 +6,7 @@ import Select from "react-select";
 import { getToken } from "../../../utils/storage";
 import { dataHoraMaskBR, valueMaskBR, statusMask, dataMaskBR, cpfMask, telefoneMask } from "../../../utils/mask";
 import { useNavigate } from "react-router-dom";
+import AdminSolicitacaoService from "../../../services/Admin/adminSolicitacaoService";
 
 const AdminSolicitacoesTrocaDevolucao = () => {
     const [solicitacoes, setSolicitacoes] = useState([]);
@@ -22,40 +23,14 @@ const AdminSolicitacoesTrocaDevolucao = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        const carregarSolicitacoes = async () => {
+            const response = await AdminSolicitacaoService.buscarSolicitacoes(navigate);
+
+            setSolicitacoes(response);
+        }
+
         carregarSolicitacoes();
     }, []);
-
-    const carregarSolicitacoes = async () => {
-        const token = getToken();
-
-        try {
-            const response = await fetch('http://localhost:8080/admin/solicitacoestroca', {
-                headers: { Authorization: "Bearer " + token }
-            });
-
-            if (response.ok) {
-                const json = await response.json()
-                const sortedSolicitacoes = json.sort((a, b) => a.id - b.id); // Ordena os solicitacoes por ID
-
-                setSolicitacoes(sortedSolicitacoes);
-            }
-            else {
-                if (response.status === 500) {
-                    throw new Error('Token Inválido!');
-                }
-                else if (response.status === 400) {
-                    Swal.fire({ title: "Erro!", html: `Erro ao carregar solicitações de troca e devolução!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-                }
-                else if (response.status === 403) {
-                    Swal.fire({ title: "Erro!", html: `Você não possui permissão para acessar o painel de administrador.<br><br> Por favor, entre em contato com o administrador do sistema para mais informações.`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/perfil/pessoal"); });
-                }
-            }
-        }
-        catch (error) {
-            console.error('Erro ao carregar dados:', error);
-            Swal.fire({ title: "Erro!", html: `Erro ao carregar painel de administrador.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
-        }
-    };
 
     // Função para calcular o valor total dos itens de troca
     const calcularValorTotalItensTroca = (solicitacao) => {
@@ -142,9 +117,9 @@ const AdminSolicitacoesTrocaDevolucao = () => {
                 const FormUpdateStatus = () => (
                     <div>
                         <p>Selecione uma opção:</p>
-                        <button onClick={() => aprovarSolicitacao(solicitacao.id)} className="swal2-confirm swal2-styled" style={{ backgroundColor: '#6085FF', fontSize: '1rem' }}>Aprovar</button>
+                        <button onClick={() => AdminSolicitacaoService.aprovarSolicitacao(solicitacao.id)} className="swal2-confirm swal2-styled" style={{ backgroundColor: '#6085FF', fontSize: '1rem' }}>Aprovar</button>
                         <button onClick={() => abrirPopupConcluirSolicitacao(solicitacao)} className="swal2-deny swal2-styled" style={{ backgroundColor: '#011640', fontSize: '1rem' }}>Concluir</button>
-                        <button onClick={() => reprovarSolicitacao(solicitacao.id)} className="swal2-cancel swal2-styled" style={{ backgroundColor: '#FF0000', fontSize: '1rem' }}>Reprovar</button>
+                        <button onClick={() => AdminSolicitacaoService.reprovarSolicitacao(solicitacao.id)} className="swal2-cancel swal2-styled" style={{ backgroundColor: '#FF0000', fontSize: '1rem' }}>Reprovar</button>
                         <button onClick={() => abrirPopupUpdateStatus(solicitacao)} className="swal2-cancel swal2-styled" style={{ backgroundColor: '#2D314D', fontSize: '1rem' }}>Personalizado</button>
                         <button onClick={() => abrirPopupInfo(solicitacao)} className="swal2-cancel swal2-styled" style={{ backgroundColor: '#6E7881', fontSize: '1rem' }}>Voltar</button>
                     </div>
@@ -167,60 +142,6 @@ const AdminSolicitacoesTrocaDevolucao = () => {
                 abrirPopupDelete(solicitacao);
             }
         });
-    };
-
-    // Função para atualizar o status solicitação para APROVADA
-    const aprovarSolicitacao = async (solicitacaoId) => {
-        try {
-            const token = getToken();
-            const response = await fetch(`http://localhost:8080/admin/solicitacoestroca/aprovar/${solicitacaoId}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                }
-            });
-
-            if (response.ok) {
-                const successMessage = await response.text();
-                Swal.fire({ title: "Sucesso!", html: `${successMessage}`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-            }
-            else {
-                const errorMessage = await response.text();
-                throw new Error(errorMessage);
-            }
-        }
-        catch (error) {
-            console.error("Erro ao atualizar status solicitação de troca/devolução:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao aprovar a solicitação de troca/devolução.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" });
-        }
-    };
-
-    // Função para atualizar o status solicitação para REPROVADA
-    const reprovarSolicitacao = async (solicitacaoId) => {
-        try {
-            const token = getToken();
-            const response = await fetch(`http://localhost:8080/admin/solicitacoestroca/reprovar/${solicitacaoId}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                }
-            });
-
-            if (response.ok) {
-                const successMessage = await response.text();
-                Swal.fire({ title: "Sucesso!", html: `${successMessage}`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-            }
-            else {
-                const errorMessage = await response.text();
-                throw new Error(errorMessage);
-            }
-        }
-        catch (error) {
-            console.error("Erro ao atualizar status solicitação de troca/devolução:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao reprovar a solicitação de troca/devolução.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" });
-        }
     };
 
     // Função para atualizar status solicitação
@@ -315,7 +236,7 @@ const AdminSolicitacoesTrocaDevolucao = () => {
                     const reporEstoque = document.getElementById('reporEstoque').checked;
 
                     // Chamando a função para atualizar o status da solicitação
-                    concluirSolicitacao(solicitacao.id, itensReposicao, reporEstoque);
+                    AdminSolicitacaoService.concluirSolicitacao(solicitacao.id, itensReposicao, reporEstoque);
                 }
             }).then((result) => {
                 if (result.isDismissed) { // Se o usuário clicar em cancelar, volte para abrirPopupInfo
@@ -334,36 +255,7 @@ const AdminSolicitacoesTrocaDevolucao = () => {
         }
     };
 
-    // Função para concluir Solicitação Troca/Devolução
-    const concluirSolicitacao = async (solicitacaoId, itensReposicao, reporEstoque) => {
-        try {
-            const token = getToken();
-            const response = await fetch(`http://localhost:8080/admin/solicitacoestroca/concluir/${solicitacaoId}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                },
-                body: JSON.stringify({
-                    itensReposicao,
-                    reporEstoque
-                }),
-            });
 
-            if (response.ok) {
-                const successMessage = await response.text();
-                Swal.fire({ title: "Sucesso!", html: `${successMessage}`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-            }
-            else {
-                const errorMessage = await response.text();
-                throw new Error(errorMessage);
-            }
-        }
-        catch (error) {
-            console.error("Erro ao atualizar status da solicitação de troca/devolução:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao concluir solicitação de troca/devolução.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" });
-        }
-    };
 
     // Função para atualizar status solicitação
     const abrirPopupUpdateStatus = (solicitacao) => {
@@ -388,41 +280,13 @@ const AdminSolicitacoesTrocaDevolucao = () => {
                 const novoStatus = Swal.getPopup().querySelector('#novoStatus').value;
 
                 // Chamando a função para atualizar o status do pedido
-                atualizarStatusSolicitacao(solicitacao.id, novoStatus);
+                AdminSolicitacaoService.atualizarStatusSolicitacao(solicitacao.id, novoStatus);
             }
         }).then((result) => {
             if (result.isDismissed) { // Se o usuário clicar em cancelar, volte para abrirPopupInfo
                 abrirPopupInfo(solicitacao);
             }
         });
-    };
-
-    const atualizarStatusSolicitacao = async (solicitacaoId, novoStatus) => {
-        try {
-            const token = getToken();
-            const response = await fetch(`http://localhost:8080/admin/solicitacoestroca/update/${solicitacaoId}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                },
-                body: JSON.stringify({
-                    statusSolicitacao: novoStatus
-                }),
-            });
-
-            if (response.ok) {
-                const successMessage = await response.text();
-                Swal.fire({ title: "Sucesso!", html: `${successMessage}`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-            }
-            else {
-                const errorMessage = await response.text();
-                throw new Error(errorMessage);
-            }
-        } catch (error) {
-            console.error("Erro ao atualizar status da solicitação de troca/devolução:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao atualizar o status da solicitação de troca/devolução.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" });
-        }
     };
 
     // Função para solicitar confirmação da deleção da solicitação de troca/devolução
@@ -436,47 +300,14 @@ const AdminSolicitacoesTrocaDevolucao = () => {
             cancelButtonColor: '#d33',
             confirmButtonText: 'Sim, deletar!',
             cancelButtonText: 'Cancelar'
-        })
-            .then((result) => {
-                if (result.isConfirmed) {
-                    deletarSolicitacao(solicitacao.id);
-                }
-                else if (result.isDismissed) {
-                    abrirPopupInfo(solicitacao);
-                }
-            });
-    };
-
-    // Função para deletar uma solicitação
-    const deletarSolicitacao = async (solicitacaoId) => {
-        try {
-            const token = getToken();
-
-            const response = await fetch(`http://localhost:8080/admin/solicitacoestroca/delete/${solicitacaoId}`, {
-                method: "DELETE",
-                headers: {
-                    Authorization: "Bearer " + token,
-                    'Content-Type': 'application/json'
-                },
-            });
-
-            if (response.ok) {
-                const successMessage = await response.text();
-
-                Swal.fire({ title: "Sucesso!", html: `${successMessage}`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
+        }).then((result) => {
+            if (result.isConfirmed) {
+                AdminSolicitacaoService.deletarSolicitacao(solicitacao.id);
             }
-            else {
-                // Buscando mensagem de erro que não é JSON
-                const errorMessage = await response.text();
-
-                throw new Error(errorMessage);
+            else if (result.isDismissed) {
+                abrirPopupInfo(solicitacao);
             }
-        }
-        catch (error) {
-            // Tratando mensagem de erro
-            console.error("Erro ao deletar solicitação de troca/devolução:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao deletar a solicitação de troca/devolução.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
-        }
+        });
     };
 
     const handleSort = (coluna) => {

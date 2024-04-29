@@ -1,5 +1,6 @@
 import Swal from "sweetalert2";
 import { getToken } from "../utils/storage";
+import { useAsync } from "react-select/async";
 
 // função para buscar endereços
 async function buscarEnderecos (navigate) {
@@ -64,6 +65,48 @@ async function adicionarEndereco (apelido, numero, complemento, tipo, cep, obser
 
         if (response.ok) {
             Swal.fire({ title: "Sucesso!", text: "Endereço adicionado com sucesso.", icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
+        }
+        else {
+            // buscando mensagem de erro que não é JSON
+            const errorMessage = await response.text();
+
+            throw new Error(errorMessage);
+        }
+    }
+    catch (error) {
+        // tratando mensagem de erro
+        console.error("Erro ao adicionar endereço:", error);
+        Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao adicionar o endereço.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
+    }
+}
+
+// função para adicionar um novo endereço
+async function adicionarEnderecoCheckout (apelido, numero, complemento, tipo, cep, observacao) {
+    try {
+        const token = getToken();
+
+        const response = await fetch("http://localhost:8080/perfil/add/endereco", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + token,
+            },
+            body: JSON.stringify({
+                apelido,
+                numero,
+                complemento,
+                tipo,
+                endereco: {
+                    cep,
+                },
+                observacao,
+            }),
+        });
+
+        if (response.ok) {
+            Swal.fire({ title: "Sucesso!", text: "Endereço adicionado com sucesso.", icon: "success", confirmButtonColor: "#6085FF" });
+
+            return await response.json();
         }
         else {
             // buscando mensagem de erro que não é JSON
@@ -154,11 +197,46 @@ async function excluirEndereco (enderecoId) {
     }
 }
 
+// função request delete endereço
+async function excluirEnderecoCheckout (enderecoId, carregarEnderecosCliente) {
+    try {
+        const token = getToken();
+
+        const response = await fetch("http://localhost:8080/perfil/remove/endereco", {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + token,
+            },
+            body: JSON.stringify({
+                id: enderecoId,
+            }),
+        });
+
+        if (response.ok) {
+            carregarEnderecosCliente();
+        }
+        else {
+            // buscando mensagem de erro que não é JSON
+            const errorMessage = await response.text();
+
+            throw new Error(errorMessage);
+        }
+    }
+    catch (error) {
+        // tratando mensagem de erro
+        console.error("Erro ao excluir endereço:", error);
+        Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao excluir o endereço.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
+    }
+};
+
 const EnderecoService = {
     buscarEnderecos,
     adicionarEndereco,
+    adicionarEnderecoCheckout,
     editarEndereco,
-    excluirEndereco
+    excluirEndereco,
+    excluirEnderecoCheckout
 };
 
 export default EnderecoService;

@@ -2,11 +2,8 @@ import React, { useEffect, useState } from "react";
 import LinhaDadosCupons from "../../../components/components_perfil/linhaDadosCupons";
 import TabelaActions from "../../../components/components_perfil/tabelaActions";
 import styles from "./Cupons.module.css";
-import Swal from "sweetalert2";
-import { getToken } from "../../../utils/storage";
 import { useNavigate } from "react-router-dom";
-import { DateMask } from "../../../utils/mask";
-import { buscarCupons } from "../../../services/cupomService";
+import CupomService from "../../../services/cupomService";
 
 const Cupons = () => {
     const [cupons, setCupons] = useState([]);
@@ -18,9 +15,9 @@ const Cupons = () => {
 
     useEffect(() => {
         const carregarCupons = async () => {
-            const result = await buscarCupons(navigate);
+            const response = await CupomService.buscarCupons(navigate);
 
-            setCupons(result);
+            setCupons(response);
         }
 
         carregarCupons();

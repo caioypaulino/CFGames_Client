@@ -5,6 +5,7 @@ import { valueMaskBR } from "../../../utils/mask";
 import Swal from "sweetalert2";
 import { getToken } from "../../../utils/storage";
 import { useNavigate } from "react-router-dom";
+import CarrinhoService from "../../../services/carrinhoService";
 
 const ResumoCarrinho = (props) => {
     const navigate = useNavigate();
@@ -23,40 +24,9 @@ const ResumoCarrinho = (props) => {
         }).then((result) => {
             if (result.isConfirmed) {
                 // Chamar função para excluir o cartão
-                excluirCarrinho();
+                CarrinhoService.excluirCarrinho();
             }
         });
-    };
-
-    // Função para excluir o cartão
-    const excluirCarrinho = async () => {
-        try {
-            const token = getToken();
-
-            const response = await fetch("http://localhost:8080/carrinhodecompra/delete", {
-                method: "DELETE",
-                headers: {
-                    Authorization: "Bearer " + token,
-                }
-            });
-
-            if (response.ok) {
-                // Exibindo mensagem de sucesso
-                Swal.fire({ title: "Removido!", text: "Carrinho de Compras removido com sucesso.", icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
-                // Recarregar a página ou atualizar os dados, conforme necessário
-            }
-            else {
-                // Buscando mensagem de erro que não é JSON
-                const errorMessage = await response.text();
-
-                throw new Error(errorMessage);
-            }
-        }
-        catch (error) {
-            // Tratando mensagem de erro
-            console.error("Erro ao excluir carrinho:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao excluir o Carrinho de Compras.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
-        }
     };
 
     return (

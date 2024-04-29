@@ -2,7 +2,7 @@ import Swal from "sweetalert2";
 import { getToken } from "../utils/storage";
 import { DateMask } from "../utils/mask";
 
-export async function buscarCupons (navigate) {
+async function buscarCupons (navigate) {
     const token = getToken();
 
     try {
@@ -38,3 +38,9 @@ export async function buscarCupons (navigate) {
         Swal.fire({ title: "Erro!", html: `Erro ao carregar cupons.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
     }
 };
+
+const CupomService = {
+    buscarCupons
+}
+
+export default CupomService;

@@ -171,3 +171,47 @@ export const statusMask = (value) => {
         return palavras.join(' ');
     }
 }
+
+// Função para aplicar máscara ao gênero cliente
+export const generoMask = (value) => {
+    switch (value) {
+        case "MASCULINO":
+            return "Masculino";
+        case "FEMININO":
+            return "Feminino";
+        case "OUTRO":
+            return "Outro";
+        case "NAO_INFORMAR":
+            return "Não Informar";
+        default:
+            return "";
+    }
+};
+
+// Função para aplicar máscara a plataforma produto
+export const plataformaMask = (value) => {
+    switch (value) {
+        case "XBOX360":
+            return "Xbox 360";
+        case "XBOXONE":
+            return "Xbox One";
+        case "XBOXS":
+            return "Xbox Series S";
+        case "PS3":
+            return "PlayStation 3";
+        case "PS4":
+            return "PlayStation 4";
+        case "PS5":
+            return "PlayStation 5";
+        case "PSP":
+            return "PSP";
+        case "NINTENDOWII":
+            return "Nintendo Wii";
+        case "NINTENDODS":
+            return "Nintendo DS";
+        case "NINTENDOSWITCH":
+            return "Nintendo Switch";
+        default:
+            return "";
+    }
+};

@@ -3,11 +3,11 @@ import styles from "./CartoesCheckout.module.css";
 import Swal from "sweetalert2";
 import Select from "react-select";
 import { useNavigate } from 'react-router-dom';
-import { getToken } from "../../../utils/storage";
 import { creditCardXXXXMask, removeMask, handleCreditCard, handleNumber, valueMaskBR } from "../../../utils/mask";
+import CartaoService from "../../../services/cartaoService";
 
 const CartoesCheckout = (props) => {
-    const { valorTotal, cartoesPedido, valorParcialPedido, valorParcialEdit, parcelasPedido, cartoesAdded, excluirCartoes } = props;
+    const { valorTotal, cartoesPedido, valorParcialPedido, valorParcialEdit, parcelasPedido, cartoesAdded } = props;
 
     const [cartoesSelecionados, setCartoesSelecionados] = cartoesPedido;
     const [valorParcialPorCartao, setValorParcialPorCartao] = valorParcialPedido;
@@ -33,13 +33,13 @@ const CartoesCheckout = (props) => {
     useEffect(() => {
         const handleUnload = async () => {
             if (cartoesAdicionados.length > 0) {
-                excluirCartoes(cartoesAdicionados);
+                CartaoService.excluirCartoes(cartoesAdicionados);
             }
         };
     
         const handleBeforeUnload = () => {
             if (cartoesAdicionados.length > 0) {
-                excluirCartoes(cartoesAdicionados);
+                CartaoService.excluirCartoes(cartoesAdicionados);
             }
         };
     
@@ -89,6 +89,12 @@ const CartoesCheckout = (props) => {
         setParcelasSelecionadas({});
     }, [valorTotal]);
 
+    const carregarCartoesCliente = async () => {
+        const response = await CartaoService.buscarCartoes(navigate);
+
+        setCartoesCliente(response);
+    }
+
     const handleSelecionarCartao = (cartaoSelecionado) => {
         // Verificar se o valor total é menor que 0
         if (valorTotal <= 0) {
@@ -97,26 +103,6 @@ const CartoesCheckout = (props) => {
         else {
             // Permitir a seleção do cartão
             setCartoesSelecionados(cartaoSelecionado);
-        }
-    };
-
-    const carregarCartoesCliente = async () => {
-        const token = getToken();
-
-        try {
-            const response = await fetch('http://localhost:8080/perfil/cartoes', {
-                headers: { Authorization: "Bearer " + token }
-            });
-
-            if (!response.ok) {
-                throw new Error('Token Inválido!');
-            }
-
-            setCartoesCliente(await response.json());
-        }
-        catch (error) {
-            console.error('Erro ao carregar dados:', error);
-            Swal.fire({ title: "Erro!", html: `Erro ao carregar cartões.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
         }
     };
 
@@ -147,7 +133,17 @@ const CartoesCheckout = (props) => {
                 const cvc = Swal.getPopup().querySelector("#cvc").value;
                 const salvarNoPerfil = document.getElementById('salvarNoPerfil').checked;
 
-                adicionarCartao(numeroCartao, nomeCartao, mesVencimento, anoVencimento, cvc, salvarNoPerfil);
+                CartaoService.adicionarCartaoCheckout({
+                    numeroCartao, 
+                    nomeCartao, 
+                    mesVencimento, 
+                    anoVencimento, 
+                    cvc, 
+                    salvarNoPerfil, 
+                    cartoesAdicionados,
+                    setCartoesAdicionados, 
+                    carregarCartoesCliente
+                });
             },
         });
 
@@ -155,44 +151,6 @@ const CartoesCheckout = (props) => {
         const cvcInput = document.getElementById('cvc');
         numeroCartaoInput.addEventListener('input', handleCreditCard);
         cvcInput.addEventListener('input', handleNumber);
-    };
-
-    const adicionarCartao = async (numeroCartao, nomeCartao, mesVencimento, anoVencimento, cvc, salvarNoPerfil) => {
-        try {
-            const token = getToken();
-            const response = await fetch("http://localhost:8080/perfil/add/cartao", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                },
-                body: JSON.stringify({
-                    numeroCartao,
-                    nomeCartao,
-                    mesVencimento,
-                    anoVencimento,
-                    cvc,
-                }),
-            });
-
-            if (response.ok) {
-                const novoCartaoNumero = await response.json();
-
-                Swal.fire({ title: "Sucesso!", text: "Cartão adicionado com sucesso.", icon: "success", confirmButtonColor: "#6085FF" }).then(() => {
-                    const novoCartao = { numeroCartao: novoCartaoNumero, salvar: salvarNoPerfil }
-                    setCartoesAdicionados([...cartoesAdicionados, novoCartao]);
-                    carregarCartoesCliente();
-                });
-            }
-            else {
-                const errorMessage = await response.text();
-                throw new Error(errorMessage);
-            }
-        }
-        catch (error) {
-            console.error("Erro ao adicionar cartão:", error);
-            Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao adicionar o cartão.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
-        }
     };
 
     const handleEditValorParcial = () => {

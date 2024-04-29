@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./linhaDadosPessoais.module.css";
-import { cpfMask, telefoneMask, dataMaskBR } from "../../../utils/mask";
+import { cpfMask, telefoneMask, dataMaskBR, generoMask } from "../../../utils/mask";
 
 const linhaDadosPessoais = ({ tipo, dado }) => {
     const formatarMap = {
@@ -8,7 +8,7 @@ const linhaDadosPessoais = ({ tipo, dado }) => {
         cpf: { tipo: 'CPF', formatter: cpfMask },
         telefone: { tipo: 'Telefone', formatter: telefoneMask },
         dataNascimento: { tipo: 'Data de Nascimento', formatter: dataMaskBR },
-        genero: { tipo: 'Gênero', formatter: (dado) => (dado === 'NAO_INFORMAR' ? 'Não Informar' : dado) }
+        genero: { tipo: 'Gênero', formatter: generoMask }
     };
 
     const { tipo: tipoFormatado, formatter } = formatarMap[tipo];

@@ -3,7 +3,7 @@ import TabelaActions from "../../../components/components_perfil/tabelaActions";
 import TabelaPerfilPedidos from "../../../components/components_perfil/tabelaPerfilPedidos";
 import styles from "./Pedidos.module.css";
 import { useNavigate } from "react-router-dom";
-import { buscarPedidos } from "../../../services/pedidoService";
+import PedidoService from "../../../services/pedidoService";
 
 const Pedidos = () => {
     const [pedidos, setPedidos] = useState([]);
@@ -12,9 +12,9 @@ const Pedidos = () => {
 
     useEffect(() => {
         const carregarPedidos = async () => {
-            const result = await buscarPedidos(navigate);
+            const response = await PedidoService.buscarPedidos(navigate);
 
-            setPedidos(result);
+            setPedidos(response);
         }
 
         carregarPedidos();

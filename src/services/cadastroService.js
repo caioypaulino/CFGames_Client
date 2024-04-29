@@ -1,7 +1,7 @@
 import Swal from "sweetalert2";
 import { getToken, salvarToken } from "../utils/storage";
 
-export async function cadastrarCliente({
+async function cadastrarCliente({
     nome,
     cpf,
     dataNascimento,
@@ -70,7 +70,7 @@ async function loginAutomatico(email, senha, navigate) {
     }
 }
 
-export async function cadastrarEndereco({enderecosRequest, navigate}) {
+async function cadastrarEndereco({enderecosRequest, navigate}) {
     try {
         const token = getToken();
 
@@ -100,3 +100,10 @@ export async function cadastrarEndereco({enderecosRequest, navigate}) {
         Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao adicionar o(s) endereço(s).<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" });
     }
 }
+
+const CadastroService = {
+    cadastrarCliente,
+    cadastrarEndereco
+}
+
+export default CadastroService;

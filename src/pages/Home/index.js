@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import banner from "../../assets/home/Banner.svg";
 import styles from "./Home.module.css";
 import ProdutoHome from "../../components/produtos_home";
+import ProdutoService from '../../services/produtoService';
 
 const Home = ({ termoBusca }) => {
     const [produtos, setProdutos] = useState([]);
@@ -20,44 +21,21 @@ const Home = ({ termoBusca }) => {
         carregarProdutos();
     }, []);
 
-    useEffect(() => {
-        buscarTitulo(termoBusca);
-    }, [termoBusca]);
-
     const carregarProdutos = async () => {
-        try {
-            const response = await fetch('http://localhost:8080/home/');
+        const response = await ProdutoService.buscarProdutos();
 
-            if (!response.ok) {
-                throw new Error('Response error!');
-            }
+        setProdutos(response || []);
+    }
 
-            setProdutos(await response.json());
-        }
-        catch (error) {
-            console.error('Erro ao carregar dados:', error);
-        }
-    };
+    useEffect(() => {
+        const procurarTitulo = async () => {
+            const response = await ProdutoService.buscarTitulo(termoBusca, carregarProdutos);
 
-    const buscarTitulo = async (termoBusca) => {
-        try {
-            if (termoBusca === "") {
-                carregarProdutos();
-            }
-            else {
-                const response = await fetch(`http://localhost:8080/home/buscar/titulo=${termoBusca}`);
-    
-                if (!response.ok) {
-                    throw new Error('Response error!');
-                }
-    
-                setProdutos(await response.json());
-            }
+            setProdutos(response || []);
         }
-        catch (error) {
-            console.error('Erro ao carregar dados:', error);
-        }
-    };
+
+        procurarTitulo();
+    }, [termoBusca]);
 
     const handlePaginaAnterior = () => {
         setPaginaAtual(paginaAnterior => Math.max(paginaAnterior - 1, 1));

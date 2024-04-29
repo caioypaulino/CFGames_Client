@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "./Checkout.module.css";
 import EnderecosCheckout from "../../components/components_checkout/enderecos_checkout";
 import { useNavigate } from "react-router-dom";
-import CheckoutService from "../../services/checkoutService";
+import CarrinhoService from "../../services/carrinhoService";
 
 const Checkout = () => {
     const [carrinhoCompras, setCarrinhoCompras] = useState({});
@@ -11,9 +11,9 @@ const Checkout = () => {
 
     useEffect(() => {
         const carregarCarrinhoCompras = async () => {
-            const result = await CheckoutService.buscarCarrinhoCompras(navigate);
+            const response = await CarrinhoService.buscarCarrinhoCompras(navigate);
 
-            setCarrinhoCompras(result);
+            setCarrinhoCompras(response);
         }
 
         carregarCarrinhoCompras();

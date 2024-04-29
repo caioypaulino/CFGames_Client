@@ -4,10 +4,9 @@ import TabelaActions from "../../../components/components_perfil/tabelaActions";
 import iconAdd from "../../../assets/buttons/add.svg"
 import styles from "./Cartoes.module.css";
 import Swal from "sweetalert2";
-import { getToken } from "../../../utils/storage";
 import { useNavigate } from "react-router-dom";
 import { handleCreditCard, handleNumber, removeMask } from "../../../utils/mask";
-import { adicionarCartao, buscarCartoes } from "../../../services/cartaoService";
+import CartaoService from "../../../services/cartaoService";
 
 const Cartoes = () => {
     const [cartoes, setCartoes] = useState([]);
@@ -19,9 +18,9 @@ const Cartoes = () => {
 
     useEffect(() => {
         const carregarCartoes = async () => {
-            const result = await buscarCartoes(navigate);
+            const response = await CartaoService.buscarCartoes(navigate);
 
-            setCartoes(result);
+            setCartoes(response);
         }
 
         carregarCartoes();
@@ -49,7 +48,7 @@ const Cartoes = () => {
                 const anoVencimento = Swal.getPopup().querySelector("#anoVencimento").value;
                 const cvc = Swal.getPopup().querySelector("#cvc").value;
 
-                adicionarCartao(numeroCartao, nomeCartao, mesVencimento, anoVencimento, cvc);
+                CartaoService.adicionarCartao(numeroCartao, nomeCartao, mesVencimento, anoVencimento, cvc);
             },
         });
 

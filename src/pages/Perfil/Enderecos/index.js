@@ -4,7 +4,6 @@ import TabelaActions from "../../../components/components_perfil/tabelaActions";
 import iconAdd from "../../../assets/buttons/add.svg"
 import styles from "./Enderecos.module.css";
 import Swal from "sweetalert2";
-import { getToken } from "../../../utils/storage";
 import { handleCep, cepMask, handleNumber } from '../../../utils/mask';
 import { useNavigate } from "react-router-dom";
 import EnderecoService from "../../../services/enderecoService";
@@ -19,9 +18,9 @@ const Enderecos = () => {
 
     useEffect(() => {
         const carregarEnderecos = async () => {
-            const result = await EnderecoService.buscarEnderecos(navigate);
+            const response = await EnderecoService.buscarEnderecos(navigate);
 
-            setEnderecos(result);
+            setEnderecos(response);
         }
         
         carregarEnderecos();

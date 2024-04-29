@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styles from "./tabelaPerfilPedidos.module.css";
 import Swal from "sweetalert2";
 import { dataHoraMaskBR, valueMaskBR, statusMask, creditCardXXXXMask} from "../../../utils/mask";
 import FormTrocaDevolucao from "./FormTrocaDevolucao";
-import { cancelarPedido } from "../../../services/pedidoService";
+import PedidoService from "../../../services/pedidoService";
 
 const TabelaPerfilPedidos = (props) => {
     const { pedidos } = props;
@@ -146,7 +146,7 @@ const TabelaPerfilPedidos = (props) => {
         })
             .then((result) => {
                 if (result.isConfirmed) {
-                    cancelarPedido(pedido.id);
+                    PedidoService.cancelarPedido(pedido.id);
                 }
                 else if (result.isDismissed) {
                     abrirPopupInfo(pedido);

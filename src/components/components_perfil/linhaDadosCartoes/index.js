@@ -3,9 +3,8 @@ import styles from "./linhaDadosCartoes.module.css";
 import Swal from "sweetalert2";
 import iconInfo from "../../../assets/buttons/info.svg";
 import iconDelete from "../../../assets/buttons/delete.svg";
-import { getToken } from "../../../utils/storage";
 import { creditCardMask, creditCardXXXXMask } from "../../../utils/mask";
-import { excluirCartao } from "../../../services/cartaoService";
+import CartaoService, { excluirCartao } from "../../../services/cartaoService";
 
 const linhaDadosCartoes = (props) => {
     // Utilizando desestruturação
@@ -43,7 +42,7 @@ const linhaDadosCartoes = (props) => {
         }).then((result) => {
             if (result.isConfirmed) {
                 // Chamar função service para excluir o cartão
-                excluirCartao(numeroCartao);
+                CartaoService.excluirCartao(numeroCartao);
             }
         });
     };
