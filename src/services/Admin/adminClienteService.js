@@ -1,5 +1,5 @@
 import Swal from "sweetalert2";
-import { getToken } from "../../utils/storage";
+import { getToken, limparToken } from "../../utils/storage";
 
 async function buscarClientes(navigate) {
     const token = getToken();
@@ -28,6 +28,7 @@ async function buscarClientes(navigate) {
         }
     }
     catch (error) {
+        limparToken();
         console.error('Erro ao carregar dados:', error);
         Swal.fire({ title: "Erro!", html: `Erro ao carregar painel de administrador.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
     }
@@ -66,9 +67,33 @@ async function deletarCliente(clienteId) {
     }
 };
 
+async function filtrarClientes(clientes, filtro) {
+    // Lógica para filtrar os clientes com base nos filtros
+    const clientesFiltrados = clientes.filter(cliente => {
+        // Verifica se há filtros de gênero
+        const filtroGenero = filtro.generos && filtro.generos.length > 0;
+        // Verifica se o cliente corresponde aos filtros de gênero
+        const correspondeGenero = filtroGenero ? filtro.generos.includes(cliente.genero) : true;
+
+        return (
+            cliente.id.toString().includes(filtro.id) &&
+            cliente.nome.toLowerCase().includes(filtro.nome.toLowerCase()) &&
+            cliente.cpf.includes(filtro.cpf) &&
+            cliente.dataNascimento.includes(filtro.dataNascimento) &&
+            cliente.telefone.includes(filtro.telefone) &&
+            cliente.email.toLowerCase().includes(filtro.email.toLowerCase()) &&
+            correspondeGenero // Verifica se corresponde ao filtro de gênero
+        );
+    });
+
+    return clientesFiltrados;
+}
+
+
 const AdminClienteService = {
     buscarClientes,
-    deletarCliente
+    deletarCliente,
+    filtrarClientes
 }
 
 export default AdminClienteService;

@@ -2,13 +2,14 @@
 
 .modal {
     position: fixed;
-    top: 19.75%;
-    left: 29.45%;
+    top: 27%;
+    left: 23%;
     background-color: #fff;
     padding: 2%;
     border-radius: 5px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    width: 37.25%;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    width: 20.25%;
     max-width: 90%;
     z-index: 1000;
     animation: blowup 0.35s;
@@ -20,7 +21,6 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
     z-index: 999;
 }
 
@@ -77,6 +77,7 @@
 
 .swal2-select__control--is-focused {
     border-color: #96c1f8;
+    outline: none;
     box-shadow: none;
 }
 
@@ -119,29 +120,59 @@
 }
 
 .buttonsContainer {
-    margin-left: 35%;
+    margin-left: 10.9%;
 }
 
 .confirmButton,
+.limparButton,
 .cancelButton {
-    height: 2rem;
-    width: 20%;
-    background: #011640;
+    height: 2.4rem;
+    width: 25.5%;
+    background: #6085FF;
     color: #e2e6ef;
     border-radius: 6px;
     border-color: transparent;
     cursor: pointer;
     margin: 2%;
+    font-size: 1rem;
 }
 
-.cancelButton {
+.limparButton {
     background: red;
 }
 
+.cancelButton {
+    background: #6e7881;
+}
+
 .confirmButton:hover {
-    background-color: #062c79;
+    background-color: #5677e5;
+}
+
+.limparButton:hover {
+    background: rgb(122, 0, 0);
 }
 
 .cancelButton:hover {
-    background: rgb(138, 0, 0);
+    background: #636c74;
+}
+
+.swal2input {
+    /* Estilos semelhantes aos campos swal2-input */
+
+    border: 1px solid #dbdbdb;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 1rem;
+    width: 93.3%; /* Largura total */
+    margin-bottom: 8px;
+}
+
+.swal2input:focus {
+    border: 2px solid #96c1f8;
+    outline: none; /* Remove a borda de foco padrão */
+}
+
+.swal2input::placeholder {
+    color: #6e7881; /* Cor do texto de espaço reservado */
 }

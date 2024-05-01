@@ -1,6 +1,5 @@
 import Swal from "sweetalert2";
-import { getToken } from "../utils/storage";
-import { useAsync } from "react-select/async";
+import { getToken, limparToken } from "../utils/storage";
 
 // função para buscar endereços
 async function buscarEnderecos (navigate) {
@@ -35,6 +34,7 @@ async function buscarEnderecos (navigate) {
         return enderecos;
     }
     catch (error) {
+        limparToken();
         console.error('Erro ao carregar dados:', error);
         Swal.fire({ title: "Erro!", html: `Erro ao carregar endereços.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
     }

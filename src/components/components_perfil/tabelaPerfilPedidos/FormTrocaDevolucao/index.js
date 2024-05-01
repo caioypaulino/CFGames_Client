@@ -41,7 +41,7 @@ const FormTrocaDevolucao = ({
             isOpen={isOpen}
             onRequestClose={onRequestClose}
             contentLabel="Troca/Devolução Modal"
-            className={styles.modal}
+            className={`${styles.modal} ${isOpen ? styles["modal-blowup"] : ""}`}
             overlayClassName={styles.overlay}
         >
             <h1>Solicitar Troca/Devolução</h1><br></br>

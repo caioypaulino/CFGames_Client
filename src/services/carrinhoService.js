@@ -1,5 +1,5 @@
 import Swal from "sweetalert2";
-import { getToken } from "../utils/storage";
+import { getToken, limparToken } from "../utils/storage";
 
 async function buscarCarrinhoCompras (navigate) {
     const token = getToken();
@@ -22,6 +22,7 @@ async function buscarCarrinhoCompras (navigate) {
         }
     }
     catch (error) {
+        limparToken();
         console.error('Erro ao carregar dados:', error);
         Swal.fire({ title: "Erro!", html: `Erro ao carregar carrinho de compras.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
     }
@@ -58,7 +59,7 @@ async function adicionarCarrinho (produto, quantidadeSelecionada, navigate) {
         }
     }
     catch (error) {
-        // tratando mensagem de erro
+        limparToken();
         console.error("Erro ao adicionar item:", error);
         Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao adicionar item(ns) ao carrinho de compras.<br><br>Faça login novamente!<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
     }
@@ -93,7 +94,7 @@ async function adicionarItemCarrinho (produto, quantidadeSelecionada) {
         }
     }
     catch (error) {
-        // tratando mensagem de erro
+        limparToken();
         console.error("Erro ao adicionar item:", error);
         Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao adicionar item(ns) ao carrinho de compras.<br><br>Faça login novamente!<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
     }

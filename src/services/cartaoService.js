@@ -1,5 +1,5 @@
 import Swal from "sweetalert2";
-import { getToken } from "../utils/storage";
+import { getToken, limparToken } from "../utils/storage";
 
 async function buscarCartoes (navigate) {
     const token = getToken();
@@ -16,6 +16,7 @@ async function buscarCartoes (navigate) {
         return await response.json();
     }
     catch (error) {
+        limparToken();
         console.error('Erro ao carregar dados:', error);
         Swal.fire({ title: "Erro!", html: `Erro ao carregar cartões.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
     }

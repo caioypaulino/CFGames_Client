@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
+import iconFilter from "../../../assets/buttons/filter.svg";
 import styles from "./AdminClientes.module.css";
 import Swal from "sweetalert2";
-import { getToken } from "../../../utils/storage";
-import { dataMaskBR, telefoneMask, cpfMask } from "../../../utils/mask";
+import { dataMaskBR, telefoneMask, cpfMask, generoMask } from "../../../utils/mask";
 import { useNavigate } from "react-router-dom";
+import FormFiltrarClientes from "../../../components/components_filtro/FormFiltrarClientes";
 import AdminClienteService from "../../../services/Admin/adminClienteService";
 
 const AdminClientes = () => {
@@ -13,6 +14,20 @@ const AdminClientes = () => {
     const [colunaClassificada, setColunaClassificada] = useState(null);
     const [ordemClassificacao, setOrdemClassificacao] = useState('asc');
 
+    const [clientesFiltrados, setClientesFiltrados] = useState([]);
+
+    const [filtro, setFiltro] = useState({
+        id: "",
+        nome: "",
+        cpf: "",
+        dataNascimento: "",
+        generos: [],
+        telefone: "",
+        email: ""
+    });
+
+    const [abrirFormFiltrarClientes, setAbrirFormFiltrarClientes] = useState(false);
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -20,6 +35,7 @@ const AdminClientes = () => {
             const response = await AdminClienteService.buscarClientes(navigate);
 
             setClientes(response);
+            setClientesFiltrados(response);
         }
 
         carregarClientes();
@@ -28,25 +44,34 @@ const AdminClientes = () => {
     // Abre os detalhes do cliente usando o SweetAlert2
     const abrirPopupInfo = (cliente) => {
         // Utilizando desestruturação de cliente
-        const { id, nome, email, cpf, telefone, dataNascimento } = cliente;
+        const { id, nome, email, cpf, genero, telefone, dataNascimento } = cliente;
+
+        const detalhesCliente = `
+            <div class=${styles.justifyText}>
+                <hr>
+                <h2>Geral</h2>
+                <p><strong>ID:</strong> #${id}</p>
+                <p><strong>Nome:</strong> ${nome}</p>
+                <p><strong>Email:</strong> ${email}</p>
+                <p><strong>CPF:</strong> ${cpfMask(cpf)}</p>
+                <br>
+                <p><strong>Gênero:</strong> ${generoMask(genero)}</p>
+                <p><strong>Telefone:</strong> ${telefoneMask(telefone)}</p>
+                <p><strong>Data de Nascimento:</strong> ${dataMaskBR(dataNascimento)}</p>
+                <br>
+                <hr>
+            </div>
+        `;
 
         Swal.fire({
-            title: nome,
-            html: `
-            <p>ID: ${id}</p>
-            <p>Nome: ${nome}</p>
-            <p>Email: ${email}</p>
-            <p>CPF: ${cpfMask(cpf)}</p>
-            <p>Telefone: ${telefoneMask(telefone)}</p>
-            <p>Data de Nascimento: ${dataMaskBR(dataNascimento)}</p>
-        `,
+            title: `<h3 style='color:#011640;'>${nome}</h3>`,
+            html: detalhesCliente,
             showCancelButton: true,
             confirmButtonText: "Endereços",
             confirmButtonColor: "#6085FF",
             cancelButtonText: "Fechar",
             showDenyButton: true, // Adiciona um botão de negação (Deletar Cliente)
             denyButtonText: "Deletar",
-            icon: 'info',
         }).then((result) => {
             if (result.isConfirmed) { // Se o botão "Endereços" for clicado
                 abrirPopupEnderecos(cliente);
@@ -57,27 +82,30 @@ const AdminClientes = () => {
         });
     };
 
-    // Formata os endereços do cliente
-    const formatEnderecos = (enderecosCliente) => {
-        return enderecosCliente.map((enderecoCliente) => {
-            // Utilizando desestruturação de enderecoCliente e endereco
-            const { id, apelido, numero, tipo, endereco } = enderecoCliente;
-            const { cep, rua, bairro, cidade, estado, pais } = endereco;
-
-            return `Endereço ${id}: ${apelido}, ${cep}, ${rua}, ${numero}, ${bairro}, ${cidade} - ${estado} (${pais}) [Tipo: ${tipo}]`;
-        });
-    };
-
     // Abre os endereços do cliente com SweetAlert2
     const abrirPopupEnderecos = (cliente) => {
-        const enderecos = formatEnderecos(cliente.enderecos);
+        const detalhesEnderecos = `
+            <div class=${styles.justifyText}>
+                <hr>
+                ${cliente.enderecos.sort((a, b) => a.id - b.id).map((endereco) => {
+                const { id, apelido, numero, tipo } = endereco;
+                const { cep, rua, bairro, cidade, estado, pais } = endereco.endereco;
 
-        const htmlContent = enderecos.map((endereco) => `<p>${endereco}</p>`).join('');
+                return `
+                    <h3 style='margin-left:2%;'><strong>ID #${id}</strong></h3>
+                    <p><strong>Tipo:</strong> ${tipo}</p>
+                    <p><strong>Apelido:</strong> ${apelido}</p>
+                    <p><strong>Endereço:</strong> ${cep}, ${rua}, ${numero}, ${bairro}, ${cidade} - ${estado} (${pais})</p>
+                    <br>
+                    <hr>
+                `;
+                }).join("")}
+            </div>
+        `;
 
         Swal.fire({
-            title: `Endereços`,
-            html: htmlContent,
-            icon: 'info',
+            title: `<h3 style='color:#011640;'>Endereços Cliente</h3>`,
+            html: detalhesEnderecos,
             confirmButtonText: 'Voltar',
             confirmButtonColor: "#6085FF",
             width: '50rem'
@@ -99,8 +127,7 @@ const AdminClientes = () => {
             cancelButtonColor: '#d33',
             confirmButtonText: 'Sim, deletar!',
             cancelButtonText: 'Cancelar'
-        })
-        .then((result) => {
+        }).then((result) => {
             if (result.isConfirmed) { // Se o botão "Confirmar" for clicado
                 AdminClienteService.deletarCliente(cliente.id);
             }
@@ -113,7 +140,8 @@ const AdminClientes = () => {
     const handleSort = (coluna) => {
         if (coluna === colunaClassificada) {
             setOrdemClassificacao(ordem => (ordem === 'asc' ? 'desc' : 'asc'));
-        } else {
+        }
+        else {
             setColunaClassificada(coluna);
             setOrdemClassificacao('asc');
         }
@@ -123,7 +151,7 @@ const AdminClientes = () => {
     const indexPrimeiroCliente = indexUltimoCliente - clientesPorPagina;
 
     // Condicionais para ordenar os clientes com base na coluna selecionada
-    const sortedClientes = [...clientes].sort((a, b) => {
+    const sortedClientes = [...clientesFiltrados].sort((a, b) => {
         if (colunaClassificada === 'ID') {
             return ordemClassificacao === 'asc' ? a.id - b.id : b.id - a.id;
         }
@@ -140,7 +168,7 @@ const AdminClientes = () => {
     });
 
     const clientesAtuais = sortedClientes.slice(indexPrimeiroCliente, indexUltimoCliente);
-    const totalPaginas = Math.ceil(clientes.length / clientesPorPagina);
+    const totalPaginas = Math.ceil(clientesFiltrados.length / clientesPorPagina);
 
     const handlePaginaAnterior = () => {
         setPaginaAtual(paginaAnterior => Math.max(paginaAnterior - 1, 1));
@@ -189,7 +217,7 @@ const AdminClientes = () => {
                                 <td>{cliente.id}</td>
                                 <td>{cliente.nome}</td>
                                 <td>{cliente.email}</td>
-                                <td>{cliente.telefone}</td>
+                                <td>{telefoneMask(cliente.telefone)}</td>
                                 <td>
                                     <button className={styles.buttonAcoes} onClick={() => abrirPopupInfo(cliente)}>. . .</button>
                                 </td>
@@ -197,10 +225,23 @@ const AdminClientes = () => {
                         ))}
                     </tbody>
                 </table>
+                <FormFiltrarClientes
+                    isOpen={abrirFormFiltrarClientes}
+                    onRequestClose={() => setAbrirFormFiltrarClientes(false)}
+                    filtro={filtro}
+                    setFiltro={setFiltro}
+                    clientes={clientes}
+                    setClientesFiltrados={setClientesFiltrados}
+                />
                 <div className={styles.pagination}>
                     <button onClick={handlePaginaAnterior} disabled={paginaAtual === 1}>&lt;</button>
                     <span className={styles.paginaAtual}>{paginaAtual}</span><span className={styles.totalPaginas}>/{totalPaginas}</span>
                     <button onClick={handleProximaPagina} disabled={paginaAtual === totalPaginas}>&gt;</button>
+                </div>
+                <div className={styles.btnIconFilter}>
+                    <button className={styles.btnIcon} onClick={() => setAbrirFormFiltrarClientes(true)}>
+                        <img className={styles.iconFilter} src={iconFilter} alt="Filtrar" />
+                    </button>
                 </div>
             </div>
         </div>

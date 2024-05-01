@@ -3,14 +3,12 @@ import React, { useEffect, useState } from "react";
 import styles from "./Carrinho.module.css";
 import ItemCarrinho from "../../components/components_carrinho/item_carrinho";
 import ResumoCarrinho from "../../components/components_carrinho/resumo_carrinho";
-import Swal from "sweetalert2";
-import { getToken } from "../../utils/storage";
 import { useNavigate } from "react-router-dom";
 import { valueMaskBR } from "../../utils/mask";
 import CarrinhoService from "../../services/carrinhoService";
 
 const Carrinho = () => {
-    const [carrinhoCompras, setCarrinhoCompras] = useState({});
+    const [carrinhoCompras, setCarrinhoCompras] = useState([]);
     const { itensCarrinho } = carrinhoCompras;
 
     const navigate = useNavigate();

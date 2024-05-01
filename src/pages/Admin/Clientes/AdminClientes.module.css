@@ -108,7 +108,7 @@ td {
     font-family: 'Roboto';
 }
 
-.btnIconAdd {
+.btnIconFilter {
     background: none;
     border: none;
     padding: 0;
@@ -116,7 +116,7 @@ td {
     display: flex; /* Transformar em um flex container */
     width: 6%; /* Definir largura */
     height: 6%; /* Definir altura */
-    left: 77.5%;
+    left: 20%;
     bottom: 14%;
     position: absolute;
 }
@@ -126,7 +126,7 @@ td {
     border-radius: 50%; /* Fazer o botão parecer um círculo */
 }
 
-.iconAdd {
+.iconFilter {
     width: 90%;
     height: 90%;
     flex: 3;
@@ -162,4 +162,16 @@ td {
 .select1::onblur {
     border-color: '#ccc';
     border-width: 1px;
+}
+
+.justifyText {
+    text-align: justify;
+}
+
+.justifyText h2 {
+    text-align: center;
+}
+
+.justifyText hr {
+    border-color: #011640;
 }

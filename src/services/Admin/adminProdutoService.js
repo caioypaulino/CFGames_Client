@@ -1,5 +1,5 @@
 import Swal from "sweetalert2";
-import { getToken } from "../../utils/storage";
+import { getToken, limparToken } from "../../utils/storage";
 
 async function carregarProdutosCategorias(setProdutos, setCategorias, navigate) {
     const token = getToken();
@@ -35,6 +35,7 @@ async function carregarProdutosCategorias(setProdutos, setCategorias, navigate) 
         }
     }
     catch (error) {
+        limparToken();
         console.error('Erro ao carregar dados:', error);
         Swal.fire({ title: "Erro!", html: `Erro ao carregar painel de administrador.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
     }

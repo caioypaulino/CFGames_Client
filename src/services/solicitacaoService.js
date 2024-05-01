@@ -1,5 +1,5 @@
 import Swal from "sweetalert2";
-import { getToken } from "../utils/storage";
+import { getToken, limparToken } from "../utils/storage";
 
 async function buscarSolicitacoes (navigate) {
     const token = getToken();
@@ -25,6 +25,7 @@ async function buscarSolicitacoes (navigate) {
         }
     } 
     catch (error) {
+        limparToken();
         console.error('Erro ao carregar dados:', error);
         Swal.fire({ title: "Erro!", html: `Erro ao carregar solicitações de troca/devolução.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
     }

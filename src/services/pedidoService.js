@@ -1,5 +1,5 @@
 import Swal from "sweetalert2";
-import { getToken } from "../utils/storage";
+import { getToken, limparToken } from "../utils/storage";
 import EnderecoService from "./enderecoService";
 import CartaoService from "./cartaoService";
 
@@ -27,6 +27,7 @@ async function buscarPedidos (navigate) {
         }
     } 
     catch (error) {
+        limparToken();
         console.error('Erro ao carregar dados:', error);
         Swal.fire({ title: "Erro!", html: `Erro ao carregar pedidos.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
     }

@@ -1,5 +1,5 @@
 import Swal from "sweetalert2";
-import { getToken } from "../utils/storage";
+import { getToken, limparToken } from "../utils/storage";
 import { DateMask } from "../utils/mask";
 
 async function buscarCupons (navigate) {
@@ -34,6 +34,7 @@ async function buscarCupons (navigate) {
         return cuponsDisponiveis;
     }
     catch (error) {
+        limparToken();
         console.error('Erro ao carregar dados:', error);
         Swal.fire({ title: "Erro!", html: `Erro ao carregar cupons.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
     }
