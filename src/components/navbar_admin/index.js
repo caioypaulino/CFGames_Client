@@ -32,7 +32,8 @@ function NavbarAdmin() {
         { value: 'pedidos', label: 'Pedidos' },
         { value: 'carrinhos_compra', label: 'Carrinhos de Compra' },
         { value: 'solicitacoes_troca_devolucao', label: 'Solicitações de Troca/Devolução' },
-        { value: 'cupons', label: 'Cupons' }
+        { value: 'cupons', label: 'Cupons' },
+        { value: 'grafico', label: 'Gráfico' }
     ];
 
     const handleDropdownChange = (option) => {

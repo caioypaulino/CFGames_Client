@@ -149,6 +149,17 @@ export const dateTimeMask = (dateTimeString) => {
     return `${day}-${month}-${year} ${hours}:${minutes}`;
 };
 
+// Função para formatar data e hora (dd-MM-yyyy hh:mm)
+export const dateTimeMask2 = (date) => {
+    const dia = String(date.getDate()).padStart(2, "0");
+    const mes = String(date.getMonth() + 1).padStart(2, "0"); // +1 porque os meses começam em 0
+    const ano = String(date.getFullYear()).padStart(4, "0");
+    const hora = String(date.getHours()).padStart(2, "0");
+    const minutos = String(date.getMinutes()).padStart(2, "0");
+
+    return `${dia}-${mes}-${ano} ${hora}:${minutos}`;
+}
+
 // Função para aplicar máscara de valores (ex: 13950,00 para 13950.00)
 export const valueMaskEN = (value) => {
     return value.replace(",", ".");
