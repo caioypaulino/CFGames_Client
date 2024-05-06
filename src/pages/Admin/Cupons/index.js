@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import iconAdd from "../../../assets/buttons/add.svg";
 import styles from "./AdminCupons.module.css";
 import Swal from "sweetalert2";
-import { getToken } from "../../../utils/storage";
-import { dataHoraMaskBR, valueMaskBR, valueMaskEN, dataMaskBR, dateTimeMask, cpfMask, telefoneMask } from "../../../utils/mask";
+import { dataHoraMaskBR, valueMaskBR, dataMaskBR, dateTimeMask, cpfMask, telefoneMask, precoUnmask, handlePreco, precoMask } from "../../../utils/mask";
 import { useNavigate } from "react-router-dom";
 import AdminCupomService from "../../../services/Admin/adminCupomService";
 
@@ -96,8 +95,8 @@ const AdminCupons = () => {
         Swal.fire({
             title: 'Atualizar Cupom',
             html: `
-                <input id="valorDesconto" type="number" placeholder="R$ 1,00" class="swal2-input min="1.0" step="0.01" defaultValue=${cupom.valorDesconto}">
-                <input id="validade" type="datetime-local" class="swal2-input" placeholder="Data de Validade" defaultValue=${cupom.validade} style={ width: '16.3rem' } />
+                <input id="valorDesconto" type="text" placeholder="R$ 1,00" class="swal2-input min="1.0" step="0.01" value=${precoMask((cupom.valorDesconto.toFixed(2)))}">
+                <input id="validade" type="datetime-local" class="swal2-input" placeholder="Data de Validade" value=${cupom.validade} style={ width: '16.3rem' } />
             `,
             showCancelButton: true,
             confirmButtonText: "Confirmar",
@@ -106,7 +105,7 @@ const AdminCupons = () => {
             icon: "info",
             preConfirm: () => {
                 // Obter valores dos campos atualizados
-                const valorDesconto = parseFloat(valueMaskEN(Swal.getPopup().querySelector('#valorDesconto').value));
+                const valorDesconto = parseFloat(precoUnmask(Swal.getPopup().querySelector('#valorDesconto').value));
                 const validade = Swal.getPopup().querySelector('#validade').value;
 
                 try {
@@ -128,6 +127,10 @@ const AdminCupons = () => {
                 abrirPopupInfo(cupom);
             }
         });
+
+        // Adicionando a máscara ao valor Desconto
+        const valorDescontoInput = document.getElementById('valorDesconto');
+        valorDescontoInput.addEventListener('input', handlePreco);
     };
 
     // Função para solicitar confirmação da deleção do cupom
@@ -141,15 +144,39 @@ const AdminCupons = () => {
             cancelButtonColor: '#d33',
             confirmButtonText: 'Sim, deletar!',
             cancelButtonText: 'Cancelar'
-        })
-            .then((result) => {
-                if (result.isConfirmed) {
-                    AdminCupomService.deletarCupom(cupom.codigoCupom);
-                }
-                else if (result.isDismissed) {
-                    abrirPopupInfo(cupom);
-                }
-            });
+        }).then((result) => {
+            if (result.isConfirmed) {
+                AdminCupomService.deletarCupom(cupom.codigoCupom);
+            }
+            else if (result.isDismissed) {
+                abrirPopupInfo(cupom);
+            }
+        });
+    };
+
+    const abrirPopupAdd = () => {
+        Swal.fire({
+            title: "Adicionar Cupom",
+            html: `
+                <input id="valorDesconto" type="text" placeholder="R$ 1,00" min="1.0" step="0.01" class="swal2-input">
+                <input id="clienteId" type="number" placeholder="Cliente ID" class="swal2-input">
+            `,
+            showCancelButton: true,
+            confirmButtonText: "Adicionar",
+            confirmButtonColor: "#6085FF",
+            cancelButtonText: "Cancelar",
+            icon: "info",
+            preConfirm: () => {
+                const valorDesconto = parseFloat(precoUnmask(Swal.getPopup().querySelector('#valorDesconto').value));
+                const clienteId = parseInt(Swal.getPopup().querySelector('#clienteId').value);
+
+                AdminCupomService.adicionarCupom(valorDesconto, clienteId);
+            },
+        });
+
+        // Adicionando a máscara ao valor Desconto
+        const valorDescontoInput = document.getElementById('valorDesconto');
+        valorDescontoInput.addEventListener('input', handlePreco);
     };
 
     const handleSort = (coluna) => {
@@ -160,27 +187,6 @@ const AdminCupons = () => {
             setColunaClassificada(coluna);
             setOrdemClassificacao('asc');
         }
-    };
-
-    const abrirPopupAdd = () => {
-        Swal.fire({
-            title: "Adicionar Cupom",
-            html: `
-                <input id="valorDesconto" type="number" placeholder="R$ 1,00" min="1.0" step="0.01" class="swal2-input">
-                <input id="clienteId" type="number" placeholder="Cliente ID" class="swal2-input">
-            `,
-            showCancelButton: true,
-            confirmButtonText: "Adicionar",
-            confirmButtonColor: "#6085FF",
-            cancelButtonText: "Cancelar",
-            icon: "info",
-            preConfirm: () => {
-                const valorDesconto = parseFloat(valueMaskEN(Swal.getPopup().querySelector('#valorDesconto').value));
-                const clienteId = parseInt(Swal.getPopup().querySelector('#clienteId').value);
-
-                AdminCupomService.adicionarCupom(valorDesconto, clienteId);
-            },
-        });
     };
 
     const indexUltimoCupom = paginaAtual * cuponsPorPagina;

@@ -9,7 +9,7 @@ import { handleCPF, cpfMask, handleTelefone, telefoneMask, dataMaskEN, removeMas
 import ClienteService from "../../../services/clienteService";
 
 const pessoais = () => {
-    const [cliente, setCliente] = useState({});
+    const [cliente, setCliente] = useState([]);
 
     const navigate = useNavigate();
 

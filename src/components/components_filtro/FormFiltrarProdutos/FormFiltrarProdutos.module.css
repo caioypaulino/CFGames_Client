@@ -1,8 +1,6 @@
-/* FormTrocaDevolucao.module.css */
-
 .modal {
     position: fixed;
-    top: 27%;
+    top: 6%;
     left: 23%;
     background-color: #fff;
     padding: 2%;
@@ -13,6 +11,8 @@
     max-width: 90%;
     z-index: 1000;
     animation: blowup 0.35s;
+    overflow-y: auto; /* Adiciona a propriedade overflow-y: auto para permitir rolagem vertical */
+    max-height: 85vh; /* Define a altura máxima para 80% da altura da viewport */
 }
 
 .overlay {
@@ -175,6 +175,19 @@
 
 .swal2input::placeholder {
     color: #6e7881; /* Cor do texto de espaço reservado */
+}
+
+.priceInputWrapper {
+    display: flex;
+}
+
+.priceInputWrapper input {
+    flex: 1;
+    margin-right: 2%; /* Adiciona uma margem entre os campos de preço */
+}
+
+.priceInputWrapper input:last-child {
+    margin-right: 0; /* Remove a margem do último campo para evitar espaçamento extra */
 }
 
 .dateFilter {

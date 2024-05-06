@@ -20,7 +20,9 @@ const AdminClientes = () => {
         id: "",
         nome: "",
         cpf: "",
-        dataNascimento: "",
+        diaNascimento: "",
+        mesNascimento: "",
+        anoNascimento: "",
         generos: [],
         telefone: "",
         email: ""

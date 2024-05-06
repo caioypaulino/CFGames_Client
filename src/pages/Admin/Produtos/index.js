@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import iconAdd from "../../../assets/buttons/add.svg";
+import iconFilter from "../../../assets/buttons/filter.svg";
 import styles from "./AdminProdutos.module.css";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import Select from "react-select";
-import { dataMaskBR2, dataMaskEN, dataMaskEN2, plataformaMask, valueMaskEN } from "../../../utils/mask";
+import { dataMaskBR2, dataMaskEN, dataMaskEN2, handlePreco, plataformaMask, precoMask, precoUnmask, valueMaskEN } from "../../../utils/mask";
 import { useNavigate } from "react-router-dom";
 import AdminProdutoService from "../../../services/Admin/adminProdutoService";
+import FormFiltrarProdutos from "../../../components/components_filtro/FormFiltrarProdutos";
 
 const AdminProdutos = () => {
     const [produtos, setProdutos] = useState([]);
@@ -24,11 +26,46 @@ const AdminProdutos = () => {
     const [colunaClassificada, setColunaClassificada] = useState(null);
     const [ordemClassificacao, setOrdemClassificacao] = useState('asc');
 
+    const [produtosFiltrados, setProdutosFiltrados] = useState([]);
+
+    const [filtro, setFiltro] = useState({
+        id: "",
+        titulo: "",
+        descricao: "",
+        diaLancamento: "",
+        mesLancamento: "",
+        anoLancamento: "",
+        marca: "",
+        publisher: "",
+        peso: "",
+        comprimento: "",
+        altura: "",
+        largura: "",
+        codigoBarras: "",
+        quantidade: "",
+        precoMin: 0,
+        precoMax: Infinity,
+        status: "",
+        categorias: [],
+        plataformas: [],
+        status: []
+    });
+
+    const [abrirFormFiltrarProdutos, setAbrirFormFiltrarProdutos] = useState(false);
+
     const SwalJSX = withReactContent(Swal);
     const navigate = useNavigate();
 
     useEffect(() => {
         AdminProdutoService.carregarProdutosCategorias(setProdutos, setCategorias, navigate);
+
+        const carregarProdutos = async () => {
+            const response = await AdminProdutoService.buscarProdutos(navigate);
+
+            setProdutosFiltrados(response);
+        }
+
+        carregarProdutos();
     }, []);
 
     // Abre um modal com os detalhes do produto usando o SweetAlert2
@@ -105,7 +142,7 @@ const AdminProdutos = () => {
                 <input id="titulo" type="text" className="swal2-input" placeholder="Título" defaultValue={produto.titulo} />
                 <input id="descricao" type="text" className="swal2-input" placeholder="Descrição" defaultValue={produto.descricao} />
                 <select id="plataforma" className="swal2-input" style={{ marginTop: '1rem', padding: '0.5rem', fontSize: '1.25rem', border: '1px solid #ccc', borderRadius: '4px', width: '16.3rem', height: '3.5rem', fontFamily: 'inherit', outline: 'none' }} onFocus={(e) => e.target.style.borderColor = '#b1cae3'} onBlur={(e) => e.target.style.borderColor = '#ccc'}>
-                    <option defaultValue={produto.plataforma} selected disabled hidden>{plataformaMask(produto.plataforma)}</option>
+                    <option value={produto.plataforma} selected disabled hidden>{plataformaMask(produto.plataforma)}</option>
                     <option value="0">Xbox 360</option>
                     <option value="1">Xbox One</option>
                     <option value="2">Xbox Series S</option>
@@ -125,7 +162,7 @@ const AdminProdutos = () => {
                 <input id="altura" type="number" className="swal2-input" placeholder="Altura (cm)" min="0" step="0.1" defaultValue={produto.altura} />
                 <input id="largura" type="number" className="swal2-input" placeholder="Largura (cm)" min="0" step="0.1" defaultValue={produto.largura} />
                 <input id="codigoBarras" type="text" className="swal2-input" placeholder="Código de Barras" defaultValue={produto.codigoBarras} />
-                <input id="preco" type="number" className="swal2-input" placeholder="Preço" min="10.0" step="0.01" defaultValue={produto.preco} />
+                <input id="preco" type="text" className="swal2-input" placeholder="Preço" min="10.0" step="0.01" defaultValue={precoMask(String(produto.preco.toFixed(2)))} onChange={handlePreco} />
                 <select id="status" className="swal2-select" style={{ marginTop: '1rem', padding: '0.5rem', fontSize: '1.25rem', border: '1px solid #ccc', borderRadius: '4px', width: '16.3rem', height: '3.5rem', fontFamily: 'inherit', outline: 'none' }} defaultValue={produto.status} onFocus={(e) => e.target.style.borderColor = '#b1cae3'} onBlur={(e) => e.target.style.borderColor = '#ccc'}>
                     <option value="" disabled hidden>Status</option>
                     <option defaultValue={produto.status} selected disabled hidden>{produto.status}</option>
@@ -189,7 +226,7 @@ const AdminProdutos = () => {
                 const altura = parseFloat(Swal.getPopup().querySelector('#altura').value);
                 const largura = parseFloat(Swal.getPopup().querySelector('#largura').value);
                 const codigoBarras = Swal.getPopup().querySelector('#codigoBarras').value;
-                const preco = parseFloat(Swal.getPopup().querySelector('#preco').value);
+                const preco = parseFloat(precoUnmask(Swal.getPopup().querySelector('#preco').value));
                 const status = Swal.getPopup().querySelector('#status').value;
                 const categorias = categoriasSelecionadas.map(categoria => ({ id: categoria.value }));
 
@@ -293,7 +330,7 @@ const AdminProdutos = () => {
                 <input id="peso" type="number" className="swal2-input" placeholder="Peso (g)" />
                 <input id="codigoBarras" type="text" pattern="[0-9]{13}" maxLength="13" className="swal2-input" placeholder="Código de Barras" />
                 <input id="quantidade" type="number" min="1" className="swal2-input" placeholder="Quantidade" pattern="[0-9]+" title="Apenas números inteiros" />
-                <input id="preco" type="number" className="swal2-input" placeholder="Preço" />
+                <input id="preco" type="text" className="swal2-input" placeholder="Preço" onChange={handlePreco} />
                 <select id="status" placeholder="Status" className="swal2-select" style={{ marginTop: '1rem', padding: '0.5rem', fontSize: '1.25rem', border: '1px solid #ccc', borderRadius: '4px', width: '16.3rem', height: '3.5rem', fontFamily: 'inherit', outline: 'none' }} onFocus={(e) => e.target.style.borderColor = '#b1cae3'} onBlur={(e) => e.target.style.borderColor = '#ccc'}>
                     <option value="" disabled selected hidden>Status</option>
                     <option value="0">Inativo</option>
@@ -355,7 +392,7 @@ const AdminProdutos = () => {
                 const peso = parseFloat(valueMaskEN(Swal.getPopup().querySelector('#peso').value));
                 const codigoBarras = Swal.getPopup().querySelector('#codigoBarras').value;
                 const quantidade = parseInt(Swal.getPopup().querySelector('#quantidade').value);
-                const preco = parseFloat(valueMaskEN(Swal.getPopup().querySelector('#preco').value));
+                const preco = parseFloat(precoUnmask(Swal.getPopup().querySelector('#preco').value));
                 const status = Swal.getPopup().querySelector('#status').value;
                 const categorias = categoriasSelecionadas.map(categoria => ({ id: categoria.value }));
 
@@ -394,7 +431,7 @@ const AdminProdutos = () => {
     const indexPrimeiroProduto = indexUltimoProduto - produtosPorPagina;
 
     // Condicionais para ordenar os produtos com base na coluna selecionada
-    const sortedProdutos = [...produtos].sort((a, b) => {
+    const sortedProdutos = [...produtosFiltrados].sort((a, b) => {
         if (colunaClassificada === 'ID') {
             return ordemClassificacao === 'asc' ? a.id - b.id : b.id - a.id;
         }
@@ -416,7 +453,7 @@ const AdminProdutos = () => {
     });
 
     const produtosAtuais = sortedProdutos.slice(indexPrimeiroProduto, indexUltimoProduto);
-    const totalPaginas = Math.ceil(produtos.length / produtosPorPagina);
+    const totalPaginas = Math.ceil(produtosFiltrados.length / produtosPorPagina);
 
     const handlePaginaAnterior = () => {
         setPaginaAtual(paginaAnterior => Math.max(paginaAnterior - 1, 1));
@@ -471,7 +508,7 @@ const AdminProdutos = () => {
                                 <td>{produto.id}</td>
                                 <td>{produto.titulo}</td>
                                 <td>{produto.categorias.length > 0 ? produto.categorias[0].nome : ''}</td>
-                                <td>{'R$ ' + produto.preco}</td>
+                                <td>{'R$ ' + produto.preco.toFixed(2)}</td>
                                 <td>{produto.quantidade}</td>
                                 <td>
                                     <button className={styles.buttonAcoes} onClick={() => abrirPopupInfo(produto)}>. . .</button>
@@ -480,10 +517,24 @@ const AdminProdutos = () => {
                         ))}
                     </tbody>
                 </table>
+                <FormFiltrarProdutos
+                    isOpen={abrirFormFiltrarProdutos}
+                    onRequestClose={() => setAbrirFormFiltrarProdutos(false)}
+                    filtro={filtro}
+                    setFiltro={setFiltro}
+                    produtos={produtos}
+                    categorias={categorias}
+                    setProdutosFiltrados={setProdutosFiltrados}
+                />
                 <div className={styles.pagination}>
                     <button onClick={handlePaginaAnterior} disabled={paginaAtual === 1}>&lt;</button>
                     <span className={styles.paginaAtual}>{paginaAtual}</span><span className={styles.totalPaginas}>/{totalPaginas}</span>
                     <button onClick={handleProximaPagina} disabled={paginaAtual === totalPaginas}>&gt;</button>
+                </div>
+                <div className={styles.btnIconFilter}>
+                    <button className={styles.btnIcon} onClick={() => setAbrirFormFiltrarProdutos(true)}>
+                        <img className={styles.iconFilter} src={iconFilter} alt="Filtrar" />
+                    </button>
                 </div>
                 <div className={styles.btnIconAdd}>
                     <button className={styles.btnIcon} onClick={abrirPopupAdd}>

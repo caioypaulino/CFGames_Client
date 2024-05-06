@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
 import Select from "react-select";
-import styles from "./FormFiltrarClientes.module.css"; // Certifique-se de ajustar o caminho do arquivo CSS
+import styles from "./FormFiltrarClientes.module.css";
 import AdminClienteService from "../../../services/Admin/adminClienteService";
 import { cpfMask, generoMask, removeMask, telefoneMask } from "../../../utils/mask";
 
@@ -29,7 +29,9 @@ const FormFiltrarClientes = ({
             id: "",
             nome: "",
             cpf: "",
-            dataNascimento: "",
+            diaNascimento: "",
+            mesNascimento: "",
+            anoNascimento: "",
             generos: [],
             telefone: "",
             email: ""
@@ -56,7 +58,11 @@ const FormFiltrarClientes = ({
                 <input type="text" className={styles.swal2input} value={filtro.id} onChange={(e) => setFiltro({ ...filtro, id: removeMask(e.target.value) })} placeholder="ID" />
                 <input type="text" className={styles.swal2input} value={filtro.nome} onChange={(e) => setFiltro({ ...filtro, nome: e.target.value })} placeholder="Nome" />
                 <input type="text" className={styles.swal2input} value={cpfMask(filtro.cpf)} onChange={(e) => setFiltro({ ...filtro, cpf: removeMask(e.target.value) })} placeholder="CPF" maxLength="14" />
-                <input type="date" className={styles.swal2input} value={filtro.dataNascimento} onChange={(e) => setFiltro({ ...filtro, dataNascimento: e.target.value })} placeholder="Data de Nascimento" />
+                <div className={styles.dateFilter}>
+                    <input type="text" className={`${styles.swal2input} ${styles.dateInput}`} value={removeMask(filtro.diaNascimento)} onChange={(e) => setFiltro({ ...filtro, diaNascimento: e.target.value })} placeholder="Dia" maxLength="2" />
+                    <input type="text" className={`${styles.swal2input} ${styles.dateInput}`} value={removeMask(filtro.mesNascimento)} onChange={(e) => setFiltro({ ...filtro, mesNascimento: e.target.value })} placeholder="Mês" maxLength="2" />
+                    <input type="text" className={`${styles.swal2input} ${styles.dateInput}`} value={removeMask(filtro.anoNascimento)} onChange={(e) => setFiltro({ ...filtro, anoNascimento: e.target.value })} placeholder="Ano" maxLength="4" />
+                </div>
                 <Select
                     id="generos"
                     className="swal2-select"
@@ -76,7 +82,7 @@ const FormFiltrarClientes = ({
                         }),
                     }}
                     placeholder="Gênero(s)"
-                    options={generosOptions&& generosOptions.map((genero) => ({ value: genero, label: `${generoMask(genero)}`}))}
+                    options={generosOptions && generosOptions.map((genero) => ({ value: genero, label: `${generoMask(genero)}` }))}
                     isMulti
                     isClearable
                     isSearchable

@@ -159,6 +159,42 @@ export const valueMaskBR = (value) => {
     return value.toFixed(2);
 }
 
+// Função para lidar com a mudança no valor do input e aplicar a máscara de preço
+export const handlePreco = (event) => {
+    event.target.value = precoMask(event.target.value);
+};
+
+// Função para aplicar máscara de preço (R$ value)
+export const precoMask = (value) => {
+    // Se o valor não for uma string ou estiver vazio, retorne vazio
+    if (typeof value !== 'string' || value === '') return '';
+
+    // Remover "R$" e quaisquer caracteres não numéricos
+    const numericValue = value.replace(/^R\s*\$/, '').replace(/[^\d]/g, '');
+
+    // Se o valor não for numérico, retornar vazio
+    if (isNaN(numericValue)) return '';
+
+    // Formatando o valor como "R$ X,XX" apenas se houver valor numérico
+    const floatValue = parseFloat(numericValue) / 100; // Dividir por 100 para obter o valor correto
+    return `R$ ${floatValue.toFixed(2)}`; // Formatar para duas casas decimais
+};
+
+// Função para remover a máscara de preço (R$ value)
+export const precoUnmask = (value) => {
+    // Se o valor não for uma string ou estiver vazio, retorne vazio
+    if (typeof value !== 'string' || value === '') return '';
+
+    // Remover "R$" e quaisquer caracteres não numéricos
+    const numericValue = value.replace(/^R\s*\$/, '').replace(/[^\d]/g, '');
+
+    // Se o valor não for numérico, retornar vazio
+    if (isNaN(numericValue)) return '';
+
+    // Dividir por 100 para obter o valor correto
+    return (parseFloat(numericValue) / 100).toFixed(2);
+};
+
 export const statusMask = (value) => {
     if (value === "EM_TRANSITO") {
         return "Em Trânsito";

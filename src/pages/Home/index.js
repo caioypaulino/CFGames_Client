@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import banner from "../../assets/home/Banner.svg";
+import iconFilter from "../../assets/buttons/filter.svg";
 import styles from "./Home.module.css";
 import ProdutoHome from "../../components/produtos_home";
 import ProdutoService from '../../services/produtoService';
+import FormFiltrarProdutos from '../../components/components_filtro/FormFiltrarProdutos';
 
 const Home = ({ termoBusca }) => {
     const [produtos, setProdutos] = useState([]);
+    const [categorias, setCategorias] = useState([]);
+
+    const [produtosFiltrados, setProdutosFiltrados] = useState([]);
 
     // Paginação
     const [paginaAtual, setPaginaAtual] = useState(1);
@@ -14,28 +19,62 @@ const Home = ({ termoBusca }) => {
     const indexUltimoProduto = paginaAtual * produtosPorPagina;
     const indexPrimeiroProduto = indexUltimoProduto - produtosPorPagina;
 
-    const produtosAtuais = produtos.slice(indexPrimeiroProduto, indexUltimoProduto);
-    const totalPaginas = Math.ceil(produtos.length / produtosPorPagina);
+    const produtosAtuais = produtosFiltrados.slice(indexPrimeiroProduto, indexUltimoProduto);
+    const totalPaginas = Math.ceil(produtosFiltrados.length / produtosPorPagina);
+
+    const [filtro, setFiltro] = useState({
+        id: "",
+        titulo: "",
+        descricao: "",
+        diaLancamento: "",
+        mesLancamento: "",
+        anoLancamento: "",
+        marca: "",
+        publisher: "",
+        peso: "",
+        comprimento: "",
+        altura: "",
+        largura: "",
+        codigoBarras: "",
+        quantidade: "",
+        precoMin: 0,
+        precoMax: Infinity,
+        status: "",
+        categorias: [],
+        plataformas: [],
+        status: []
+    });
+
+    const [abrirFormFiltrarProdutos, setAbrirFormFiltrarProdutos] = useState(false);
 
     useEffect(() => {
         carregarProdutos();
+        carregarCategorias();
     }, []);
-
-    const carregarProdutos = async () => {
-        const response = await ProdutoService.buscarProdutos();
-
-        setProdutos(response || []);
-    }
 
     useEffect(() => {
         const procurarTitulo = async () => {
             const response = await ProdutoService.buscarTitulo(termoBusca, carregarProdutos);
 
             setProdutos(response || []);
+            setProdutosFiltrados(response || []);
         }
 
         procurarTitulo();
     }, [termoBusca]);
+
+    const carregarProdutos = async () => {
+        const response = await ProdutoService.buscarProdutos();
+
+        setProdutos(response || []);
+        setProdutosFiltrados(response || []);
+    };
+
+    const carregarCategorias = async () => {
+        const response = await ProdutoService.buscarCategorias();
+
+        setCategorias(response);
+    };
 
     const handlePaginaAnterior = () => {
         setPaginaAtual(paginaAnterior => Math.max(paginaAnterior - 1, 1));
@@ -48,7 +87,7 @@ const Home = ({ termoBusca }) => {
     return (
         <div className={styles.home}>
             <img className={styles.banner} src={banner} alt="Banner" />
-            <h1 className={styles.titleNewProducts}>Novos produtos!</h1>
+            <h1 className={styles.titleNewProducts}>Melhores Produtos!</h1>
             <div className={styles.listProducts}>
                 {produtosAtuais.map((produto, index) => (
                     <div key={index}>
@@ -59,10 +98,27 @@ const Home = ({ termoBusca }) => {
                     </div>
                 ))}
             </div>
+            <div className={styles.filtro}>
+                <FormFiltrarProdutos
+                    isOpen={abrirFormFiltrarProdutos}
+                    onRequestClose={() => setAbrirFormFiltrarProdutos(false)}
+                    filtro={filtro}
+                    setFiltro={setFiltro}
+                    produtos={produtos}
+                    categorias={categorias}
+                    setProdutosFiltrados={setProdutosFiltrados}
+                    home={true}
+                />
+            </div>
             <div className={styles.pagination}>
                 <button className={styles.btnPaginaAnterior} onClick={handlePaginaAnterior} disabled={paginaAtual === 1}>&lt;</button>
                 <span testId='paginaAtual' className={styles.paginaAtual}>{paginaAtual}</span><span className={styles.totalPaginas}>/{totalPaginas}</span>
                 <button className={styles.btnPaginaProxima} onClick={handleProximaPagina} disabled={paginaAtual === totalPaginas}>&gt;</button>
+            </div>
+            <div className={styles.btnIconFilter}>
+                <button className={styles.btnIcon} onClick={() => setAbrirFormFiltrarProdutos(true)}>
+                    <img className={styles.iconFilter} src={iconFilter} alt="Filtrar" />
+                </button>
             </div>
         </div>
     );

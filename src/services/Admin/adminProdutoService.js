@@ -1,5 +1,6 @@
 import Swal from "sweetalert2";
 import { getToken, limparToken } from "../../utils/storage";
+import { dataMaskBR, dataMaskEN, dataMaskEN2 } from "../../utils/mask";
 
 async function carregarProdutosCategorias(setProdutos, setCategorias, navigate) {
     const token = getToken();
@@ -30,6 +31,40 @@ async function carregarProdutosCategorias(setProdutos, setCategorias, navigate) 
                 Swal.fire({ title: "Erro!", html: `Erro ao carregar produtos ou categorias!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
             }
             else if (responseProdutos.status === 403 || responseCategorias.status === 403) {
+                Swal.fire({ title: "Erro!", html: `Você não possui permissão para acessar o painel de administrador.<br><br> Por favor, entre em contato com o administrador do sistema para mais informações.`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/perfil/pessoal"); });
+            }
+        }
+    }
+    catch (error) {
+        limparToken();
+        console.error('Erro ao carregar dados:', error);
+        Swal.fire({ title: "Erro!", html: `Erro ao carregar painel de administrador.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
+    }
+};
+
+async function buscarProdutos(navigate) {
+    const token = getToken();
+
+    try {
+        const responseProdutos = await fetch('http://localhost:8080/admin/produtos', {
+            headers: { Authorization: "Bearer " + token }
+        });
+
+        if (responseProdutos.ok) {
+            const jsonProdutos = await responseProdutos.json();
+
+            const sortedProdutos = jsonProdutos.sort((a, b) => a.id - b.id); // Ordena os produtos por ID
+
+            return sortedProdutos;
+        }
+        else {
+            if (responseProdutos.status === 500) {
+                throw new Error('Token Inválido!');
+            }
+            else if (responseProdutos.status === 400) {
+                Swal.fire({ title: "Erro!", html: `Erro ao carregar produtos ou categorias!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
+            }
+            else if (responseProdutos.status === 403) {
                 Swal.fire({ title: "Erro!", html: `Você não possui permissão para acessar o painel de administrador.<br><br> Por favor, entre em contato com o administrador do sistema para mais informações.`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/perfil/pessoal"); });
             }
         }
@@ -223,12 +258,61 @@ async function deletarProduto (produtoId) {
     }
 };
 
+async function filtrarProdutos(produtos, filtro) {
+    // Lógica para filtrar os produtos com base nos filtros
+    const produtosFiltrados = produtos.filter(produto => {
+        // Verifica se o produto corresponde ao range de valores selecionados
+        const correspondePreco = produto.preco >= parseFloat(filtro.precoMin) && produto.preco <= parseFloat(filtro.precoMax);
+
+        // Verifica se o produto corresponde às categorias selecionadas
+        const filtroCategorias = filtro.categorias && filtro.categorias.length > 0;
+        const correspondeCategorias = filtroCategorias ? filtro.categorias.some(catId => produto.categorias.map(cat => cat.id).includes(catId)) : true;
+
+        // Verifica se o produto corresponde às plataformas selecionadas
+        const filtroPlataformas = filtro.plataformas && filtro.plataformas.length > 0;
+        const correspondePlataformas = filtroPlataformas ? filtro.plataformas.includes(produto.plataforma) : true;
+
+        // Verifica se o produto corresponde aos status selecionados
+        const filtroStatus = filtro.status && filtro.status.length > 0;
+        const correspondeStatus = filtroStatus ? filtro.status.includes(produto.status) : true;
+
+        // Verificando se a data de nascimento do cliente corresponde ao filtro
+        const correspondeDataLancamento =
+            (!filtro.anoLancamento || dataMaskEN2(produto.dataLancamento).startsWith(filtro.anoLancamento)) &&
+            (!filtro.mesLancamento || dataMaskEN2(produto.dataLancamento).includes(filtro.mesLancamento)) &&
+            (!filtro.diaLancamento || dataMaskEN2(produto.dataLancamento).endsWith(filtro.diaLancamento));
+
+        return (
+            produto.id.toString().includes(filtro.id) &&
+            produto.titulo.toLowerCase().includes(filtro.titulo.toLowerCase()) &&
+            produto.descricao.toLowerCase().includes(filtro.descricao.toLowerCase()) &&
+            produto.marca.toLowerCase().includes(filtro.marca.toLowerCase()) &&
+            produto.publisher.toLowerCase().includes(filtro.publisher.toLowerCase()) &&
+            produto.codigoBarras.includes(filtro.codigoBarras) &&
+            produto.quantidade.toString().includes(filtro.quantidade) &&
+            produto.peso.toString().includes(filtro.peso) &&
+            produto.comprimento.toString().includes(filtro.comprimento) &&
+            produto.largura.toString().includes(filtro.largura) &&
+            produto.altura.toString().includes(filtro.altura) &&
+            correspondePreco &&
+            correspondeDataLancamento &&
+            correspondeCategorias && // Verifica se corresponde aos filtros de categorias
+            correspondePlataformas && // Verifica se corresponde aos filtros de plataformas
+            correspondeStatus // Verifica se corresponde aos filtros de status
+        );
+    });
+
+    return produtosFiltrados;
+}
+
 const AdminProdutoService = {
     carregarProdutosCategorias,
+    buscarProdutos,
     adicionarProduto,
     atualizarProduto,
     atualizarEstoque,
-    deletarProduto
+    deletarProduto,
+    filtrarProdutos
 }
 
 export default AdminProdutoService;
