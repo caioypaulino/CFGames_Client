@@ -29,8 +29,8 @@ function NavbarAdmin() {
         { value: 'clientes', label: 'Clientes' },
         { value: 'enderecos', label: 'Endereços' },
         { value: 'enderecos_clientes', label: 'Endereços Clientes' },
-        { value: 'pedidos', label: 'Pedidos' },
         { value: 'carrinhos_compra', label: 'Carrinhos de Compra' },
+        { value: 'pedidos', label: 'Pedidos' },
         { value: 'solicitacoes_troca_devolucao', label: 'Solicitações de Troca/Devolução' },
         { value: 'cupons', label: 'Cupons' },
         { value: 'grafico', label: 'Gráfico' }

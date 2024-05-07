@@ -72,15 +72,14 @@ const TabelaPerfilSolicitacoes = (props) => {
             cancelButtonColor: '#d33',
             confirmButtonText: 'Sim, cancelar!',
             cancelButtonText: 'Voltar'
-        })
-            .then((result) => {
-                if (result.isConfirmed) {
-                    SolicitacaoService.cancelarSolicitacao(solicitacao.id);
-                }
-                else if (result.isDismissed) {
-                    abrirPopupInfo(solicitacao);
-                }
-            });
+        }).then((result) => {
+            if (result.isConfirmed) {
+                SolicitacaoService.cancelarSolicitacao(solicitacao.id);
+            }
+            else if (result.isDismissed) {
+                abrirPopupInfo(solicitacao);
+            }
+        });
     };
 
     const handleSort = (coluna) => {
