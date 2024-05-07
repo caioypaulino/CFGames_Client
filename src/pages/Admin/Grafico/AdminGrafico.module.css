@@ -4,13 +4,13 @@
     margin-top: 3%;
 }
 
-.table {
-    width: 70%; /* Aumenta a largura da tabela */
+.grafic {
+    width: 90%; /* Aumenta a largura da tabela */
     border-collapse: collapse;
     border-radius: 10px;
     overflow: hidden;
     table-layout: fixed;
-    margin-left: 15%; /* Centraliza a tabela */
+    margin-left: 17%; /* Centraliza a tabela */
 }
 
 thead {
@@ -108,7 +108,7 @@ td {
     font-family: 'Roboto';
 }
 
-.btnIconFilter {
+.btnIconSwitch, .btnIconFilter {
     background: none;
     border: none;
     padding: 0;
@@ -126,7 +126,12 @@ td {
     border-radius: 50%; /* Fazer o botão parecer um círculo */
 }
 
-.iconFilter {
+.btnIconSwitch{
+    left: 77.5%;
+}
+
+
+.iconSwitch, .iconFilter {
     width: 90%;
     height: 90%;
     flex: 3;

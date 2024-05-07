@@ -33,6 +33,7 @@ async function buscarStatsProdutos(dataInicio, dataFim, navigate) {
         }
     }
     catch (error) {
+        limparToken();
         console.error('Erro ao carregar dados:', error);
         Swal.fire({ title: "Erro!", html: `Erro ao carregar painel de administrador.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
     }
@@ -70,6 +71,7 @@ async function buscarStatsCategorias(dataInicio, dataFim, navigate) {
         }
     }
     catch (error) {
+        limparToken();
         console.error('Erro ao carregar dados:', error);
         Swal.fire({ title: "Erro!", html: `Erro ao carregar painel de administrador.<br><br>Faça login novamente!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { navigate("/login"); });
     }
@@ -104,10 +106,37 @@ async function filtrarClientes(clientes, filtro) {
     return clientesFiltrados;
 }
 
+// Função para converter os dados de stats em um formato aceito pelo gráfico
+async function adequarDadosGrafico (dados, isProduto) {
+    let dadosGrafico = [];
+
+    if(isProduto) {
+        dadosGrafico = [["Mês/Ano", ...dados.map(item => item.produto && item.produto.titulo)]];
+    }
+    else {
+        dadosGrafico = [["Mês/Ano", ...dados.map(item => item.categoria && item.categoria.nome)]];
+    }
+
+    const periodoStats = [...new Set(dados.flatMap(item => item.stats.map(stat => `${stat.mes}/${stat.ano}`)))];
+    
+    periodoStats.forEach(periodo => {
+        const linhaStats = [periodo];   
+
+        dados.forEach(item => {
+            const matchPeriodo = item.stats.find(stat => `${stat.mes}/${stat.ano}` === periodo);
+            linhaStats.push(matchPeriodo ? matchPeriodo.valorTotal : null);
+        });
+
+        dadosGrafico.push(linhaStats);
+    });
+
+    return dadosGrafico;
+};
 
 const AdminGraficoService = {
     buscarStatsProdutos,
     buscarStatsCategorias,
+    adequarDadosGrafico
 }
 
 export default AdminGraficoService;

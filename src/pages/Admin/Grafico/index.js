@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import iconSwitch from "../../../assets/buttons/switch.svg";
 import iconFilter from "../../../assets/buttons/filter.svg";
 import styles from "./AdminGrafico.module.css";
 import { dateTimeMask2 } from "../../../utils/mask";
@@ -10,6 +11,9 @@ import { Chart } from "react-google-charts";
 const AdminGrafico = () => {
     const [statsProdutos, setStatsProdutos] = useState([]);
     const [statsCategorias, setStatsCategorias] = useState([]);
+
+    const [dataProdutos, setDataProdutos] = useState([]);
+    const [dataCategorias, setDataCategorias] = useState([]);
 
     const [filtro, setFiltro] = useState({
         id: "",
@@ -23,6 +27,7 @@ const AdminGrafico = () => {
         email: ""
     });
 
+    const [alternarGrafico, setAlternarGrafico] = useState(true);
     const [abrirFormFiltrarClientes, setAbrirFormFiltrarClientes] = useState(false);
     const navigate = useNavigate();
 
@@ -33,44 +38,77 @@ const AdminGrafico = () => {
 
             setStatsProdutos(responseProdutos);
             setStatsCategorias(responseCategorias);
+
         };
 
         carregarStats();
+
     }, []);
 
-    // Função para converter os dados de stats em um formato aceito pelo gráfico
-    const formatDataForChart = (dados, produto) => {
-        let dadosGrafico = [];
+    useEffect(() => {
+        const carregarData = async () => {
+            // Dados formatados para o gráfico de produtos e categorias
+            const responseProdutos = await AdminGraficoService.adequarDadosGrafico(statsProdutos, true);
+            const responseCategorias = await AdminGraficoService.adequarDadosGrafico(statsCategorias, false);
 
-        if(produto) {
-            dadosGrafico = [["Mês/Ano", ...dados.map(item => item.produto && item.produto.titulo)]];
-        }
-        else {
-            dadosGrafico = [["Mês/Ano", ...dados.map(item => item.categoria && item.categoria.nome)]];
-        }
+            setDataProdutos(responseProdutos);
+            setDataCategorias(responseCategorias);
+        };
 
-        const periodoStats = [...new Set(dados.flatMap(item => item.stats.map(stat => `${stat.mes}/${stat.ano}`)))];
-        
-        periodoStats.forEach(periodo => {
-            const linhaStats = [periodo];   
+        carregarData();
 
-            dados.forEach(item => {
-                const matchPeriodo = item.stats.find(stat => `${stat.mes}/${stat.ano}` === periodo);
-                linhaStats.push(matchPeriodo ? matchPeriodo.valorTotal : null);
-            });
+    }, [statsProdutos, statsCategorias]);
 
-            dadosGrafico.push(linhaStats);
-        });
-
-        return dadosGrafico;
-    };
-
-    // Dados formatados para o gráfico de produtos e categorias
-    const dataProdutos = formatDataForChart(statsProdutos, true);
-    const dataCategorias = formatDataForChart(statsCategorias, false);
+    function handleAlternarGrafico() {
+        setAlternarGrafico(!alternarGrafico); // Alternando entre exibição de produtos e categorias
+    }
 
     return (
         <div className={styles.container}>
+            {console.log(dataProdutos)}
+            <div className={styles.grafic}>
+                {alternarGrafico ? (
+                    <>
+                        {statsProdutos.length > 0 ? (
+                            <Chart
+                                chartType="LineChart"
+                                width={"90%"}
+                                height={550}
+                                loader={<div>Loading Chart</div>}
+                                data={dataProdutos}
+                                options={{
+                                    title: "Vendas por Produto",
+                                    hAxis: { title: "Mês/Ano" },
+                                    vAxis: { title: "Valor Total" },
+                                    legend: { position: "bottom" },
+                                }}
+                            />
+                        ) : (
+                            <div>Não há dados disponíveis para exibir o gráfico de vendas por produtos.</div>
+                        )}
+                    </>
+                ) : (
+                    <>
+                        {statsCategorias.length > 0 ? (
+                            <Chart
+                                chartType="LineChart"
+                                width={"90%"}
+                                height={550}
+                                loader={<div>Loading Chart</div>}
+                                data={dataCategorias}
+                                options={{
+                                    title: "Vendas por Categoria",
+                                    hAxis: { title: "Mês/Ano" },
+                                    vAxis: { title: "Valor Total" },
+                                    legend: { position: "bottom" },
+                                }}
+                            />
+                        ) : (
+                            <div>Não há dados disponíveis para exibir o gráfico de vendas por categorias.</div>
+                        )}
+                    </>
+                )}
+            </div>
             <FormFiltrarClientes
                 isOpen={abrirFormFiltrarClientes}
                 onRequestClose={() => setAbrirFormFiltrarClientes(false)}
@@ -82,40 +120,11 @@ const AdminGrafico = () => {
                     <img className={styles.iconFilter} src={iconFilter} alt="Filtrar" />
                 </button>
             </div>
-
-            <h2>Gráfico de Vendas por Produtos</h2>
-            <Chart
-                chartType="LineChart"
-                width={"100%"}
-                height={400}
-                loader={<div>Loading Chart</div>}
-                data={dataProdutos}
-                options={{
-                    hAxis: {
-                        title: "Mês/Ano",
-                    },
-                    vAxis: {
-                        title: "Valor Total",
-                    },
-                }}
-            />
-
-            <h2>Gráfico de Vendas por Categorias</h2>
-            <Chart
-                chartType="LineChart"
-                width={"100%"}
-                height={400}
-                loader={<div>Loading Chart</div>}
-                data={dataCategorias}
-                options={{
-                    hAxis: {
-                        title: "Mês/Ano",
-                    },
-                    vAxis: {
-                        title: "Valor Total",
-                    },
-                }}
-            />
+            <div className={styles.btnIconSwitch}>
+                <button className={styles.btnIcon} onClick={handleAlternarGrafico}>
+                    <img className={styles.iconSwitch} src={iconSwitch} alt="Alternar" />
+                </button>
+            </div>
         </div>
     );
 };
