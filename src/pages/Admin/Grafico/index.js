@@ -4,7 +4,7 @@ import iconFilter from "../../../assets/buttons/filter.svg";
 import styles from "./AdminGrafico.module.css";
 import { dateTimeMask2 } from "../../../utils/mask";
 import { useNavigate } from "react-router-dom";
-import FormFiltrarClientes from "../../../components/components_filtro/FormFiltrarClientes";
+import FormFiltrarGrafico from "../../../components/components_filtro/FormFiltrarGrafico";
 import AdminGraficoService from "../../../services/Admin/adminGraficoService";
 import { Chart } from "react-google-charts";
 
@@ -12,52 +12,52 @@ const AdminGrafico = () => {
     const [statsProdutos, setStatsProdutos] = useState([]);
     const [statsCategorias, setStatsCategorias] = useState([]);
 
-    const [dataProdutos, setDataProdutos] = useState([]);
-    const [dataCategorias, setDataCategorias] = useState([]);
+    const [statsProdutosFiltrados, setStatsProdutosFiltrados] = useState([]);
+    const [statsCategoriasFiltradas, setStatsCategoriasFiltradas] = useState([]);
+
+    const [dadosProdutos, setDadosProdutos] = useState([]);
+    const [dadosCategorias, setDadosCategorias] = useState([]);
+
+    const [dataInicio, setDataInicio] = useState(dateTimeMask2(new Date(2024, 0, 1, 0, 0)));
+    const [dataFim, setDataFim] = useState(dateTimeMask2(new Date()));
 
     const [filtro, setFiltro] = useState({
-        id: "",
-        nome: "",
-        cpf: "",
-        diaNascimento: "",
-        mesNascimento: "",
-        anoNascimento: "",
-        generos: [],
-        telefone: "",
-        email: ""
+        produtos: [],
+        categorias: []
     });
 
     const [alternarGrafico, setAlternarGrafico] = useState(true);
-    const [abrirFormFiltrarClientes, setAbrirFormFiltrarClientes] = useState(false);
+    const [abrirFormFiltrarGrafico, setAbrirFormFiltrarGrafico] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
         const carregarStats = async () => {
-            const responseProdutos = await AdminGraficoService.buscarStatsProdutos(dateTimeMask2(new Date(2024, 0, 1, 0, 0)), dateTimeMask2(new Date()), navigate);
-            const responseCategorias = await AdminGraficoService.buscarStatsCategorias(dateTimeMask2(new Date(2024, 0, 1, 0, 0)), dateTimeMask2(new Date()), navigate);
+            const responseProdutos = await AdminGraficoService.buscarStatsProdutos(dataInicio, dataFim, navigate);
+            const responseCategorias = await AdminGraficoService.buscarStatsCategorias(dataInicio, dataFim, navigate);
 
             setStatsProdutos(responseProdutos);
             setStatsCategorias(responseCategorias);
 
+            setStatsProdutosFiltrados(responseProdutos);
+            setStatsCategoriasFiltradas(responseCategorias);
         };
 
         carregarStats();
-
-    }, []);
+    }, [dataInicio, dataFim]);
 
     useEffect(() => {
-        const carregarData = async () => {
+        const carregarDados = async () => {
             // Dados formatados para o gráfico de produtos e categorias
-            const responseProdutos = await AdminGraficoService.adequarDadosGrafico(statsProdutos, true);
-            const responseCategorias = await AdminGraficoService.adequarDadosGrafico(statsCategorias, false);
+            const responseProdutos = await AdminGraficoService.adequarDadosGrafico(statsProdutosFiltrados, true);
+            const responseCategorias = await AdminGraficoService.adequarDadosGrafico(statsCategoriasFiltradas, false);
 
-            setDataProdutos(responseProdutos);
-            setDataCategorias(responseCategorias);
+            setDadosProdutos(responseProdutos);
+            setDadosCategorias(responseCategorias);
         };
 
-        carregarData();
+        carregarDados();
 
-    }, [statsProdutos, statsCategorias]);
+    }, [statsProdutosFiltrados, statsCategoriasFiltradas]);
 
     function handleAlternarGrafico() {
         setAlternarGrafico(!alternarGrafico); // Alternando entre exibição de produtos e categorias
@@ -65,21 +65,20 @@ const AdminGrafico = () => {
 
     return (
         <div className={styles.container}>
-            {console.log(dataProdutos)}
             <div className={styles.grafic}>
                 {alternarGrafico ? (
                     <>
-                        {statsProdutos.length > 0 ? (
+                        {statsProdutosFiltrados.length > 0 ? (
                             <Chart
                                 chartType="LineChart"
                                 width={"90%"}
                                 height={550}
-                                loader={<div>Loading Chart</div>}
-                                data={dataProdutos}
+                                loader={<div>Carregando Gráfico</div>}
+                                data={dadosProdutos}
                                 options={{
                                     title: "Vendas por Produto",
                                     hAxis: { title: "Mês/Ano" },
-                                    vAxis: { title: "Valor Total" },
+                                    vAxis: { title: "Valor Total (R$)" },
                                     legend: { position: "bottom" },
                                 }}
                             />
@@ -89,17 +88,17 @@ const AdminGrafico = () => {
                     </>
                 ) : (
                     <>
-                        {statsCategorias.length > 0 ? (
+                        {statsCategoriasFiltradas.length > 0 ? (
                             <Chart
                                 chartType="LineChart"
                                 width={"90%"}
                                 height={550}
-                                loader={<div>Loading Chart</div>}
-                                data={dataCategorias}
+                                loader={<div>Carregando Gráfico</div>}
+                                data={dadosCategorias}
                                 options={{
                                     title: "Vendas por Categoria",
                                     hAxis: { title: "Mês/Ano" },
-                                    vAxis: { title: "Valor Total" },
+                                    vAxis: { title: "Valor Total (R$)" },
                                     legend: { position: "bottom" },
                                 }}
                             />
@@ -109,14 +108,19 @@ const AdminGrafico = () => {
                     </>
                 )}
             </div>
-            <FormFiltrarClientes
-                isOpen={abrirFormFiltrarClientes}
-                onRequestClose={() => setAbrirFormFiltrarClientes(false)}
+            <FormFiltrarGrafico
+                isOpen={abrirFormFiltrarGrafico}
+                onRequestClose={() => setAbrirFormFiltrarGrafico(false)}
+                data={{ dataInicio, dataFim }}
+                setData={{ setDataInicio, setDataFim }}
                 filtro={filtro}
                 setFiltro={setFiltro}
+                alternarGrafico={alternarGrafico}
+                stats={{ statsProdutos, statsCategorias }}
+                setStatsFiltrados={{ setStatsProdutosFiltrados, setStatsCategoriasFiltradas }}
             />
             <div className={styles.btnIconFilter}>
-                <button className={styles.btnIcon} onClick={() => setAbrirFormFiltrarClientes(true)}>
+                <button className={styles.btnIcon} onClick={() => setAbrirFormFiltrarGrafico(true)}>
                     <img className={styles.iconFilter} src={iconFilter} alt="Filtrar" />
                 </button>
             </div>

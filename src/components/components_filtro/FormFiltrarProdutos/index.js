@@ -132,9 +132,9 @@ const FormFiltrarProdutos = ({
                     isSearchable
                     closeMenuOnSelect={false}
                     value={plataformasSelecionadas}
-                    onChange={(selectedItems) => {
-                        setPlataformasSelecionadas(selectedItems || []);
-                        const plataformasSelecionadas = selectedItems ? selectedItems.map(item => item.value) : [];
+                    onChange={(itensSelecionados) => {
+                        setPlataformasSelecionadas(itensSelecionados || []);
+                        const plataformasSelecionadas = itensSelecionados ? itensSelecionados.map(item => item.value) : [];
                         setFiltro({ ...filtro, plataformas: plataformasSelecionadas });
                     }}
                 />
@@ -163,9 +163,9 @@ const FormFiltrarProdutos = ({
                     isSearchable
                     closeMenuOnSelect={false}
                     value={categoriasSelecionadas}
-                    onChange={(selectedItems) => {
-                        setCategoriasSelecionadas(selectedItems || []);
-                        const categoriasSelecionadas = selectedItems ? selectedItems.map(item => item.value) : [];
+                    onChange={(itensSelecionados) => {
+                        setCategoriasSelecionadas(itensSelecionados || []);
+                        const categoriasSelecionadas = itensSelecionados ? itensSelecionados.map(item => item.value) : [];
                         setFiltro({ ...filtro, categorias: categoriasSelecionadas });
                     }}
                 />
@@ -198,9 +198,9 @@ const FormFiltrarProdutos = ({
                     isSearchable
                     closeMenuOnSelect={false}
                     value={statusSelecionados}
-                    onChange={(selectedItems) => {
-                        setStatusSelecionados(selectedItems || []);
-                        const statusSelecionados = selectedItems ? selectedItems.map(item => item.value) : [];
+                    onChange={(itensSelecionados) => {
+                        setStatusSelecionados(itensSelecionados || []);
+                        const statusSelecionados = itensSelecionados ? itensSelecionados.map(item => item.value) : [];
                         setFiltro({ ...filtro, status: statusSelecionados });
                     }}
                 />

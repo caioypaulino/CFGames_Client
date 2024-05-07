@@ -77,40 +77,11 @@ async function buscarStatsCategorias(dataInicio, dataFim, navigate) {
     }
 };
 
-async function filtrarClientes(clientes, filtro) {
-    // Lógica para filtrar os clientes com base nos filtros
-    const clientesFiltrados = clientes.filter(cliente => {
-        // Verifica se há filtros de gênero
-        const filtroGenero = filtro.generos && filtro.generos.length > 0;
-
-        // Verifica se o cliente corresponde aos filtros de gênero
-        const correspondeGenero = filtroGenero ? filtro.generos.includes(cliente.genero) : true;
-
-        // Verificando se a data de nascimento do cliente corresponde ao filtro
-        const correspondeDataNascimento =
-            (!filtro.anoNascimento || cliente.dataNascimento.startsWith(filtro.anoNascimento)) &&
-            (!filtro.mesNascimento || cliente.dataNascimento.includes(filtro.mesNascimento)) &&
-            (!filtro.diaNascimento || cliente.dataNascimento.endsWith(filtro.diaNascimento));
-
-        return (
-            cliente.id.toString().includes(filtro.id) &&
-            cliente.nome.toLowerCase().includes(filtro.nome.toLowerCase()) &&
-            cliente.cpf.includes(filtro.cpf) &&
-            cliente.telefone.includes(filtro.telefone) &&
-            cliente.email.toLowerCase().includes(filtro.email.toLowerCase()) &&
-            correspondeDataNascimento &&
-            correspondeGenero // Verifica se corresponde ao filtro de gênero
-        );
-    });
-
-    return clientesFiltrados;
-}
-
 // Função para converter os dados de stats em um formato aceito pelo gráfico
-async function adequarDadosGrafico (dados, isProduto) {
+async function adequarDadosGrafico(dados, isProduto) {
     let dadosGrafico = [];
 
-    if(isProduto) {
+    if (isProduto) {
         dadosGrafico = [["Mês/Ano", ...dados.map(item => item.produto && item.produto.titulo)]];
     }
     else {
@@ -118,9 +89,9 @@ async function adequarDadosGrafico (dados, isProduto) {
     }
 
     const periodoStats = [...new Set(dados.flatMap(item => item.stats.map(stat => `${stat.mes}/${stat.ano}`)))];
-    
+
     periodoStats.forEach(periodo => {
-        const linhaStats = [periodo];   
+        const linhaStats = [periodo];
 
         dados.forEach(item => {
             const matchPeriodo = item.stats.find(stat => `${stat.mes}/${stat.ano}` === periodo);
@@ -133,10 +104,67 @@ async function adequarDadosGrafico (dados, isProduto) {
     return dadosGrafico;
 };
 
+async function buscarProdutosIniciais(statsProdutos) {
+    if (statsProdutos.length > 0) {
+        const produtosIniciais = statsProdutos.map((stats) => ({
+            value: stats.produto.id,
+            label: stats.produto.titulo
+        }));
+
+        return produtosIniciais;
+    }
+    else {
+        return [];
+    }
+};
+
+async function buscarCategoriasIniciais(statsCategorias) {
+    if (statsCategorias.length > 0) {
+        const categoriasIniciais = statsCategorias.map((stats) => ({
+            value: stats.categoria.id,
+            label: stats.categoria.nome
+        }));
+
+        return categoriasIniciais;
+    }
+    else {
+        return [];
+    }
+};
+
+const filtrarGrafico = async (produtos, categorias, isProduto, filtro, setStatsProdutosFiltrados, setStatsCategoriasFiltradas) => {
+    if (isProduto) {
+        const produtosFiltrados = produtos.filter(produto => {
+            // Verifica se há produtos selecionados no filtro
+            const filtroProdutos = filtro.produtos && filtro.produtos.length > 0;
+            // Verifica se o produto corresponde aos produtos selecionados no filtro
+            const correspondeProdutos = filtroProdutos
+                ? filtro.produtos.some(produtoFiltro => produtoFiltro.value === produto.produto.id) : false; 
+            return correspondeProdutos;
+        });
+
+        return setStatsProdutosFiltrados(produtosFiltrados);
+    }
+    else {
+        const categoriasFiltradas = categorias.filter(categoria => {
+            // Verificando se o produto match aos produtos selecionados no filtro
+            const filtroCategorias = filtro.categorias && filtro.categorias.length > 0;
+            const matchCategorias = filtroCategorias ? filtro.categorias.some(categoriaFiltro => categoriaFiltro.value === categoria.categoria.id) : false;
+
+            return matchCategorias;
+        });
+        console.log(categoriasFiltradas)
+        return setStatsCategoriasFiltradas(categoriasFiltradas);
+    }
+};
+
 const AdminGraficoService = {
     buscarStatsProdutos,
     buscarStatsCategorias,
-    adequarDadosGrafico
+    adequarDadosGrafico,
+    buscarProdutosIniciais,
+    buscarCategoriasIniciais,
+    filtrarGrafico
 }
 
 export default AdminGraficoService;

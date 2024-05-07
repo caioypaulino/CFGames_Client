@@ -73,11 +73,11 @@ async function filtrarClientes(clientes, filtro) {
         // Verifica se há filtros de gênero
         const filtroGenero = filtro.generos && filtro.generos.length > 0;
         
-        // Verifica se o cliente corresponde aos filtros de gênero
-        const correspondeGenero = filtroGenero ? filtro.generos.includes(cliente.genero) : true;
+        // Verifica se o cliente match aos filtros de gênero
+        const matchGenero = filtroGenero ? filtro.generos.includes(cliente.genero) : true;
 
-        // Verificando se a data de nascimento do cliente corresponde ao filtro
-        const correspondeDataNascimento =
+        // Verificando se a data de nascimento do cliente match ao filtro
+        const matchDataNascimento =
             (!filtro.anoNascimento || cliente.dataNascimento.startsWith(filtro.anoNascimento)) &&
             (!filtro.mesNascimento || cliente.dataNascimento.includes(filtro.mesNascimento)) &&
             (!filtro.diaNascimento || cliente.dataNascimento.endsWith(filtro.diaNascimento));
@@ -88,8 +88,8 @@ async function filtrarClientes(clientes, filtro) {
             cliente.cpf.includes(filtro.cpf) &&
             cliente.telefone.includes(filtro.telefone) &&
             cliente.email.toLowerCase().includes(filtro.email.toLowerCase()) &&
-            correspondeDataNascimento &&
-            correspondeGenero // Verifica se corresponde ao filtro de gênero
+            matchDataNascimento &&
+            matchGenero // Verifica se match ao filtro de gênero
         );
     });
 

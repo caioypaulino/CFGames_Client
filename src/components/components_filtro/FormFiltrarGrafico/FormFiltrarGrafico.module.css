@@ -1,0 +1,208 @@
+.modal {
+    position: fixed;
+    top: 27%;
+    left: 22.5%;
+    background-color: #fff;
+    padding: 2%;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    width: 20.25%;
+    max-width: 90%;
+    z-index: 1000;
+    animation: blowup 0.35s;
+    overflow-y: auto; /* Adiciona a propriedade overflow-y: auto para permitir rolagem vertical */
+    max-height: 85vh; /* Define a altura máxima para 80% da altura da viewport */
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 999;
+}
+
+.modal-open {
+    overflow: hidden;
+}
+
+@keyframes blowup {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    60% {
+        transform: scale(1.025);
+        opacity: 1;
+    }
+    80% {
+        transform: scale(.975);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.quantidadeTroca {
+    overflow-y: auto;
+    /* Adiciona a propriedade overflow-y: auto para permitir rolagem vertical */
+    max-height: 400px;
+    /* Define uma altura máxima para a div, ajuste conforme necessário */
+}
+
+.itemTroca {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 2%;
+}
+
+.quantidadeSelect {
+    display: flex;
+    align-items: center;
+}
+
+.quantidadeSelect p {
+    margin-right: 10px;
+}
+
+.swal2-select__control {
+    background-color: #f3f4f6;
+    border: 1px solid #d2d6dc;
+    border-radius: 4px;
+}
+
+.swal2-select__control--is-focused {
+    border-color: #96c1f8;
+    outline: none;
+    box-shadow: none;
+}
+
+.swal2-select__menu {
+    background-color: #fff;
+    border: 1px solid #d2d6dc;
+    border-radius: 4px;
+}
+
+.swal2-select__option {
+    color: #000;
+}
+
+.swal2-select__option--is-selected {
+    background-color: #96c1f8;
+    color: #fff;
+}
+
+.swal2-select__option--is-focused {
+    background-color: #d2e3fc;
+}
+
+.swal2-select__single-value {
+    color: #000;
+}
+
+.textArea {
+    font-family: 'Roboto';
+    font-size: 1rem;
+    width: 95.5%;
+    height: 10rem;
+    padding: 2%;
+    margin-top: 2%;
+}
+
+.quantidadeTroca p {
+    font-family: 'Roboto';
+    font-weight: bold;
+    color: #011640;
+}
+
+.buttonsContainer {
+    margin-left: 10.9%;
+}
+
+.confirmButton,
+.limparButton,
+.cancelButton {
+    height: 2.4rem;
+    width: 25.5%;
+    background: #6085FF;
+    color: #e2e6ef;
+    border-radius: 6px;
+    border-color: transparent;
+    cursor: pointer;
+    margin: 2%;
+    font-size: 1rem;
+}
+
+.limparButton {
+    background: red;
+}
+
+.cancelButton {
+    background: #6e7881;
+}
+
+.confirmButton:hover {
+    background-color: #5677e5;
+}
+
+.limparButton:hover {
+    background: rgb(122, 0, 0);
+}
+
+.cancelButton:hover {
+    background: #636c74;
+}
+
+.swal2input {
+    /* Estilos semelhantes aos campos swal2-input */
+
+    border: 1px solid #dbdbdb;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 1rem;
+    width: 93.3%; /* Largura total */
+    margin-bottom: 8px;
+}
+
+.swal2input:focus {
+    border: 2px solid #96c1f8;
+    outline: none; /* Remove a borda de foco padrão */
+}
+
+.swal2input::placeholder {
+    color: #6e7881; /* Cor do texto de espaço reservado */
+}
+
+.priceInputWrapper {
+    display: flex;
+}
+
+.priceInputWrapper input {
+    flex: 1;
+    margin-right: 2%; /* Adiciona uma margem entre os campos de preço */
+}
+
+.priceInputWrapper input:last-child {
+    margin-right: 0; /* Remove a margem do último campo para evitar espaçamento extra */
+}
+
+.dateFilter {
+    display: flex;
+}
+
+.dateInput {
+    margin-right: 1%;
+    margin-left: 1%;
+}
+
+.dateInput:first-child {
+    margin-left: 0; /* Remove a margem à esquerda do primeiro campo */
+}
+
+.dateInput:last-child {
+    margin-right: 0; /* Remove a margem à direita do último campo */
+}

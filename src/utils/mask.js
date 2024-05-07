@@ -140,13 +140,13 @@ export const dateTimeMask = (dateTimeString) => {
         throw new Error('Por favor, insira uma data e hora válidas.');
     }
 
-    const day = String(dateTime.getDate()).padStart(2, '0');
-    const month = String(dateTime.getMonth() + 1).padStart(2, ' 0');
-    const year = dateTime.getFullYear();
-    const hours = String(dateTime.getHours()).padStart(2, '0');
-    const minutes = String(dateTime.getMinutes()).padStart(2, '0');
+    const dia = String(dateTime.getDate()).padStart(2, '0');
+    const mes = String(dateTime.getMonth() + 1).padStart(2, ' 0');
+    const ano = dateTime.getFullYear();
+    const horas = String(dateTime.getHours()).padStart(2, '0');
+    const minutos = String(dateTime.getMinutes()).padStart(2, '0');
 
-    return `${day}-${month}-${year} ${hours}:${minutes}`;
+    return `${dia}-${mes}-${ano} ${horas}:${minutos}`;
 };
 
 // Função para formatar data e hora (dd-MM-yyyy hh:mm)
@@ -154,11 +154,37 @@ export const dateTimeMask2 = (date) => {
     const dia = String(date.getDate()).padStart(2, "0");
     const mes = String(date.getMonth() + 1).padStart(2, "0"); // +1 porque os meses começam em 0
     const ano = String(date.getFullYear()).padStart(4, "0");
-    const hora = String(date.getHours()).padStart(2, "0");
+    const horas = String(date.getHours()).padStart(2, "0");
     const minutos = String(date.getMinutes()).padStart(2, "0");
 
-    return `${dia}-${mes}-${ano} ${hora}:${minutos}`;
+    return `${dia}-${mes}-${ano} ${horas}:${minutos}`;
 }
+
+// Função para formatar data e hora (yyyy-MM-ddThh:mm)
+export const dateTimeLocalMask = (data) => {
+    var partes = data.split(' ');
+    var dataPartes = partes[0].split('-');
+    var horaPartes = partes[1].split(':');
+
+    var novaData = dataPartes[2] + '-' + dataPartes[1] + '-' + dataPartes[0] + 'T' + horaPartes[0] + ':' + horaPartes[1];
+
+    return novaData;
+}
+
+export const reverterDateTimeLocalMask = (data) => {
+    var partes = data.split('T');
+    var dataPartes = partes[0].split('-');
+    var horaPartes = partes[1].split(':');
+
+    var novaData = dataPartes[2] + '-' + dataPartes[1] + '-' + dataPartes[0] + ' ' + horaPartes[0] + ':' + horaPartes[1];
+
+    return novaData;
+}
+
+export const dateTimeValido = (dateTimeString) => {
+    const dateTimeRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
+    return dateTimeRegex.test(dateTimeString);
+};
 
 // Função para aplicar máscara de valores (ex: 13950,00 para 13950.00)
 export const valueMaskEN = (value) => {

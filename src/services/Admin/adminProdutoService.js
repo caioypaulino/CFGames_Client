@@ -261,23 +261,23 @@ async function deletarProduto (produtoId) {
 async function filtrarProdutos(produtos, filtro) {
     // Lógica para filtrar os produtos com base nos filtros
     const produtosFiltrados = produtos.filter(produto => {
-        // Verifica se o produto corresponde ao range de valores selecionados
-        const correspondePreco = produto.preco >= parseFloat(filtro.precoMin) && produto.preco <= parseFloat(filtro.precoMax);
+        // Verifica se o produto match ao range de valores selecionados
+        const matchPreco = produto.preco >= parseFloat(filtro.precoMin) && produto.preco <= parseFloat(filtro.precoMax);
 
-        // Verifica se o produto corresponde às categorias selecionadas
+        // Verifica se o produto match às categorias selecionadas
         const filtroCategorias = filtro.categorias && filtro.categorias.length > 0;
-        const correspondeCategorias = filtroCategorias ? filtro.categorias.some(catId => produto.categorias.map(cat => cat.id).includes(catId)) : true;
+        const matchCategorias = filtroCategorias ? filtro.categorias.some(catId => produto.categorias.map(cat => cat.id).includes(catId)) : true;
 
-        // Verifica se o produto corresponde às plataformas selecionadas
+        // Verifica se o produto match às plataformas selecionadas
         const filtroPlataformas = filtro.plataformas && filtro.plataformas.length > 0;
-        const correspondePlataformas = filtroPlataformas ? filtro.plataformas.includes(produto.plataforma) : true;
+        const matchPlataformas = filtroPlataformas ? filtro.plataformas.includes(produto.plataforma) : true;
 
-        // Verifica se o produto corresponde aos status selecionados
+        // Verifica se o produto match aos status selecionados
         const filtroStatus = filtro.status && filtro.status.length > 0;
-        const correspondeStatus = filtroStatus ? filtro.status.includes(produto.status) : true;
+        const matchStatus = filtroStatus ? filtro.status.includes(produto.status) : true;
 
-        // Verificando se a data de nascimento do cliente corresponde ao filtro
-        const correspondeDataLancamento =
+        // Verificando se a data de nascimento do cliente match ao filtro
+        const matchDataLancamento =
             (!filtro.anoLancamento || dataMaskEN2(produto.dataLancamento).startsWith(filtro.anoLancamento)) &&
             (!filtro.mesLancamento || dataMaskEN2(produto.dataLancamento).includes(filtro.mesLancamento)) &&
             (!filtro.diaLancamento || dataMaskEN2(produto.dataLancamento).endsWith(filtro.diaLancamento));
@@ -294,11 +294,11 @@ async function filtrarProdutos(produtos, filtro) {
             produto.comprimento.toString().includes(filtro.comprimento) &&
             produto.largura.toString().includes(filtro.largura) &&
             produto.altura.toString().includes(filtro.altura) &&
-            correspondePreco &&
-            correspondeDataLancamento &&
-            correspondeCategorias && // Verifica se corresponde aos filtros de categorias
-            correspondePlataformas && // Verifica se corresponde aos filtros de plataformas
-            correspondeStatus // Verifica se corresponde aos filtros de status
+            matchPreco &&
+            matchDataLancamento &&
+            matchCategorias && // Verifica se match aos filtros de categorias
+            matchPlataformas && // Verifica se match aos filtros de plataformas
+            matchStatus // Verifica se match aos filtros de status
         );
     });
 

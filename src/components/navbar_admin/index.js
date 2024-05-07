@@ -37,7 +37,7 @@ function NavbarAdmin() {
     ];
 
     const handleDropdownChange = (option) => {
-        // Redirecionar para a página correspondente à opção selecionada
+        // Redirecionar para a página matchnte à opção selecionada
         window.location.href = `/admin/${option.value}`;
     };
 
