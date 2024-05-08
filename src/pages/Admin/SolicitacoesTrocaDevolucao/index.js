@@ -3,7 +3,6 @@ import styles from "./AdminSolicitacoesTrocaDevolucao.module.css";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import Select from "react-select";
-import { getToken } from "../../../utils/storage";
 import { dataHoraMaskBR, valueMaskBR, statusMask, dataMaskBR, cpfMask, telefoneMask } from "../../../utils/mask";
 import { useNavigate } from "react-router-dom";
 import AdminSolicitacaoService from "../../../services/Admin/adminSolicitacaoService";
@@ -146,7 +145,7 @@ const AdminSolicitacoesTrocaDevolucao = () => {
 
     // Função para atualizar status solicitação
     const abrirPopupConcluirSolicitacao = (solicitacao) => {
-        if (solicitacao.status === "APROVADA" || solicitacao.status === "PRODUTOS_RECEBIDOS") {
+        if (solicitacao.status === "PRODUTOS_ENVIADOS" || solicitacao.status === "PRODUTOS_RECEBIDOS") {
             // Preenche itensReposicao ao abrirPopup
             setItensReposicao(solicitacao.itensTroca.map((item) => ({
                 itemTroca: { id: item.id },
@@ -251,7 +250,7 @@ const AdminSolicitacoesTrocaDevolucao = () => {
             Swal.fire({ title: "Conclusão Inválida!", html: `Não é possível concluir a solicitação.<br></br>(Solicitação Cancelada)`, icon: "warning", confirmButtonColor: "#6085FF" });
         }
         else if (solicitacao.status !== "CONCLUIDA") {
-            Swal.fire({ title: "Conclusão Inválida!", html: `Não é possível concluir a solicitação.<br></br>(Solicitação ainda não foi aprovada ou itens ainda não foram recebidos)`, icon: "warning", confirmButtonColor: "#6085FF" });
+            Swal.fire({ title: "Conclusão Inválida!", html: `Não é possível concluir a solicitação.<br></br>(Solicitação ainda não foi aprovada ou itens ainda não foram enviados/recebidos)`, icon: "warning", confirmButtonColor: "#6085FF" });
         }
     };
 

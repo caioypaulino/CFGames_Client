@@ -70,6 +70,38 @@ async function confirmarSolicitacao( pedido, itensTroca ) {
 }
 
 // Função para cancelar uma solicitação
+async function confirmarEnvioSolicitacao (solicitacaoId) {
+    try {
+        const token = getToken();
+
+        const response = await fetch(`http://localhost:8080/perfil/enviar/solicitacaotroca/${solicitacaoId}`, {
+            method: "PUT",
+            headers: {
+                Authorization: "Bearer " + token,
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (response.ok) {
+            const successMessage = await response.text();
+
+            Swal.fire({ title: "Sucesso!", html: `${successMessage}`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
+        }
+        else {
+            // Buscando mensagem de erro que não é JSON
+            const errorMessage = await response.text();
+
+            throw new Error(errorMessage);
+        }
+    }
+    catch (error) {
+        // Tratando mensagem de erro
+        console.error("Erro ao cancelar solicitação de troca/devolução:", error);
+        Swal.fire({ title: "Erro!", html: `Ocorreu um erro ao cancelar a solicitação de troca/devolução.<br><br>${error.message}`, icon: "error", confirmButtonColor: "#6085FF" })
+    }
+};
+
+// Função para cancelar uma solicitação
 async function cancelarSolicitacao (solicitacaoId) {
     try {
         const token = getToken();
@@ -104,6 +136,7 @@ async function cancelarSolicitacao (solicitacaoId) {
 const SolicitacaoService = {
     buscarSolicitacoes,
     confirmarSolicitacao,
+    confirmarEnvioSolicitacao,
     cancelarSolicitacao
 }
 

@@ -49,13 +49,16 @@ const TabelaPerfilSolicitacoes = (props) => {
         Swal.fire({
             title: `<h3 style='color:#011640;'>Solicitação de Troca/Devolução #${solicitacao.id}</h3>`,
             html: detalhesSolicitacao,
-            confirmButtonText: "OK",
+            confirmButtonText: "Confirmar Envio do(s) Item(ns)",
             confirmButtonColor: "#6085FF",
             showDenyButton: true,
             denyButtonText: "Cancelar Solicitação",
             width: '40%',
         }).then((result) => {
-            if (result.isDenied) {
+            if (result.isConfirmed) {
+                SolicitacaoService.confirmarEnvioSolicitacao(solicitacao.id);
+            }
+            else if (result.isDenied) {
                 abrirPopupCancel(solicitacao);
             }
         });
