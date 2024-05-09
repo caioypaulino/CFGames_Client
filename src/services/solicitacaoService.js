@@ -11,7 +11,7 @@ async function buscarSolicitacoes (navigate) {
 
         if (response.ok) {
             const json = await response.json()
-            const sortedSolicitacoes = json.sort((a, b) => a.id - b.id); // Ordena os pedidos por ID
+            const sortedSolicitacoes = json.sort((a, b) => b.id - a.id); // Ordena os pedidos por ID
 
             return sortedSolicitacoes;
         }

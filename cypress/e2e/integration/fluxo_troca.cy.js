@@ -1,5 +1,5 @@
 describe('Fluxos de Troca/Devolução', () => {
-    it('Fluxo de Troca Feliz Cliente', () => {
+    it('Fluxo de Troca Feliz Cliente Solicitação', () => {
         cy.login_success(); // Realizando login com sucesso!
     
         cy.visit('http://localhost:3000/perfil/pedidos').wait(1000);
@@ -22,7 +22,7 @@ describe('Fluxos de Troca/Devolução', () => {
         cy.contains('OK').click();
     });
 
-    it('Fluxo de Troca Feliz Admin', () => {
+    it('Fluxo de Troca Feliz Admin Aprovação', () => {
         const selecionarSolicitacao = () => {
             cy.get('thead > tr > :nth-child(1)').click().wait(500); // Selecionando pedido mais recente
             cy.get('thead > tr > :nth-child(1)').click().wait(500);
@@ -41,6 +41,36 @@ describe('Fluxos de Troca/Devolução', () => {
         selecionarSolicitacao();
         cy.get('#swal2-html-container > div > .swal2-confirm').click().wait(500);
         cy.get('.swal2-confirm').click().wait(500);
+    });
+
+    it('Fluxo de Troca Feliz Cliente Confirmar Envio', () => {
+        cy.login_success(); // Realizando login com sucesso!
+    
+        cy.visit('http://localhost:3000/perfil/solicitacoes_troca_devolucao').wait(1000);
+    
+        cy.contains('. . .').first().click().wait(1000);  // Acessando último pedido
+    
+        cy.get('.swal2-container').scrollTo('bottom').wait(500);
+        cy.get('.swal2-confirm').click().wait(500); // Confirmar envio do(s) item(ns)
+
+        cy.contains('OK').click();
+    });
+
+    it('Fluxo de Troca Feliz Admin Conclusão', () => {
+        const selecionarSolicitacao = () => {
+            cy.get('thead > tr > :nth-child(1)').click().wait(500); // Selecionando pedido mais recente
+            cy.get('thead > tr > :nth-child(1)').click().wait(500);
+    
+            cy.contains('. . .').first().click().wait(500); // Acessando pedido
+    
+            cy.get('.swal2-container').scrollTo('bottom');
+    
+            cy.get('.swal2-confirm').click().wait(500); // Alterar Status
+        }
+        
+        cy.login_admin_success(); // Realizando login com sucesso!
+
+        cy.visit('http://localhost:3000/admin/solicitacoes_troca_devolucao').wait(1000);
 
         selecionarSolicitacao();
         cy.get('#swal2-html-container > div > .swal2-deny').click().wait(500);
@@ -49,5 +79,11 @@ describe('Fluxos de Troca/Devolução', () => {
         cy.get('#reporEstoque').click().wait(500);
         cy.get('.swal2-confirm').click().wait(500);
         cy.get('.swal2-confirm').click();
+    });
+
+    it('Fluxo de Troca Feliz Cliente Cupom Gerado', () => {
+        cy.login_success(); // Realizando login com sucesso!
+    
+        cy.visit('http://localhost:3000/perfil/cupons').wait(1000);
     });
 });
