@@ -3,7 +3,6 @@ import style from "./EnderecosCheckout.module.css";
 import Swal from "sweetalert2";
 import Select from "react-select";
 import { useNavigate } from 'react-router-dom';
-import { getToken } from "../../../utils/storage";
 import ResumoCheckout from "../resumo_checkout";
 import { cepMask, handleCep, handleNumber } from "../../../utils/mask";
 import EnderecoService from "../../../services/enderecoService";

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "./Checkout.module.css";
+import Swal from "sweetalert2";
 import EnderecosCheckout from "../../components/components_checkout/enderecos_checkout";
 import { useNavigate } from "react-router-dom";
 import CarrinhoService from "../../services/carrinhoService";
@@ -11,7 +12,7 @@ const Checkout = () => {
 
     useEffect(() => {
         const carregarCarrinhoCompras = async () => {
-            const response = await CarrinhoService.buscarCarrinhoCompras(navigate);
+            const response = await CarrinhoService.buscarCarrinhoComprasCheckout(navigate);
 
             setCarrinhoCompras(response);
         }
@@ -21,6 +22,7 @@ const Checkout = () => {
 
     return (
         <div className={styles.container}>
+            {console.log(carrinhoCompras)}
             <div className="resumoAndEnderecos">
                 <EnderecosCheckout
                     valorCarrinho={carrinhoCompras !== undefined && carrinhoCompras.valorCarrinho || 0}
