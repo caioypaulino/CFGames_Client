@@ -5,19 +5,22 @@
 }
 
 .grafic {
-    width: 90%; /* Aumenta a largura da tabela */
+    width: 90%;
+    /* Aumenta a largura da tabela */
     border-collapse: collapse;
     border-radius: 10px;
     overflow: hidden;
     table-layout: fixed;
-    margin-left: 17%; /* Centraliza a tabela */
+    margin-left: 16%;
+    /* Centraliza a tabela */
 }
 
 thead {
     background-color: #011640;
 }
 
-th, td {
+th,
+td {
     color: white;
     font-family: 'Roboto', sans-serif;
     font-weight: bold;
@@ -88,7 +91,7 @@ td {
 }
 
 .pagination button:hover {
-    background-color: #011640; 
+    background-color: #011640;
 }
 
 .pagination button.active {
@@ -96,42 +99,49 @@ td {
     color: white;
 }
 
-.paginaAtual{
+.paginaAtual {
     color: #6085FF;
     font-weight: bold;
     font-family: 'Roboto';
 }
 
-.totalPaginas{
+.totalPaginas {
     color: #000a99;
     font-weight: bold;
     font-family: 'Roboto';
 }
 
-.btnIconSwitch, .btnIconFilter {
+.btnIconSwitch,
+.btnIconFilter {
     background: none;
     border: none;
     padding: 0;
     cursor: pointer;
-    display: flex; /* Transformar em um flex container */
-    width: 6%; /* Definir largura */
-    height: 6%; /* Definir altura */
+    display: flex;
+    /* Transformar em um flex container */
+    width: 6%;
+    /* Definir largura */
+    height: 6%;
+    /* Definir altura */
     left: 20%;
     bottom: 14%;
     position: absolute;
 }
 
 .btnIcon:hover {
-    background-color: #f0f0f0; /* Adicionar cor de fundo ao passar o mouse */
-    border-radius: 50%; /* Fazer o botão parecer um círculo */
+    background-color: #f0f0f0;
+    /* Adicionar cor de fundo ao passar o mouse */
+    border-radius: 50%;
+    /* Fazer o botão parecer um círculo */
 }
 
-.btnIconSwitch{
+.btnIconSwitch {
     left: 77.5%;
 }
 
 
-.iconSwitch, .iconFilter {
+.iconSwitch,
+.iconFilter {
     width: 90%;
     height: 90%;
     flex: 3;
@@ -148,14 +158,14 @@ td {
 }
 
 .select1 {
-    margin-top: 1rem; 
-    padding: 0.5rem; 
-    font-size: 1.25rem; 
-    border: 1px solid #ccc; 
-    border-radius: 4px; 
-    width: 16.3rem; 
-    height: 3.5rem; 
-    font-family: inherit; 
+    margin-top: 1rem;
+    padding: 0.5rem;
+    font-size: 1.25rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 16.3rem;
+    height: 3.5rem;
+    font-family: inherit;
     outline: none;
 }
 
@@ -179,4 +189,40 @@ td {
 
 .justifyText hr {
     border-color: #011640;
+}
+
+.label {
+    margin-left: 12%;
+}
+
+.swal2input {
+    /* Estilos semelhantes aos campos swal2-input */
+    border: 1px solid #dbdbdb;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 1rem;
+    width: 15%;
+    /* Largura total */
+}
+
+.swal2input:focus {
+    border: 2px solid #96c1f8;
+    outline: none;
+    /* Remove a borda de foco padrão */
+}
+
+.swal2input::placeholder {
+    color: #6e7881;
+    /* Cor do texto de espaço reservado */
+}
+
+.chartContainer {
+    display: 'flex';
+}
+
+.legendContainer {
+    width: '30%';
+    height: '550px';
+    overflow-y: 'scroll';
+    padding-left: '20px';
 }

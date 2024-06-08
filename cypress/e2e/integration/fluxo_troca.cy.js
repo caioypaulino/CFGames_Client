@@ -60,8 +60,8 @@ describe('Fluxos de Troca/Devolução', () => {
         cy.visit('http://localhost:3000/admin/solicitacoes_troca_devolucao').wait(1000);
 
         selecionarSolicitacao();
-        cy.get('#swal2-html-container > div > .swal2-confirm').click().wait(500);
-        cy.get('.swal2-cancel').click().wait(500);
+        cy.contains('Reprovar').click().wait(500);
+        cy.get('.swal2-confirm').click().wait(500);
     });
 
     it('Fluxo de Troca Feliz Cliente Confirmar Envio', () => {
@@ -83,8 +83,7 @@ describe('Fluxos de Troca/Devolução', () => {
         cy.visit('http://localhost:3000/perfil/solicitacoes_troca_devolucao').wait(1000);
     
         cy.contains('. . .').first().click().wait(1000);  // Acessando último pedido
-    
-        cy.get('.swal2-container').scrollTo('bottom').wait(500);
+
         cy.get('.swal2-deny').click().wait(500); // Confirmar envio do(s) item(ns)
         cy.contains('Sim, cancelar!').click().wait(500);
         cy.contains('OK').click().wait(1000);

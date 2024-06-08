@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import iconSwitch from "../../../assets/buttons/switch.svg";
 import iconFilter from "../../../assets/buttons/filter.svg";
 import styles from "./AdminGrafico.module.css";
-import { dateTimeMask2 } from "../../../utils/mask";
+import { dateTimeLocalMask, dateTimeMask2, dateTimeValido, reverterDateTimeLocalMask } from "../../../utils/mask";
 import { useNavigate } from "react-router-dom";
 import FormFiltrarGrafico from "../../../components/components_filtro/FormFiltrarGrafico";
 import AdminGraficoService from "../../../services/Admin/adminGraficoService";
@@ -63,9 +63,28 @@ const AdminGrafico = () => {
         setAlternarGrafico(!alternarGrafico); // Alternando entre exibição de produtos e categorias
     }
 
+    const handleChangeDataInicio = (e) => {
+        if (dateTimeValido(e.target.value)) {
+            setDataInicio(reverterDateTimeLocalMask(e.target.value));
+        }
+    };
+
+    const handleChangeDataFim = (e) => {
+        if (dateTimeValido(e.target.value)) {
+            setDataFim(reverterDateTimeLocalMask(e.target.value));
+        }
+    };
+
     return (
         <div className={styles.container}>
+
             <div className={styles.grafic}>
+                <form>
+                    <label for="dataInicio" className={styles.label}>Data Início: </label>
+                    <input id="dataInicio" type="datetime-local" className={`${styles.swal2input}`} value={dateTimeLocalMask(dataInicio)} onChange={handleChangeDataInicio} placeholder="Data Início" />
+                    <label for="dataFim" className={styles.label}>Data Fim: </label>
+                    <input id="dataFim" type="datetime-local" className={`${styles.swal2input}`} value={dateTimeLocalMask(dataFim)} onChange={handleChangeDataFim} placeholder="Data Final" />
+                </form>
                 {alternarGrafico ? (
                     <>
                         {statsProdutosFiltrados.length > 0 ? (
@@ -79,7 +98,7 @@ const AdminGrafico = () => {
                                     title: "Vendas por Produto",
                                     hAxis: { title: "Mês/Ano" },
                                     vAxis: { title: "Valor Total (R$)" },
-                                    legend: { position: "bottom" },
+                                    legend: { position: "right" },
                                 }}
                             />
                         ) : (
@@ -99,7 +118,7 @@ const AdminGrafico = () => {
                                     title: "Vendas por Categoria",
                                     hAxis: { title: "Mês/Ano" },
                                     vAxis: { title: "Valor Total (R$)" },
-                                    legend: { position: "bottom" },
+                                    legend: { position: "right" },
                                 }}
                             />
                         ) : (

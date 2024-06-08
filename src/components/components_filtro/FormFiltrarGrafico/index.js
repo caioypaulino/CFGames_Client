@@ -63,18 +63,6 @@ const FormFiltrarGrafico = ({
         setStatsCategoriasFiltradas(statsCategorias);
     }
 
-    const handleChangeDataInicio = (e) => {
-        if (dateTimeValido(e.target.value)) {
-            setDataInicio(reverterDateTimeLocalMask(e.target.value));
-        }
-    };
-
-    const handleChangeDataFim = (e) => {
-        if (dateTimeValido(e.target.value)) {
-            setDataFim(reverterDateTimeLocalMask(e.target.value));
-        }
-    };
-
     return (
         <Modal
             isOpen={isOpen}
@@ -85,11 +73,6 @@ const FormFiltrarGrafico = ({
         >
             <h1>Filtrar Gráfico</h1><br></br>
             <form>
-                <label for="dataInicio" className={styles.label}>Data Início:</label>
-                <input id="dataInicio" type="datetime-local" className={`${styles.swal2input}`} value={dateTimeLocalMask(dataInicio)} onChange={handleChangeDataInicio} placeholder="Data Início" min="2024-01-01T00:00" />
-                <label for="dataFim" className={styles.label}>Data Final:</label>
-                <input id="dataFim" type="datetime-local" className={`${styles.swal2input}`} value={dateTimeLocalMask(dataFim)} onChange={handleChangeDataFim} placeholder="Data Final" min="2024-01-01T00:00" />
-
                 {alternarGrafico ? (
                     <>
                         <label for="produtos" className={styles.label}>Produtos:</label>
