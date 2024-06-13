@@ -72,7 +72,7 @@
   font-family: 'Roboto';
 }
 
-.btnIconFilter {
+.btnIconFilter, .btnIconGemini {
   background: none;
   border: none;
   padding: 0;
@@ -89,7 +89,12 @@
   top: 85%;
 }
 
-.iconFilter {
+.btnIconGemini {
+  right: 2%;
+  top: 85%;
+}
+
+.iconFilter, .iconGemini {
   width: 90%;
   height: 90%;
   flex: 3;
@@ -102,4 +107,14 @@
   padding: 0;
   cursor: pointer;
   display: inline-block;
+}
+
+.justifyText {
+  text-align: justify;
+  font-size: 1.25rem;
+}
+
+.centerText {
+  text-align: center;
+  font-size: 1.25rem;
 }

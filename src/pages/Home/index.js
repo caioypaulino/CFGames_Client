@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import banner from "../../assets/home/Banner.svg";
 import iconFilter from "../../assets/buttons/filter.svg";
+import iconGemini from "../../assets/buttons/gemini.svg";
 import styles from "./Home.module.css";
+import Swal from "sweetalert2";
 import ProdutoHome from "../../components/produtos_home";
 import ProdutoService from '../../services/produtoService';
+import GeminiService from '../../services/geminiService';
 import FormFiltrarProdutos from '../../components/components_filtro/FormFiltrarProdutos';
 
 const Home = ({ termoBusca }) => {
@@ -84,6 +87,26 @@ const Home = ({ termoBusca }) => {
         setPaginaAtual(paginaAnterior => Math.min(paginaAnterior + 1, totalPaginas));
     };
 
+    const abrirPopupGemini= () => {
+        Swal.fire({
+            title: `<h3 style='color:#011640; margin-bottom:-1%; margin-top:-1%'>Saiba mais sobre seus Games Favoritos!</h3>`,
+            html: `
+                <input id="nomeJogo" type="text" class="swal2-input" required placeholder="Nome do Jogo">
+            `,
+            showCancelButton: true,
+            confirmButtonText: "Confirmar",
+            confirmButtonColor: "#6085FF",
+            cancelButtonText: "Fechar",
+            icon: "info",
+            width: '40%',
+            preConfirm: () => {
+                const nomeJogo = Swal.getPopup().querySelector('#nomeJogo').value;
+
+                GeminiService.buscarGemini(nomeJogo, styles);
+            },
+        });
+    };
+
     return (
         <div className={styles.home}>
             <img className={styles.banner} src={banner} alt="Banner" />
@@ -118,6 +141,11 @@ const Home = ({ termoBusca }) => {
             <div className={styles.btnIconFilter}>
                 <button className={styles.btnIcon} onClick={() => setAbrirFormFiltrarProdutos(true)}>
                     <img className={styles.iconFilter} src={iconFilter} alt="Filtrar" />
+                </button>
+            </div>
+            <div className={styles.btnIconGemini}>
+                <button className={styles.btnIcon} onClick={() => abrirPopupGemini()}>
+                    <img className={styles.iconGemini} src={iconGemini} alt="Gemini" />
                 </button>
             </div>
         </div>

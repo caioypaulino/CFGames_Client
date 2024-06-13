@@ -133,9 +133,7 @@ const EnderecosCheckout = (props) => {
 
         CheckoutService.calcularFrete(enderecoCliente, setFrete, navigate);
     };
-
     
-
     return (
         <div className={style.selectAdress}>
             <h1>Selecione o Endereço para Entrega</h1>
