@@ -7,6 +7,19 @@ async function calcularFrete (enderecoSelecionado, setFrete, navigate) {
     }
 
     try {
+        Swal.fire({
+            title: `<h3 style='color:#011640; margin-bottom:-1%'>Calculando Frete...</h3>`,
+            html: `
+                <div>
+                    <p>Por favor, aguarde enquanto o sistema calcula o frete.</p>
+                </div>
+            `,
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
         const token = getToken();
 
         const response = await fetch("http://localhost:8080/pedido/calcular/frete", {

@@ -3,7 +3,7 @@ import { getToken, limparToken } from "../utils/storage";
 import EnderecoService from "./enderecoService";
 import CartaoService from "./cartaoService";
 
-async function buscarPedidos (navigate) {
+async function buscarPedidos(navigate) {
     const token = getToken();
 
     try {
@@ -25,7 +25,7 @@ async function buscarPedidos (navigate) {
                 Swal.fire({ title: "Erro!", html: `Erro ao carregar pedidos!`, icon: "error", confirmButtonColor: "#6085FF" }).then(() => { window.location.reload(); });
             }
         }
-    } 
+    }
     catch (error) {
         limparToken();
         console.error('Erro ao carregar dados:', error);
@@ -34,19 +34,32 @@ async function buscarPedidos (navigate) {
 };
 
 // função para adicionar um novo cartão
-async function adicionarPedido ({
-    enderecoEntrega, 
-    cartoesSelecionados, 
-    cuponsSelecionados, 
-    valorParcialEditado, 
-    valorParcialPorCartao, 
-    parcelasPorCartao, 
-    carregarEnderecosCliente, 
-    enderecoAdicionado, 
-    cartoesAdicionados, 
+async function adicionarPedido({
+    enderecoEntrega,
+    cartoesSelecionados,
+    cuponsSelecionados,
+    valorParcialEditado,
+    valorParcialPorCartao,
+    parcelasPorCartao,
+    carregarEnderecosCliente,
+    enderecoAdicionado,
+    cartoesAdicionados,
     navigate
 }) {
     try {
+        Swal.fire({
+            title: `<h3 style='color:#011640; margin-bottom:-1%'>Adicionando Pedido...</h3>`,
+            html: `
+                <div>
+                    <p>Por favor, aguarde enquanto o sistema confirma seu pedido.</p>
+                </div>
+            `,
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
         const token = getToken();
 
         const response = await fetch("http://localhost:8080/pedido/add", {
@@ -94,8 +107,48 @@ async function adicionarPedido ({
             }
 
             const successMessage = await response.text();
+            const messages = successMessage.split('<br></br>');
 
-            Swal.fire({ title: "Sucesso!", html: `${successMessage}`, icon: "success", confirmButtonColor: "#6085FF" }).then(() => { navigate('/perfil/pedidos'); });
+            // Exibe a primeira mensagem
+            Swal.fire({
+                title: "Sucesso!",
+                text: messages[0],
+                icon: "success",
+                confirmButtonColor: "#6085FF"
+            }).then(() => {
+                Swal.fire({
+                    title: `<h3 style='color:#011640; margin-bottom:-1%'>Processando Pagamento...</h3>`,
+                    html: `
+                        <div>
+                            <p>Aguarde o processamento do pagamento.</p>
+                        </div>
+                    `,
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                setTimeout(() => {
+                    const statusMessage = messages[2];
+
+                    if (statusMessage === "Status: Pagamento aprovado!") {
+                        Swal.fire({
+                            title: "Sucesso!",
+                            html: `Pagamento do pedido foi aprovado!<br><br>Por favor aguarde, prepararemos seu pedido para envio.`,
+                            icon: "success",
+                            confirmButtonColor: "#6085FF"
+                        }).then(() => { navigate('/perfil/pedidos'); });
+                    } else {
+                        Swal.fire({
+                            title: "Erro no Pagamento!", 
+                            text: statusMessage,
+                            icon: "error", 
+                            confirmButtonColor: "#6085FF"
+                        });
+                    }
+                }, 800);
+            });
         }
         else {
             // buscando mensagem de erro que não é JSON
@@ -112,7 +165,7 @@ async function adicionarPedido ({
 };
 
 // Função para cancelar um pedido
-async function cancelarPedido (pedidoId) {
+async function cancelarPedido(pedidoId) {
     try {
         const token = getToken();
 

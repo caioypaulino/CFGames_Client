@@ -81,28 +81,41 @@ async function buscarStatsCategorias(dataInicio, dataFim, navigate) {
 async function adequarDadosGrafico(dados, isProduto) {
     let dadosGrafico = [];
 
+    // Adicionando a linha do cabeçalho
     if (isProduto) {
-        dadosGrafico = [["Mês/Ano", ...dados.map(item => item.produto && item.produto.titulo)]];
-    }
+        dadosGrafico = [["Mês/Ano", ...dados.map(item => item.produto.titulo)]];
+    } 
     else {
-        dadosGrafico = [["Mês/Ano", ...dados.map(item => item.categoria && item.categoria.nome)]];
+        dadosGrafico = [["Mês/Ano", ...dados.map(item => item.categoria.nome)]];
     }
 
+    // Obtendo todos os períodos únicos nos dados
     const periodoStats = [...new Set(dados.flatMap(item => item.stats.map(stat => `${stat.mes}/${stat.ano}`)))];
 
-    periodoStats.forEach(periodo => {
+    // Ordenando os períodos em ordem cronológica
+    const periodosOrdenados = periodoStats.sort((a, b) => {
+        const [mesA, anoA] = a.split('/').map(Number);
+        const [mesB, anoB] = b.split('/').map(Number);
+
+        return new Date(anoA, mesA - 1) - new Date(anoB, mesB - 1);
+    });
+
+    // Construindo linhas para cada período ordenado
+    periodosOrdenados.forEach(periodo => {
         const linhaStats = [periodo];
 
         dados.forEach(item => {
             const matchPeriodo = item.stats.find(stat => `${stat.mes}/${stat.ano}` === periodo);
-            linhaStats.push(matchPeriodo ? matchPeriodo.valorTotal : null);
+            
+            linhaStats.push(matchPeriodo ? matchPeriodo.valorTotal : 0); // Use 0 em vez de null para valores ausentes
         });
 
         dadosGrafico.push(linhaStats);
     });
 
     return dadosGrafico;
-};
+}
+
 
 async function buscarProdutosIniciais(statsProdutos) {
     if (statsProdutos.length > 0) {
@@ -153,7 +166,7 @@ const filtrarGrafico = async (produtos, categorias, isProduto, filtro, setStatsP
 
             return matchCategorias;
         });
-        console.log(categoriasFiltradas)
+        
         return setStatsCategoriasFiltradas(categoriasFiltradas);
     }
 };
