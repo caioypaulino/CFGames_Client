@@ -4,12 +4,15 @@ import iconFilter from "../../assets/buttons/filter.svg";
 import iconGemini from "../../assets/buttons/gemini.svg";
 import styles from "./Home.module.css";
 import Swal from "sweetalert2";
+import withReactContent from 'sweetalert2-react-content';
 import ProdutoHome from "../../components/produtos_home";
 import ProdutoService from '../../services/produtoService';
-import GeminiService from '../../services/geminiService';
 import FormFiltrarProdutos from '../../components/components_filtro/FormFiltrarProdutos';
+import ChatBaseIframe from '../../components/components_chatbase/ChatBase';
 
 const Home = ({ termoBusca }) => {
+    const SwalJSX = withReactContent(Swal);
+
     const [produtos, setProdutos] = useState([]);
     const [categorias, setCategorias] = useState([]);
 
@@ -87,23 +90,14 @@ const Home = ({ termoBusca }) => {
         setPaginaAtual(paginaAnterior => Math.min(paginaAnterior + 1, totalPaginas));
     };
 
-    const abrirPopupGemini= () => {
-        Swal.fire({
-            title: `<h3 style='color:#011640; margin-bottom:-1%; margin-top:-1%'>Saiba mais sobre seus Games Favoritos!</h3>`,
-            html: `
-                <input id="nomeJogo" type="text" class="swal2-input" required placeholder="Nome do Jogo">
-            `,
-            showCancelButton: true,
-            confirmButtonText: "Confirmar",
-            confirmButtonColor: "#6085FF",
-            cancelButtonText: "Fechar",
-            icon: "info",
-            width: '40%',
-            preConfirm: () => {
-                const nomeJogo = Swal.getPopup().querySelector('#nomeJogo').value;
-
-                GeminiService.buscarGemini(nomeJogo, styles);
-            },
+    const abrirPopupIA= () => {
+        SwalJSX.fire({
+            html: (<ChatBaseIframe />),
+            showCancelButton: false,
+            showConfirmButton: false,
+            showCloseButton: true,
+            width: '50%',
+            position: 'center-end',
         });
     };
 
@@ -144,8 +138,8 @@ const Home = ({ termoBusca }) => {
                 </button>
             </div>
             <div className={styles.btnIconGemini}>
-                <button className={styles.btnIcon} onClick={() => abrirPopupGemini()}>
-                    <img className={styles.iconGemini} src={iconGemini} alt="Gemini" />
+                <button className={styles.btnIcon} onClick={() => abrirPopupIA()}>
+                    <img className={styles.iconGemini} src={iconGemini} alt="CFGIA" />
                 </button>
             </div>
         </div>
